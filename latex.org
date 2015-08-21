@@ -1,0 +1,60 @@
+* 文件类型
+  .tex : tex源文件
+  .dvi : 不依赖设备,可以用xdvi查看,也可以转换成pdf.是latex编译的结果.
+  .log : 记录上一次编译运行的日至.
+  .aux : Latex生成的参考文献引用信息.
+  .bib : 参考文献数据库.
+  .bst : BibTex的样式文件,不同期刊有不同的.bst.
+  .bbl : BibTeX根据.aux文件,.bib文件和.bst文件生成,会被Latex读取的参考文献列表.
+  .blg : BibTex日至.
+  
+
+* 颜色
+  \textcolor{red/blue/green/yellow/...}{text} : 将text设置为指定颜色.
+* 环境：
+  abstract : 摘要.
+  itmeize : 无序列表.
+  center  : 居中内容.
+
+
+
+"\\" ：强制换行.
+\label : 标签.
+\emph{} : 斜体. 
+\verb|| : 原样引用,忽虑内容的特定含义.
+% : 注释.
+
+* 引用
+  引用章节用\ref{},引用参考文献用cite{}
+* 参考文献(bibliography)
+   
+  \begin{thebibliography}{widest-label}
+  \bibitem{key1}
+  \bibitem{key2}
+  .....
+  \end{thebibliography}
+  
+  每一个参考文献以\bibitem{key}开头.
+  在正文中用\cite{key}进行引用.可以同时引用多个参考文献: \cite{key1,key2,...}, 用','分隔.
+  正文里引用时,可以向参考文献添加附注,如页号,章节号等等: \cite[Chapter 3]{key}. 输出结果为: [1,Chapter 3](假设引用第一篇参考文献).
+  
+  宏包:
+  \usepackagep[options]{natbib}
+  
+* BibTeX
+** 引用数据库(.bib)
+   \bibliography{database1.bib,database2.bib,..}
+** 设置样式(.bst)
+   \bibliographystyle{style}  (放于\begin{document}之后).
+   可用style:
+   plain.bst:
+   unsrt.bst:
+   alpha.bst:
+   abbrv.bst:
+   acm.bst:
+   apalike.bst:
+   
+
+
+* 上下标
+  上/下标: a^n/a_n

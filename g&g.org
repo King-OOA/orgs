@@ -1,0 +1,103 @@
+* gdb
+
+** 设置命令行参数
+  set args [参数1] [参数2] ....
+  show args 显示设置好的参数
+** 断点
+** 设置断点
+   b [行号] : 在指定行设置断点.
+   b [函数名] : 在指定函数处设置断点.
+
+** 显示断点
+   info b
+   
+** 删除断点
+   delte : 删除所有断点.
+   delete [断点号] : 删除指定断点.
+   delete [n-m] : 删除断点n至m.
+   
+** 显示变量
+
+  p [变量] : 显示变量值.
+  display [表达式] : 每一步中都自动显示表达式的值.
+  
+
+
+
+
+** 调试
+
+  n(ext) [数字] : 单步运行,不进入函数. 数字表示一次进行几步.
+  s(tep) [数字] : 单步运行,进入函数. 数字表示一次进行几步.
+
+
+
+
+
+* gcc
+   只处理'.c'文件, 不处理'.h'文件.
+
+** 预处理(-E)
+   对源文件进行预处理,生成预处理过的代码(.i)
+   gcc -E file.c -o file.i 
+    
+** 编译(-S)
+   文本 -> 文本: 对预处理过的代码进行编译(语法解析和汇编代码生成),生成汇编语言代码(.s)
+   gcc -S file.i(c) -o file.s
+   
+** 汇编(-C)
+   文本 -> 二进制机器码: 对汇编语言代码进行汇编,生成二进制的目标文件(.o)
+   机器代码的生成与处理器有密切的联系,相对于编译过程的语法解析,汇编的过程相对简单,这是因为对于一款特定的处理器，其汇编语言和二进制的机器代码是一一对应的
+   gcc -C file.s(c) -o file.o
+
+** 链接
+   对多个二进制目标文件进行链接,生成可执行文件.
+   gcc file_1.o file_2.o file_3.o .... -o file
+
+** 库
+   
+   当静态库与动态库同名时,gcc优先选择动态库.
+   -L[目录] : 添加(动态/静态)库文件目录.
+   -l[库名] : 添加库文件.
+
+   nm libxxx.so(a) : 查看库中所定义的符号(T表示该库所定义的符号,U表示该库所引用的符号,w表示弱符号).
+   可用: 'nm libxxx.so(a) | grep U/T/w' 来查看
+   
+   命名规则: libxxx.so(a).主版本号.次版本号
+
+*** 动态库
+    命名: lib[库名].so
+    创建: 由多个.o文件链接而成.
+    gcc -shared file1.o file2.o ...  -o lib[库名].so
+    注:其中每个file.o编译时必须加入-fPIC.
+
+    加载: 系统会自动搜寻在/lib/和/usr/lib/目录下的库.
+          1. 在/etc/ld.so.conf.d/目录下新建一个文件(pz.conf),并将动态库库所在的目录添加到该文件中.
+          2. 运行ldconfig命令.
+
+*** 静态库
+    命名: lib[名称].a
+    创建: 由多个.o文件打包而成.
+    ar -rc lib[库名].a file1.o file2.o ... 
+
+** 常用选项
+   -I[目录] : 添加头文件搜索目录. ('.c'文件中,include的'.h'文件可以不用添加路径)
+   -fPIC(Position Independent Code): 生成位置无关的代码,编译动态库的.o文件时必须加上该参数.
+   -shared: 多个.o文件链接成.so文件时必须加上该参数.
+
+
+* git
+
+** 配置
+
+  用户名和邮箱保存在~/.gitconfig(/etc/gitconfig)文件中,其中--global选项将更改~/.gitconfig文件,--system选项将更改/etc/gitconfig文件.
+  
+  git config --list : 查看配置信息
+  git config --global user.name ["用户名"] : 设置用户名.
+  git config --global user.email [电子邮箱] : 设置邮箱.
+  git config --global core.editor [文本编辑器]: 设置默认文本编辑器.
+  git config --global merge.tool [ediff] : 将ediff设置为差异分析工具.
+** 初始化新仓库
+   git init :将当前工作目录初始化为新的仓库,同时在该目录下生成".git"目录.但还没有跟踪任何文件.
+   git add [(多个)文件] : 将当前目录下的指定文件纳入版本控制.
+   
