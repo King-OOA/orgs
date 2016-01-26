@@ -135,8 +135,15 @@
    M-x,diff-buffer-with-file [buffer名] : 比较指定buffer和其关联的文件.
    M-x,compare-windows : 比较当前窗口和下一个窗口中的内容.
    
-* 光标移动
+** 其他文件操作
+   M-x,delete-file : 删除指定文件.
+   M-x move-file-to-trash : 将指定文件移动到回收站.
+   M-x,vc-delete-file : 删除加入到版本控制的文件.
+   M-x,copy-file : 拷贝指定文件到新的文件中.
+   M-x,copy-directory : 将指定目录拷贝到新目录中.
 
+* 光标移动
+  
   C-f/b : 光标前进/后退一个字符.
   M-f/b : 光标前进/后退一个单词 (单词被定义为连续的"字母"或"数字").
   C-n/p : 光标移动到下/上一行 (一般情况垂直移动光标, 如果下/上一行比当前光标所在的列短，光标将移到新行的末尾).
@@ -204,7 +211,7 @@
   C-u-SPC : 遍历标记环中的标记.
   C-x-x : 交换光标当前位置和标记起点.
   M-@ : 选择光标起一个单词.(重复执行,将连续向右选择,可加（负）参数)
-  C-M-@ : 选择平衡表达式(包括左右括号).可加正负参数.
+  C-M-SPC : 选择平衡表达式(包括左右括号).可加正负参数.
   M-h : 选择光标所在段落,标记处于段落尾,光标在段落首. (重复执行，将连续向下选择)
   C-x-p : 选择当前页.
   C-x,h : 选择全部缓冲区,标记在缓冲区末尾,光标在缓冲区首.
@@ -223,35 +230,39 @@
   set-mark-command-repeat-pop : 当设置为non-'nil'时, 在使用过"C-u-SPC"后可用"C-SPC"代替.
 
 * 正则表达式
-   '.' : 可以表示除换行符以外的任意一个字符. (例如: 'a.b')
-   '*' : 后缀操作符,表示将其前导表达式重复任意次(包括0次),它总是作用于'最小的'可能前导表达式. (例如:'ca*r': 'cr','car','caaar',...)
-   '+' : 功能同上.但至少重复一次.(例如: 'ca+r': 'car','caar','caaar',...)
-   '?' : 功能同上.但最多重复一次(0次或1次).(例如: 'ca?r': 'cr', 'car')
-   '*? ', '+?', '??' : 是以上三个操作符的非贪心版本,它们尽可能匹配少的字符. 
-   '\{n\}' : 后缀操作符,表示其前导表达式恰好重复n次. (例如: 'x\{4\}': 'xxxx')
-   '\{n,m\}' : 表示重复其前导表达式重复次数至少n次,但不超过m次,即在区间[n,m]内. (例如: '\{0,1\}'等价于'?','\{0,\}'等价于'*','\{1,\}'等价于'+')
-   '^' : 仅匹配行首的空串. 所以'^foo'仅匹配出现在行首的'foo'. (仅当'^'仅位于正则表达式首,或跟在'\('及'\|'后时,才具有这种功能.)
-   '$' : 仅匹配行尾的空串. 所以'x+$' 仅匹配出现在行尾的一个或多个'x'.(仅当'$'仅位于正则表达式尾,或在'\)'及'\|'之前时,才具有这种功能.)
-   '\' : 可以转义特殊字符,如: '\$','\['等.(但是无法转义'-'和']'.)
-   '\|' : 两个正则表达式的'or', 将作用两边最长的可能的正则表达式. (例如: 'foo\|bar': 'foo'或'bar')
-   '\(...\)' : 用于将正则表达式分组. '\(foo|\bar)x': 'foox'或'barx'. 'ba\(na\)*': 'ba', 'ban', 'banana',...
-   '\(?:...\)' : 这个分组不记录匹配的子串, 不能用'\D'来引用.
-   '\D' : 匹配和结构'\(...\)'第D次出现时所匹的同样的文本.
-   '\`' / '\'' : 匹配空串,但是仅在字符串或缓冲区的开始/结尾处.
-   '\=' : 匹配空串,但是仅在光标(point)处.
-   '\b' / '\B' : 匹配空串,但是仅/不在单词(word)的开始或结尾处. ('\bfoo\b' : 仅匹配单词独立的'foo'. '\bballs?\b' : 仅能匹配独立的'ball'或'balls')
-   '\<' / '\>' : 匹配空串,但是仅在单词的开始/结尾处.
-   '\w' / '\W' : 匹配任何(/非)构成单词的字符.(由语法表决定这些字符是什么)
-   '\_<' / '\_>' : 匹配空串,但是仅在符号(symbol)开始/结尾处. symbol: 由'\w'和'_'构成的字符序列.
-   '\sC' / '\SC': 匹配任意(/不)符合语法'C'的字符. C: 'w'(组成单词), '-'或' '(空白符)
-   '\cC' / '\CC' : 匹配任意(/不)属于字符类'C'的字符. 用'M-x, describe-categories' 来查看字符类.
-
-   '[字符集]': 表示匹配字符集中的任意一个字符.(例如: '[ab]*': 任意由'a','b'字符组成的序列,包括空串).
-   字符集可以是一个范围, 如: '[a-z$%.]'表示匹配小写字母的集合, 及'$', '%', '.'. 当搜索是大小写敏感时, 范围的起始和终止必须都是大写,小写,或非字母字符,混合使用大小写将导致错误.
-   字符集也可以是字符类,如: [:alnum:], [:alpha:], [:digit:], [:lower:], [:upper:]等,更多请查看(Char Classes).
-   注: 要包括']'字符,必须将其放在字符集的第一个位置.如[]a],将匹配']'和'a'.
-   要包括'-'字符,必须将其放在字符集的第一/最后一个位置,或放在一个范围的后面. 如[]-],将匹配']'和'-'.
    
+  '.' : 表示除换行符以外的任意一个字符. (例如: 'a.b')
+
+** 重复次数 : 以下操作符自身不是表达式的组成部分,作为后缀操作符,表示将其前导表达式重复的若干次.它总是作用于'最小的'可能前导表达式.
+  '*' : 重复0次或多次. (例如:'ca*r': 'cr','car','caaar',...)
+  '+' : 重复1次或多次.(例如: 'ca+r': 'car','caar','caaar',...)
+  '?' : 重复0次或1次.(例如: 'ca?r': 'cr', 'car')
+  '*? ', '+?', '??' : 是以上三个操作符的非贪心版本,它们尽可能匹配少的字符. 
+  '\{n\}' : 重复恰好n次. (例如: 'x\{4\}': 'xxxx')
+  '\{n,m\}' : 重复至少n次,但不超过m次,即在区间[n,m]内. (例如: '\{0,1\}'等价于'?','\{0,\}'等价于'*','\{1,\}'等价于'+')
+
+  '^' : 仅匹配行首的空串. 所以'^foo'仅匹配出现在行首的'foo'. (仅当'^'仅位于正则表达式首,或跟在'\('及'\|'后时,才具有这种功能.)
+  '$' : 仅匹配行尾的空串. 所以'x+$' 仅匹配出现在行尾的一个或多个'x'.(仅当'$'仅位于正则表达式尾,或在'\)'及'\|'之前时,才具有这种功能.)
+  '\' : 可以转义特殊字符,如: '\$','\['等.(但是无法转义'-'和']'.)
+  '\|' : 两个正则表达式的'or', 将作用两边最长的可能的正则表达式. (例如: 'foo\|bar': 'foo'或'bar')
+  '\(...\)' : 用于将正则表达式分组. '\(foo|\bar\)x': 'foox'或'barx'. 'ba\(na\)*': 'ba', 'ban', 'banana',...
+  '\(?:...\)' : 这个分组不记录匹配的子串, 不能用'\D'来引用.
+  '\D' : 匹配和结构'\(...\)'第D次出现时所匹的同样的文本.
+  '\`' / '\'' : 匹配空串,但是仅在字符串或缓冲区的开始/结尾处.
+  '\=' : 匹配空串,但是仅在光标(point)处.
+  '\b' / '\B' : 匹配空串,但是仅/不在单词(word)的开始或结尾处. ('\bfoo\b' : 仅匹配单词独立的'foo'. '\bballs?\b' : 仅能匹配独立的'ball'或'balls')
+  '\<' / '\>' : 匹配空串,但是仅在单词的开始/结尾处.
+  '\w' / '\W' : 匹配任何(/非)构成单词的字符.(由语法表决定这些字符是什么)
+  '\_<' / '\_>' : 匹配空串,但是仅在符号(symbol)开始/结尾处. symbol: 由'\w'和'_'构成的字符序列.
+  '\sC' / '\SC': 匹配任意(/不)符合语法'C'的字符. C: 'w'(组成单词), '-'或' '(空白符)
+  '\cC' / '\CC' : 匹配任意(/不)属于字符类'C'的字符. 用'M-x, describe-categories' 来查看字符类.
+  
+  '[字符集]': 表示匹配字符集中的任意一个字符.(例如: '[ab]*': 任意由'a','b'字符组成的序列,包括空串).
+  字符集可以是一个范围, 如: '[a-z$%.]'表示匹配小写字母的集合, 及'$', '%', '.'. 当搜索是大小写敏感时, 范围的起始和终止必须都是大写,小写,或非字母字符,混合使用大小写将导致错误.
+  字符集也可以是字符类,如: [:alnum:], [:alpha:], [:digit:], [:lower:], [:upper:]等,更多请查看(Char Classes).
+  注: 要包括']'字符,必须将其放在字符集的第一个位置.如[]a],将匹配']'和'a'.
+  要包括'-'字符,必须将其放在字符集的第一/最后一个位置,或放在一个范围的后面. 如[]-],将匹配']'和'-'.
+  
    '[^字符集]': 表示匹配除字符集以外的任意(一个)字符,包括换行符. 例如'[^a-zA-Z0-9]',将匹配除了字母和数字以外的任意字符.
    要包括'^'字符,只需将其置于除第一个位置以外的任意位置.
 
@@ -466,7 +477,7 @@
   
 * 大小写转换
 
-  M-l/u/c : 将光标起一个单词置为小写/大写/首字母大写. 加上参数/负参数，表示对光标起/左n个单词执行大小写转换.
+  M-l/u/c : 将光标起一个单词置为小写/大写/首字母大写. 加上参数/负参数,表示对光标起/左n个单词执行大小写转换.
   C-x-l/u : 将所选区域的改变为小/大写.
 
 * 寄存器和书签
@@ -542,24 +553,250 @@
   M-x,list-command-history : 列出整个命令历史记录.
   在minibuffer中输入密码时,"C-u"用于重新输入.
 
+* Dired
+** 进入与退出
+  
+   C-c-f, [目录] / C-x,d [目录] : 在当前窗口中,用Dired打开某目录. 加"C-u"可以指定ls的参数.
+   C-x,4/5,d [目录] : 在另一窗口/框架中打开Dired.
+   进入到Dired buffer后,可用"q"退出Dired并返回原buffer.
+   dired-listing-switches : 控制ls命令的参数.
+  
+** 光标移动
+
+   n/p : 光标移动到下/上一个文件名首.
+   j [文件名] : 将光标移动到指定文件上.
+
+** 搜索
+
+   M-s,f,C-s : 正向递增搜索文件名.(仅匹配文件名)
+   M-s,f,C-M-s : 正向正则递增搜索文件名.(仅匹配文件名)
+   dired-isearch-filenames : 为t时,"C-s"将执行文件名搜索;为'dwim'时,仅当光标处于文件名时,"C-s"才执行文件名搜索.
+   
+** 打开文件
+
+   'f' : 在当前窗口打开光标所在文件.
+   'o' : 在另一窗口打开光标所在文件,并选中.
+   C-o : 在另一窗口打开光标所在文件,但不选中.
+   'v' : 用view-mode打开光标所在文件.可以用'q'退出.
+   '^' : 进入当前目录的上层目录.
+
+** 删除文件
+
+   d/u : 将当前文件标记为待删除/移除当前文件标记,并将光标移动至下一文件.
+   可对选中区域的所有文件执行操作.(参数前缀表示正向重复的次数,负参数表示反向重复的次数).
+
+   x : 删除所有被标记文件.
+
+   注: 只能删除空目录无法,无法删除非空目录.
+   dired-recursive-deletes : 非nil,则可以直接删除非空目录.
+   delete-by-moving-to-trash : 设为t则将文件放入回收站.
+
+** 标记文件
+*** 降文件标记为D
+   'd' : 标记 当前文件.
+   '#' : 标记所有 自动保存的文件.("#file#").
+   '~' : 标记所有 备份文件文件.("file~")
+   '.' : 标记 将除最新和最旧之外的所有备份文件.
+   '% &' : 标记所有 文件名匹配变量dired-flag-garbage-files所定义的正则表达式的文件.(包括Latex产生的特定文件,和.bak, .orig, .rej文件.)
+   '% d [regexp]' : 标记所有 文件名匹配regexp的文件.
+   
+*** 将文件标记为*   
+   'm'  : 标记 当前文件.
+   '**' : 标记所有 可执行文件. "C-u"前缀,反标记.
+   '*@' : 标记所有 符号链接. "C-u"前缀,反标记.
+   '*/' : 标记所有 目录(除了"."和".."). "C-u"前缀,反标记.
+   '*s' : 标记所有 文件(除了"."和"..").
+   '% m [regexp]' : 标记所有 文件名匹配regexp的文件.
+   '% g [regexp]' : 标记所有 文件内容匹配regexp的文件.
+   '* c [oldmark] [newmark]' : 将所有标记为oldmark的文件标记为newwark.
+      
+   'u/Backspace'  : 反标记下/上一个文件. 可对选中区域的所有文件执行操作.正/负参数表示正/反向重复的次数(正/负参数表示反/正向重复的次数).
+   M-Backspace [mark] : 反标记所有 标记为mark的文件.
+   'U'  : 反标记 所有文件.
+   't'  : 反标记所有标记为*的文件,同时将所有未被任何标记的文件标记为*.
+   
+   M-{/} : 移动到上/下一个被标记文件.
+   
+** 文件操作
+   注: 以下所有操作,若带有正/负参数,则代表对下/上参数个文件执行;
+   若有*标文件,则对*标文件执行; 否则,对当前文件执行.
+
+   'C [new]' : 将文件拷贝到目标目录中.
+   'D' : 删除文件.
+   'R [new]' : 移动或重命名. 若是单个文件,则new为新文件名; 若是多个文件,new为目标目录(此时相当于mv命令).
+   'H/S [new]' : 创建硬/符号链接. 若是单个文件,则new为新链接名; 若是多个文件,new为目标目录.
+   'M [newnode]' : 改变文件的权限(mode). newmode可以是8进制或符号表示法.
+   'G [newgroup]' : 改变文件的组(group).
+   'O [newowner]' : 改变文件的所有者(owner).(需要root权限)
+   'T [timestap]' : 改变文件的时间戳.默认为当前时间.
+   'P [command]' : 打印文件.
+   'Z' : 压缩文件. 若文件已经时压缩文件,则对其解压.
+   ':d' : 解密文件.
+   ':v' : 核实文件的数字签名.
+   ':s' : 对文件进行数字签名.
+   ':e' : 加密文件.
+   'L'  : 载入指定的emacs lisp文件.
+   'B'  : 字节编译指定的emacs lisp文件.
+   'A [regexp]' : 在所有指定文件中搜索regexp.(tag-search)
+   'Q [regexp]' : query-replace-regexp.
+   
+** shell命令
+   30.8
+   
+** 文件重命名
+   注: 以下所有操作,若带有正/负参数,则代表对下/上参数个文件执行;
+   若有*标文件,则对*标文件执行; 否则,对当前文件执行.
+
+   '% u/l' : 将文件名变为大/小写.
+   `% R FROM  TO ' : 
+   `% C FROM  TO ' : 
+   `% H FROM  TO ' :
+   `% S FROM  TO ' :
+
+** 比较文件
+   '= [file]' : diff-mode比较当前文件和指定文件file.
+
+** 子目录
+   
+   'i' : 将当前目录下的内容插入到Dired buffer末尾. (可用"C-u,SPC"返回到光标原先位置).
+   'l' : 更新子目录内容.
+   C-u,k : 移除子目录的显示.光标需要置于显示的子目录文件所在行上.
+   
+   </> : 移动到上/下一个子目录.
+   C-x,[/] : 向上/下跨过目录的完整列表.
+   C-M-n/p : 移动到下/上一个子目录列表头.
+   C-M-u/d : 移动到当前目录的 父/第一个显示的子 目录头.
+   
+   注: 隐藏目录下的文件将不受任何文件操作的影响.
+   '$' : 将当前光标所在子目录列表隐藏/使可见.
+   'M-$' : 将当前dired-buffer中的所有子目录列表隐藏/使可见.
+
+** 更新dired buffer
+   
+   'g' : 更新整个dired buffer的内容,保留已有的文件标记.
+   'l' : 更新指定文件或目录. (*标文件,当前文件,前/后N个文件)
+   'k' : 仅删除*标文件的文件行(并不删除文件本身).删除的文件行可用'g'命令恢复.
+   's' : 切换文件的排序方式(字母序或时间序). mode-line中有显示.
+   'C-u,s,[swithces]' : 以switches重新ls.
+   
+** 编辑dired buffer
+   C-x-q : 进入编辑模式.(Wdired-mode)
+   C-c-c : 保存编辑结果并退出编辑模式.
+   
+** 其他
+   '+' : 新建目录.
+   M-s,a,C-s : 对*标文件执行增量搜索.
+   M-s,a,C-M-s : 对*标文件执行正则增量搜索.
+   'w' : 将(当前文件或*标文件的)文件名复制到kill ring中. "C-u 0"前缀,复制文件的绝对路径; "C-u"前缀, 复制文件相对于当前dired buffer默认目录的路径.
+   '(' : 切换是否显示文件详细信息(权限,时间等等)
+   M-x,dired-compare-directories : 比较当前dired buffer和另一个目录的内容.
+
+** dired-x
+   C-x,M-o : 切换是否忽略不感兴趣的文件.
+   '*O': 标记不感兴趣的文件
+
 * 比较文件
+
   M-x,diff : 指定两个文件,比较它们的差异.使用diff-mode显示比较结果.
   M-x,diff-backup : 指定一个文件,比较该文件和其最近一个备份文件的差异.(如果指定的是备份文件,则比较该备份文件与原文件的差异).
   M-x,diff-buffer-with-file : 指定一个buffer,比较该buffer和其关联文件的差异.用于显示该buffer相对于原文件所做的修改.
   M-x,compare-windows : 比较当前window中的内容和下一个window中的内容.
   M-x,smerge-mode : 一个minor-mode,用于编辑diff3程序的输出.
 
-** diff-mode
+* Ediff
+
+Ediff使用POSIX diff和diff3程序来比较文件间的差异,然后将输出结果可视化.
+
+** 启动
    
+   M-x,ediff-documentation: 显示Ediff手册.
 
+   M-x,ediff-files/ediff: 比较两个文件.
+   M-x,ediff-files3/ediff3: 比较三个文件.
 
-* 拼写检查
+   M-x,ediff-backup: 比较文件和其(最新的)备份文件;若当前文件本身时备份文件,则和其原文件进行比较.
+   M-x,ediff-current-file: 比较当前buffer和其关联的文件.
 
-  M-$ : 检查光标处单词的拼写.(若选中区域,则检查当前区域内单词的拼写)
-  M-x,ispell-region : 检查所选区域内单词的拼写.
-  M-x,ispell-buffer : 检查当前缓冲区内单词的拼写.
-  M-x,ispell-message : 检查email内单词的拼写.
+   M-x,ediff-buffers: 比较两个buffer.
+   M-x,ediff-buffers3: 比较三个buffer.
 
+   M-x,edirs/ediff-directories: 比较两个目录中的公共文件.
+   M-x,edirs3/ediff-directories3: 比较三个目录的公共文件.
+   
+   M-x,ediff-merge-files/ediff-merge: 合并两个文件.
+   M-x,ediff-merge-files-with-ancestor/ediff-merge-with-ancestor: 使用指定的祖先,合并两个文件.
+   
+   M-x,ediff-merge-buffers:合并两个buffer.
+   M-x,ediff-merge-buffers-with-ancestor: 使用指定祖先,合并两个buffer.
+
+   M-x,edirs-merge/ediff-merge-directories: 合并两个目录中的公共文件.
+   M-x,edirs-merge-with-ancestor/ediff-merge-directories-with-ancestor: 使用指定祖先,合并两个目录中的公共文件.
+   
+   M-x,ediff-merge-revisions: 合并当前buffer所关联文件的不同版本.
+   M-x,ediff-merge-revisions-with-ancestor: 使用指定祖先,合并当前buffer所关联文件的不同版本.
+
+   M-x,edir-revisions/ediff-directory-revisions: 比较指定目录下文件的不同版本,文件必须纳入版本控制.
+   M-x,edir-merge-revisions/ediff-merge-directory-revisions: 合并指定目录下文件的不同版本,文件必须纳入版本控制.
+   M-x,edir-merge-revisions-with-ancestor/ediff-merge-directory-revisions-with-ancestor: 合并指定目录下文件的不同版本用其他版本作为合并祖先,文件必须纳入版本控制.
+   
+   M-x,ediff-windows-wordwise: 一个单词一个单词地比较不同的窗口.
+   M-x,ediff-windows-linewise: 一行一行地比较不同的窗口.
+   
+   M-x,ediff-regions-wordwise: 一个单词一个单词地比较不同区域.(可以比较同一buffer内重叠的区域)
+   M-x,ediff-regions-linewise: 一行一个行地比较不同区域.
+
+   M-x,ediff-revision: 比较当前buffer的不同版本,如果该buffer关联的文件被纳入版本控制.
+   
+   M-x,ediff-patch-file/epatch: 给一个或多个文件打补丁,然后比较.(将改变磁盘上的文件内容.)
+   M-x,ediff-patch-buffer/epatch-buffer: 给一个buffer打补丁,然后比较.(将使用额外的buffer执行操作,原buffer及其关联的文件并不改变.)
+   
+   M-x,ediff-show-registry/eregistry : Brings up Ediff session registry.
+   
+** 常用命令
+
+   大多数命令可以添加数字前缀.(直接用数字,不用C-u).
+
+   '?': 开启/关闭帮助窗口.
+   'v'/'V': 同步向上/下滚屏.
+   '<'/'>': 同步向左/右滚屏.
+   'wd': 保存diff程序的输出.
+   'wa'/'wb'/'wc': 保存buffer A/B/C.
+   'a'/'b': 在比较模式下,将当前差异部分从buffer A/B拷贝到buffer B/A的相应处. 在合并模式下,将当前差异部分从buffer A/B拷贝到merge buffer的相应处.
+   'ab'/'ac'/'ba'/'bc'/'ca'/'cb': 将差异从前一个buffer拷贝到后一个buffer.仅在处理三个文件时适用.
+   'p'/'n': 跳转到上/下一个差异处.
+   'j'/'-j'/'Nj': 跳转到第一个/最后一个差异处,可加正负参数N,表示跳转到第N个差异处.
+   'ga'/'gb'/'gc': 在buffer A/B/C中,跳转到距离当前光标位置最近的差异处.
+   '!': 刷新差异.
+   '*': 强制对当前差异处进行精确差异计算,精确到单词.
+   'm': 将当前Ediff sesion所在frame最大化.
+   '|': 切换水平/垂直划分显示方式.
+   '@': 切换是否开启auto-refinement(高亮差异,精确到单词).
+   'h': 
+   'r': 撤销merge buffer中的上一次改动.仅在merge session中有效.
+   'ra'/'rb'/'rc': 撤销buffer A/B/C中的上一次改动.仅在comparison session中有效.
+   '##': 跳过只有空白或换行的差异处.
+   '#c': 切换是否大小写敏感.
+   '#h'
+   'A'/'B'/'C': 切换buffer A/B/C的只读模式.
+   '~': 交换buffer A/B/C的窗口.
+   'i': 在当前Ediff session中显示所有有用的数据.
+   'D': 执行ediff-custom-diff-program.
+   'R': 列出所有活跃的Ediff sessions.
+   'M': 
+   'z': 挂起当前Ediff session.(可用'R'列出并恢复)
+   'q': 结束当前Ediff session.
+   '%': 切换在比较窗口或区域时,是否对其narrowing.
+   'C-l': 恢复窗口布局.
+   '/': 在合并时,显示祖先文件.
+   's': 最小化merge window,再按一次将恢复窗口大小.可加数字前缀:'3s'(将窗口增加3行), '-2s'(将窗口缩减两行).
+   '+': 合并Buffer A和Buffer B中的差异,并将结果拷贝到merge buffer.
+   '='
+
+   其他与合并有关的命令：
+   '$$'
+   '$*'
+   
+   
 * 常见变量("C-h,v"查看)
   
   kill-ring      : 查看剪切环.
@@ -569,6 +806,69 @@
   *-font-lock-extra-types : 对某种语言(*)所识别的类型.
   line-move-visual : 如果为nil,则按照'逻辑行'来移动上下行;否则按照'屏幕'行来移动.
   require-final-newline : 控制是否在文件尾添加空白行.
+
+* 包管理器
+  
+  当安装某个特定包时,该包所依赖的其他包(如果没被安装)也将被安装.
+  
+  M-x,list-packages : 列出所有扩展包. 
+  
+  可用选项:
+  'n/p': 移动到下/上一个包.
+  '<RET>': 显示当前包的相关信息.
+  'i': 将当前包标记为待安装.
+  'd': 将当前包标记为待删除.
+  'u': 删除当前包的标记.
+  'U': 标记所有可升级的包.
+  'x': 对所有被标记的包,执行相应的命令.
+  'r': 刷新包列表.
+  'f': 根据指定关键词过滤包.('q'恢复所有列表)
+  'h': 显示以上选项.
+
+  C-h,P : 显示某个已安装包的相关信息.
+
+
+* 其它
+  
+  临时文件:#file-name#为临时文件,如果当前缓冲区内容发生变化(且尚未保存),emacs就会自动将其保存为临时文件,一旦缓冲区内容写入磁盘(C-x-s),临时文件将被自动删除.
+  1.替换^M: 用replace-string命令将^M(C-q-m)替换成空字符(直接回车）
+  "C-c"前缀调用当前模式特有的命令
+  C-x,= : 显示当前光标位置.
+  M-x,whitespace-mode : 让当前缓冲区中的空白字符变得可见.
+  M-x,calc : emacs计算器.
+
+* info系统使用
+
+** 基本
+
+  Space/Backspace : 下/上一页
+  p/n : 同级前/后一节点. (兄弟节点)
+  [/] : 顺序前/后一节点. (深度遍历节点)
+  b/e : 跳转到节首/尾
+  ? : 查看命令帮助
+  m 子节点名 : 调转到指定孩子节点. 加"C-u"前缀,则在新的buffer和窗口中打开.
+  u : 跳转到上级（父）节点
+  M-x,visible-mode : 查看被隐藏的内容
+  Tab / S-Tab : 遍历当前节点中的子节点和交叉引用
+  f 交叉引用节点 : 跳转到指定的交叉引用处
+  f ? : 列出该节点内的所有交叉引用
+  l/r : 浏览历史中的前/后一个节点.
+  L : 显示浏览历史.
+  d : 回到Info系统总目录
+  t : 回到当前话题的根结点
+  q : 退出info系统
+  
+
+** 高级
+
+   s,[字符串] : 在当前节点中查找字符串.
+   i [关键词] : 查找包含指定关键词的索引项.','用于遍历所找到的索引项.
+   I [关键词] : 功能同上。用一个虚拟节点，列出所有找到的索引项.
+   M-x,info-apropos [关键词] : 列出本机中所有包含该关键词的info文档索引.
+   g (文档名)节点名 : 跳转到指定文档中的特定节点.若该结点和当前节点在同一份文档中,则无需加文档名.加"C-u"前缀,则在新的buffer和窗口中打开.
+   1-9 : 通过编号来选择当前进入menu的节点.
+   M-n : 将当前buffer的内容,在新的buffer和窗口中打开.
+   M-x, info-display-manual : 打开指定的manual.
 
 * 常用mode
 
@@ -589,220 +889,90 @@
    M-x,view-buffer,[buffer]: 用view-mode浏览指定buffer.
    M-x,view-file,[file]: 用view-mode浏览指定文件.
 
-
-* 字体
+* 编译
+  注: compilation-skip-threshold变量控制以下命令的跳转级别.(为1时,跳转到waring;为2时,仅跳转到error)
+  M-g-n/p : 跳转到源代码的下/上一个出错信息处(可在任意buffer内执行).
+  M-n/p : 跳转到*compilation* buffer的下/上一个出错信息处.
+  M-{/} : 跳转到上/下一个不同源文件的最后/第一个出错信息处.
   
-  C-x-=/-/0 : 放大/缩小/恢复默认字体.
-  M-x,list-faces-display : 列出当前定义的字体列表.
-  M-x,list-colors-display: 列出当前定义的颜色列表.
-  M-x,set-face-foreground/background: 设置字体前/背景色
-
-* 其它
-
-  ESC可以代替ALT键,使用时只按一次,不必按住.
-  默认prefix: `C-c', `C-h', `C-x', `C-x <RET>', `C-x @', `C-x a', `C-x n', `C-x r', `C-x v', `C-x 4', `C-x 5', `C-x 6', <ESC>, `M-g', and `M-o'.  (<F1> and <F2> are aliases for `C-h' and `C-x 6'.)
-  "C-c"前缀调用当前模式特有的命令
-  C-x,= : 显示当前光标处字符的值,光标位置等信息.
-  M-= : 统计当前缓冲区的行数,字符数,单词数.(也可针对所选区域进行统计)
-  C-\ : 切换emacs内部的输入法.
-  M-x,calc : emacs计算器.
-  M-x,sunrise-sunset : 查看日出日落时间.
-  M-x,calendar : 查看日历.
-
-  C-x-m,f,utf-8-unix : 将当前文件转换为utf-8编码.
-  C-x,<RET>,x/C-x,<RET>,X : 为X选择编码系统.
-
+  C-c-f : next-error-follow-mode(在compilation buffer中移动光标到出错信息处,相应的源文件中的错误将会跟随显示)
   
-* info系统使用
-
-** 基本
-
-  Space/Backspace : 下/上一页
-  p/n : 同级前/后一节点. (兄弟节点)
-  [/] : 顺序前/后一节点. (深度遍历节点)
-  b/e : 跳转到节首/尾
-  ? : 查看命令帮助
-  m 子节点名 : 调转到指定孩子节点. 加"C-u"前缀,则在新的buffer和窗口中打开.
-  u : 跳转到上级（父）节点
-  M-x,visible-mode : 查看被隐藏的内容
-  Tab / S-Tab : 正/反向遍历当前节点中的子节点和交叉引用
-  f 交叉引用节点 : 跳转到指定的交叉引用处
-  f ? : 列出该节点内的所有交叉引用
-  l/r : 浏览历史中的前/后一个节点.
-  L : 显示浏览历史.
-  d : 回到Info系统总目录
-  t : 回到当前话题的根结点
-  q : 退出info系统
+  <SPC>/<Backspace> : 在compilation buffer中向下/上翻一页.
   
+  M-x,compilation-minor-mode
 
-** 高级
+* 常用函数
 
-   s,[字符串] : 在当前节点中查找字符串.
-   i [关键词] : 查找包含指定关键词的索引项.','用于遍历所找到的索引项.
-   I [关键词] : 功能同上。用一个虚拟节点，列出所有找到的索引项.
-   M-x,info-apropos [关键词] : 列出本机中所有包含该关键词的info文档索引.
-   g (文档名)节点名 : 跳转到指定文档中的特定节点.若该结点和当前节点在同一份文档中,则无需加文档名.加"C-u"前缀,则在新的buffer和窗口中打开.
-   1-9 : 通过编号来选择当前进入menu的节点.
-   M-n : 将当前buffer的内容,在新的buffer和窗口中打开.
-   M-x, info-display-manual : 打开指定的manual.
-   
-* 日常积累
-  1.替换^M: 用replace-string命令将^M(C-q-m)替换成空字符(直接回车）
-
-* helm-mode
-  C-c-i: 将后选项的名字插入到光标所在处.
-  M-x绑定到"helm-M-x"后,可用TAB查看命令的文档.
-  M-y: 显示kill-ring(无需提前调用"C-y").
-
-** helm-mini(C-x,b)
-   会同时显示"以打开的buffer","最近打开的文件"和"允许新建的buffer".用<left><right>箭头切换.
-   用"*major-mode"筛选指定major-mode的buffer.如:"*C"只显示C-mode下的buffer,"*!lisp,!C,!lisp"只显示不在这三个mode下的buffer.
-   用"/目录"筛选指定目录下的buffer.如:"/.emacs.d"只显示.emacs.d目录下的buffer.
-   用"@regexp"来筛选buffer内容中包含regexp的buffer.标记buffer后,用"C-s"查看buffer中包含regexp中的内容.
-
-** helm-find-files(C-x-f)
-   <TAB>: 选择高亮候选项.再按一次将预览该后选项内容.
-   C-l/r : 回到上一层目录/原先所在目录.
-   可以直接在当前路径中输入文件名或目录名(末尾加/),在当前目录下新建文件或目录.
-   输入:"/"回到根目录,"~/"回到用户主目录,"./"回到该sessiobn启动时的默认目录.
-   把光标移动到buffer中的某文件路径上,然后执行"helm-find-files(C-x-f)"可以跳转到该文件去.
-   
-   C-u,C-x-f : 显示曾经访问过的文件/目录列表.在helm-find-files session中可以运行"C-c,h"来查看访问过的文件,目录历史记录.
-   
-** helm-ff-do-grep
-   待补全.
-   
-** helm-semantic-or-imenu(C-c,h,i)
-   显示当前buffer中的头文件,全局变量,函数的列表.
-   
-** helm-man-woman(C-c,h,m)
-   产看man-page. 默认显示当前光标下的符号的man-page.
-
-** helm-find(C-c,h,/)
-   在emacs中调用系统find命令.默认只在当前目录下查找,加上"C-u"前缀,则可以指定查找目录.
-   在大目录下,使用"C-!"暂定或继续查找过程.
-   可以在helm-find-files会话中使用"C-c,/"激活heml-find.
-   
-** helm-locate(C-c,h,l)
-   在emacs中调用系统locate命令.加上"C-u"前缀,则可以创建loacate database.
-   在大目录下,使用"C-!"暂定或继续查找过程.
-
-** helm-occur(C-c,h,o)
-   交互式的"M-x,occur".列出当前buffer中匹配某个pattern的所有行.
-   <TAB>暂时将光标移动到匹配行上.<RET>将光标移动到匹配处,同时关闭helm-occur seccion.
-
-** helm-apropos(C-c,h,a)
-   类似于"M-x,apropos",但使用helm session.
-   查看与输入pattern有关的所有命令,函数,变量,..
-
-** helm-info-*(C-c,h,h,*)
-   *:
-   g : helm-info-gnus
-   i : helm-info-at-point
-   r : helm-info-emacs
-
-** helm-lisp-completion-at-point(C-c,h,<TAB>)
-** helm-resume(C-c,h,b)
-   重新执行上次的helm命令,包括输入的pattern.
-   
-** helm-all-mark-rings(C-h,<SPC>)
-   同时显示mark-ring和global-mark-ring中的内容.
-
-** helm-regexp(C-c,h,r)
-   显示所有register中的内容.
-   F1: 插入选中register中的内容.
-   F2/F3: 将buffer中的选中部分附加到选中register的末尾/开头.
-
-** helm-top(C-c,h,t)
-** helm-surfraw(C-c,h,s)
-   需要安装surfraw程序.
-   
-** helm-google-suggest(C-c,h,g)
-
-* ggtags-mode
-  M-x,ggtags-create-tags : 生成tags.
+  M-x,delete-trailing-whitespace : 删除行尾空白符.
 
 * cc-mode
 
-  M-x,c-version : 查看cc-mode的版本
-  TAB   : 缩进光标所在行.
+  M-x,c-version : 查看版本
   C-M-h : 选中当前函数,重复使用可以连续选择下面的函数.
-  C-M-@/k : 选中/剪切配对括号中的内容,包括括号.
-  C-M-\ : 缩进当前选中的区域.可以和"C-h-x"合起来,缩进整个缓冲区.
-  C-M-q : 缩进一个括号包裹的程序块,光标必须置于起始括号上.
-  C-c-q : 缩进光标所在的函数.
+  C-M-\ : 缩进当前选中的区域.
+  C-M-q : 缩进一个括号包裹的完整表达式,光标必须置于起始括号上.
+  C-c-q : 缩进当前光标所在的函数.
   C-c-c : 注释所选区域.
   C-u-c-c : 取消所选区域注释.
-  M-; : 在当前行尾插入一条注释. 若前加"C-u", 则删除当前行的所有注释内容.
+  M-; : 在当前行尾加上一条注释. 若前加"C-u", 则删除当前行的所有注释内容.
   C-M-a/e : 光标移动到函数(结构体)首/尾.可以连续移动,也可以加参数前缀.
   M-a/e : 光标移动到语句首/尾.可以连续移动,也可以加参数前缀.
   C-c-n/p : 移动到下/上一个条件编译语句块.
-  C-c-d/Backspace  : 向右/左"hungry-delete".(无论"hungry-delete-mode"是否开启).
-
-  C-c-.,[style] : 设置当前缓冲区的缩进风格.
-  C-c-\ : 在所选区域每行的末尾插入反斜杠,用于多行宏."C-u"前缀表示删除反斜杠.
-  C-c-e : 将光标所在宏的宏展开,在另一个缓冲区显示.
-
-
-  次要模式:
-  C-c-l : c-toggle-electric-state.(l) (默认开启)
-  C-c-a : c-toggle-auto-newline.(a)
-  M-x,c-toggle-hungry-state : 激活 hungry-delete mode.(h)
-  M-x,c-toggle-auto-hungry-state : 同时激活 auto-newline 和 hungry delete 模式.
-  C-c-w : 激活 subword-mode.(w)
-  M-x,c-toggle-syntactic-indentation : 激活按语法缩进模式. (默认开启)
-
-  hook
-  c-initialization-hook : 当cc-mode初始化时运行,在每个emacs session中只运行一次.(可以用来设置键绑定)
-  c-mode-common-hook : cc-mode的主要hook,为所有语言共有.
-  c-mode-hook : c语言特有的hook.
-  c-special-indent-hook : 设置一些特殊缩进.
   
-
+* shell mode
   
-
-
+  <RET> : 将光标所在行作为输入,发送给shell.
+  <TAB> : 补全命令或文件名.
+  M-?   : 显示光标前文件名的候选补全列表.
+  C-d   : 删除光标下字符或发送EOF(在shell buffer末尾执行)
+  C-c,<SPC> : 在光标前插入新行,在键入<RET>后,新行前后的两行都将作为输入发送给sell.
+  C-c,<RET> : 将光标所在行内容,整体复制到buffer尾(同时替换原有内容).
+  C-c-a : 光标移动到当前行首(提示符后).
+  C-c-u : 删除光标前最近一次输入的内容(光标当前处于shell buffer末尾).
+  C-c-w : 删除光标前一个单词.
+  C-c-c : 中断(interrupt)当前shell及其任务.(会清除shell buffer末尾尚未执行的命令)
+  C-c-z : 暂停(stop)当前shell及其任务.(会清除shell buffer末尾尚未执行的命令)
+  C-c-\ : 向shell及其任务发送quit信号.(会清除shell buffer末尾尚未执行的命令)
+  C-c-o : 清除shell最近一次的输出结果.
+  C-c-s : 将shell最近一次的输出结果写入(覆盖)指定文件."C-u"前缀表示追加.
+  C-c-p/n : 跳转到上/下一个提示符处.
+  C-c-r : 跳转到最后一次输出结果的起始处.
+  C-c-e : 将shell buffer的末尾下拉到窗口底部.
+  C-c-f/b : 在当前行内,向前/后跨越一个命令.
   
-
-
-
-
-
+  M-n/p : 下/上一个shell历史命令.
+  M-r   : 增量式正则搜索历史命令.(启动后可用"C-s/r"进行正/反向搜索)
+  C-c-x : 取得下一条历史命令.
+  C-c,. : 拷贝上一条命令的最后一个参数.("C-u,N"前缀,指定拷贝第N个参数.)
+  C-c-l : 在另一窗口中显示历史命令列表.
   
+  M-x,dirs : 显示shell的当前工作目录.
+  M-x,send-invisible [文本]: 将[文本]作为输入发送给shell,但不显示该文本,常用于输入密码.
+  M-x,comint-continue-subjob : 继续执行被挂起的shell命令.
 
-
-
-
-
+* 拼写检查
   
+  M-$ : 检查光标下(或选择区域中)单词的拼写,
+  C-M-i : 使用辞典补全输入单词.
+  M-x,ispell : 检查并纠正当前buffer内(或选择区域中)所有单词的拼写.
+  M-x,ispell-buffer/region/message : 检查并纠正当前buffer/所选区域/信件草稿内所有单词的拼写.
+  M-x,ispell-change-dictionary <RET> DICT <RET> : 为当前buffer的spell checker更换词典. 
+  M-x,ispell-kill-ispell : 杀死Aspell/Ispell/Hunspell 子进程.
+  M-x,flyspell-mode : 开启全屏检查模式.
+  M-x,flyspell-prog-mode : 仅检查字符串和注释中的拼写.用于程序中的拼写检查.
 
-* Auctex
-
-  M-x,Latex-fill-buffer : 缩进整个buffer.
-  C-c-s : 插入各种section('\chapter', '\section','\subsection',etc).
-  C-c-e : 插入各种environment.('\begin{}','\end{}').
-  C-c-m : 插入Latex宏.
-  C-c-c : 执行Latex命令.
-  C-c-r : 类似于"C-c-c",但仅对选中的部分执行命令.
-  C-c,` : 查看编译错误.
-  C-c-k : 结束当前正在执行的命令.
-  C-c-l : 将output-buffer中的内容居中.
-  C-c-b : 当一个文档包含多个源文件时,仅对当前buffer执行命令.
-
-** 字体
-   
-   C-c-f-b: \textbf{} (bold face)
-   C-c-f-i: \textit{} (italics)
-   C-c-f-e: \emph{}   (emphasized)
-   C-c-f-s: \textsl{} (slanted)
-   C-c-f-r: \textrm{} (roman)
-   C-c-f-f: \textsf{} (sans serif)
-   C-c-f-t: \texttt{} (typewriter)
-   C-c-f-c: \textsc{} (SMALL CAPS)
-   C-c-f-d: 删除包含光标的最内层字体.
-
-** 特殊符号
-
-   " : 插入两个单引号.会自动判断是前引号还是后引号.
-   C-c,{ : 成对的插入'{',同时使光标位于中间.当选择区域后,则将该区域内容置于{}内.
-   当'LaTeX-electric-left-right-brace'非空时,所有括号都将自动成对插入,若想只插入单个括号,前面需要加"C-q",例如:"C-q,{".
+  出错时的处理方式:
+  '数字' : 选择相应编号的单词替换出错单词.
+  '<SPC>' : 跳过该单词,仍保持其错误状态.
+  'r' : 用一个新输入的单词替换当前拼写错误的单词.
+  'R' : 用一个新输入的单词替换当前拼写错误的单词,并且会提示是否替换buffer中其它地方出现的类似拼写错误.
+  'a' : 接受该错误并不再提示,仅在当前session中.
+  'A' : 接受该错误并不再提示,仅在当前session,当前buffer中.
+  'i' : 将单词插入到个人辞典中,以后将其视为正确的单词.
+  'm' : 同'i',但可以指定个人辞典的完整信息.
+  'u' : 向个人辞典中插入插入该单词的小写形式.
+  'l [regexp]' : 在个人辞典中查找匹配regexp的单词,这些单词将作为新的候选单词.
+  'X' : 退出并将光标保留在当前位置.
+  'x' : 退出并将光标返回到拼写检查开始时的位置.
+  'q' : 退出并杀死spell-checker.
+  '?' : 显示选项列表.

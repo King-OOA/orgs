@@ -1,31 +1,450 @@
+* 名词术语
+** 文档格式
+   plain TeX : knuth所发明的最简单的Tex格式.
+   LaTeX : Leslie Lamport所写的Tex宏集.
+   AMSTeX : 美国数学学会制作的格式.
+   TeXinfo : FSF编写的一种格式,TeXinfo是Linux等系统下的标准文档系统,该种格式能够生成多种输出格式.
+   ConTeXt : Hans Hagen 等开发的一种格式.
+
+** 排版引擎  
+   pdfTeX
+   pTeX
+   LuaTeX
+   XeTeX
+
+* TexLive
+
+  在目录/usr/local/texlive/2015 下安装.
+
+* Auctex
+** 执行命令
+*** C-c-a(TeX-command-run-all)
+ 
+    对当前文档执行编译,查看等所有命令.
+
+*** C-c-c(TeX-command-master)
+ 
+    对当前buffer所关联的主文件,执行指定命令.
+    主文件由变量'TeX-master'设置,候选命令由'TeX-command-list'变量设置.
+  
+*** C-c-r(TeX-command-region)
+ 
+    对选定的区域,执行指定命令.
+  
+*** C-c-b(TeX-command-buffer)
+ 
+    对当前buffer,执行指定命令.(用于包含\include或\input的文档)
+
+*** C-c-z(LaTeX-command-section)
+    
+    对光标所在的section(part, chapter, subsection, paragraph, subparagraph), 执行指定命令.
+    用'C-c,M-z'改变级别.
+
+*** 其他
+   C-c-k : 终止当前命令.
+   C-c-l : 居中output buffer.
+   C-c-t-p : 选择输出格式为dvi或pdf.
+   C-c-t-i: toggles interactive mode.
+   C-c-t-o: toggles usage of Omega/lambda.
+   M-x,TeX-error-overview : 查看所有警告和错误列表.
+
+*** C-c-v(TeX-view)
+    
+    根据所生成的文件类型,自动选择相应的显示程序.根据上一条指令,决定显示整个文档还是部分文档.
+
+*** C-c-t-s(toggle TeX-source-correlate-mode)
+    
+    支持在pdf和源文件对应位置之间相互跳转.
+
+** 调试
+*** C-c,`(TeX-next-error)
+    
+    跳转到第一个错误处.
+
+*** M-g,p(TeX-previous-error)
+
+    跳转到上一个错误处.
+*** C-c-t-w(Tex-toggle-debug-warings)
+    
+    切换latex在编译时,是否在警告处停止.
+
+*** C-c-t-b(Tex-toggle-debug-bad-boxes)
+    
+    切换latex在编译时,是否在bad boxes处停止.
+
+** 引号,$号,括号
+
+   " : 自动转换成``,想得到",要连续按两次.
+   
+** 缩进
+
+   <TAB> : 缩进一行.
+   M-q : 缩进一段.
+   M-x,LaTeX-fill-buffer : 缩进整个buffer.
+
+** 插入章节
+   
+   C-c-s : 插入'\chapter', '\section', '\subsection'等.同时附加\label.
+
+** 插入环境
+   
+   C-c-e : 插入'\begin{}'-'\end{}'环境.
+
+** 插入宏
+   
+   C-c-m
+
+** 插入字体
+
+   注: 加"C-u"将会改变光标所在单位的字体.
+   C-c-f-b : 插入\textbf{} (bold face).
+   C-c-f-i : 插入\textit{} (italics).
+   C-c-f-e : 插入\emph{} (emphasized).
+   C-c-f-s : 插入\textsl{} (slanted).
+   C-c-f-r : 插入\textrm{} (roman).
+   C-c-f-f : 插入\textsf{} (sans serif).
+   C-c-f-t : 插入\texttt{} (typewriter).
+   C-c-f-c : 插入\textsc{} (SMALL CAPS).
+   C-c-f-d : 删除最内层的字体.
+
+** 注释
+   
+   C-c,; : 注释所选区域.
+
+** 折叠
+   
+   C-c-o-f : 开启或关闭TeX-fold-mode.
+   
+   C-c-o-b : 根据变量'TeX-fold-type-list',隐藏当前buffer中,所有可以折叠的部分.
+   C-c-o,b : 展开当前buffer中所有被折叠的部分.
+   
+   C-c-o-r : 折叠当前所选区域内所有内容.
+   C-c-o,r : 展开当前所选区域内所有内容.
+   
+   C-c-o-p : 折叠当前段落内所有内容.
+   C-c-o,p : 展开当前段落内所以内容.
+   
+   C-c-o-m : 折叠当前光标所在的宏.(由)
+   C-c-o-e : 折叠当前光标所在的环境.
+   C-c-o,i : 展开当前光标所在的宏或环境.
+   
+   C-c-o-c : 折叠当前光标所在的注释.
+   
+   C-c-o-o : 切换展开/折叠当前光标下的元素.
+   
+   M-x,TeX-fold-math: 折叠当前光标所在的数学宏.
+
+* 宏包
+
+  路径:/usr/share/texmf/
+
+  \usepackage{amsmath} : AMS(美国数学协会)系列宏包中最重要的宏包,这个宏包引入了一些改进的数学环境.
+  \usepackage{graphicx} : 
+  \usepackage{sectsty} : 设置章节头样式.
+  \usepackage{latexsym/amssymb} : 数学符号包.
+  
 * 文件类型
   .tex : tex源文件
   .dvi : 不依赖设备,可以用xdvi查看,也可以转换成pdf.是latex编译的结果.
-  .log : 记录上一次编译运行的日至.
+  .log : 记录上一次编译运行的日志.
   .aux : Latex生成的参考文献引用信息.
   .bib : 参考文献数据库.
   .bst : BibTex的样式文件,不同期刊有不同的.bst.
   .bbl : BibTeX根据.aux文件,.bib文件和.bst文件生成,会被Latex读取的参考文献列表.
-  .blg : BibTex日至.
+  .blg : BibTex日志.
   
+* 空白符
+  
+  注：若'.'号前不是大写字母,则表示句子结束符,在该'.'后会自动产生额外的空白.
 
+  '\@.' : 在'.'后产生额外空白.用于'.'前是大写字母,但同时又需要是句子结束符时.
+  '\<SPC>' : 强制产生一个空格字符.
+
+* 文档类型
+  \documentclass[options]{class}
+  
+  注:每个文档必须指定文档类型,没有默认文档类型.
+
+** class
+
+   article
+   report
+   letter
+   book
+
+** options
+*** 字体大小
+
+    10pt(默认),11pt,12pt
+
+*** 纸张大小
+
+    letterpaper(默认)
+    legalpaper
+    executivepaper
+    a4paper
+    a5paper
+    b5paper
+
+*** 单双栏
+    
+    onecolumn : 单栏(默认).
+    twocolumn : 双栏.
+
+*** 单双页
+    
+    oneside : 单页打印(article,report,letter).
+    twoside : 双页打印(book).
+
+*** 章节起始位置
+
+    openany : 在任意新的页开始新的章节(report).
+    openright : 在奇数页开始新的章节(book).
+    
+*** 标题页
+    
+    titlepage : 标题单独在一页,和正文分开(report,book).
+    notitlepage : 标题和正文在一页(article).
+
+* 页面风格
+  
+  \pagestyle{style} : 为所有文档页面设置风格.
+  \thispagestyle{style} : 仅为当前页面设置风格.
+
+** style
+  plain : 页眉为空,页脚仅包含页数,并居中.(article类型默认风格)
+  empty : 页眉页脚均为空.
+  headings: 页脚为空,页眉包含页数和章节名(具体布局依赖文档类型及其选项).(book类型默认风格)
+  myheadings: 同headings,只是'section'的信息由\markright和\markboth命令给出.
+  
+  \markboth{left head}{right head} : 设置左右两个页眉.left hand出现在左手边偶数页,right hand出现在右手边基数页.(twoside)
+  \markright{right hand} : 仅设置右页眉,左页眉保持原样.right hand出现在右手奇数页,.(oneside)
+
+* 页码
+  
+  \pagenumbering{style}
+  \setcounter{page}{number(可变)} : 将当前页面设置为指定页码number.
+
+** style:
+   arabic : 阿拉伯数字.(默认)
+   roman/Roman : 小/大写罗马数字.
+   alph/Alph : 小/大写英文字母.
+
+* 章节
+  
+  book, report:
+  \chapter{name}(有编号)
+  \section{name}(有编号)
+  \subsection{name}(有编号)
+  \subsubsection{name}(book,report:无编号; article:有编号)
+  \paragraph{name}(无编号)
+  \subparagraph{name}(无编号,有额外缩进)
+
+  article没有\chapter.
+  带*版本,如:\section*{name},将不显示编号.
+
+* 标题部分
+  
+  在\begin{document}之外,分为三项:
+  \title{} : 文章标题.
+  \author{}: 文章作者,多个时可用\and分隔.
+  \date{} : 日期.
+
+  \maketitle : 生成以上标题内容.
+  
+  所有标题部分内容默认居中且自动换行,可在其中用\\强制断行.
+
+* 摘要
+  
+  只有article和report有,book没有.
+  \begin{abstract}
+  ...
+  \end{abstract}
+
+* 引号
+
+  `/' : 左/右单引号.
+  ``/'' : 左/右双引号.
+  
+* 破折号
+  
+  '-'/'--'/'---' : 连字符/数据范围/解释符.
+
+* 字体
+** 风格
+   风格是family,series,shape三者的组合.
+   默认为: roman family, medium series, upright shape type.
+   
+*** family
+
+    对于小段文本:
+    \textrm{} : roman.
+    \textsf{} : sans serif.
+    \texttt{} : typewriter.
+    
+    对于大段文本:
+    \begin{rmfamily} ... \end{rmfamily}
+    \begin{sffamily} ... \end{sffamily}
+    \begin{ttfamily} ... \end{ttfamily}
+
+*** series
+    
+    小段文本:
+    \textmd{} : medium.
+    \textbf{} : boldface.
+    
+    大段文本:
+    \begin{mdseries} ... \end{mdseries}
+    \begin{bfseries} ... \end{bfseries}
+
+*** shape
+    
+    小段文本:
+    \textup{} : upright.
+    \textit{} : italic.
+    \textsl{} : slanted.
+    \textsc{} : small cap.
+    
+    大段文本:
+    \begin{upshape} ... \end{upshape}
+    \begin{itshape} ... \end{itshape}
+    \begin{slshape} ... \end{slshape}
+    \begin{scshape} ... \end{scshape}
+
+** 大小
+
+   由小到大:
+   {\tiny ... }
+   {\scriptsize ... }
+   {\footnotesize ... }
+   {\small ... }
+   {\normalsize ... } : 默认大小.
+   {\large ... }
+   {\Large ... }
+   {\LARGE ... }
+   {\huge ... }
+   {\Huge ... }
+
+* 特殊符号
+  
+  '\' : \textbackslash
+  '~' : \textasciitilde
+  '^' : \textasciicircum
+  '#' : \#
+  '$' : \$
+  '%' : \%
+  '&' : \&
+  '{' / '}' : \{ / \}
+  '_' : \_
+  
+* 段落
+  空行表示段落
+  段落开头加\noindent表示该段落没有缩进.
+
+* 换行
+
+  \\[5pt] : 换行,且行间距为5pt.
+  
 * 颜色
   \textcolor{red/blue/green/yellow/...}{text} : 将text设置为指定颜色.
-* 环境：
-  abstract : 摘要.
-  itmeize : 无序列表.
-  center  : 居中内容.
 
+* 位置
+   
+  \begin{center/flushleft/flushright}
+  要居中/居左/居右的内容
+  \end{center/flushleft/flushright}
 
-
-"\\" ：强制换行.
+* 环境
+**  
 \label : 标签.
-\emph{} : 斜体. 
 \verb|| : 原样引用,忽虑内容的特定含义.
-% : 注释.
+
+** 引文
+*** 行内引文
+
+    用双引号:``...``.
+
+*** 单段引文
+
+    \begin{quote} ...  \end{quote}
+    被引用的文本将自成一段,并且左右两边都有缩进.
+
+*** 多段引文
+
+    \begin{quotation} ...  \end{quotation1}
+
+** 无序列表
+   
+   \begin{itemize}
+     \item .....
+     \item .....
+     ...
+   \end{itemize}
+   
+   每一项用\item分隔.
+   列表允许嵌套,即每个\item也可以是一个\begin{itemize}...\end{itemize},最多允许4级嵌套.
+   列表默认标号: 一级: 大圆点; 二级: '-'; 三级: '*'; 四级: 小圆点.
+   
+   修改标号样式:
+  {
+   \renewcommand{\labelitemi}{一级标号样式}
+   \renewcommand{\labelitemii}{二级标号样式}
+   \renewcommand{\labelitemiii}{三级标号样式}
+   \renewcommand{\labelitemiv}{四级标号样式}
+
+   \begin{itemize}
+     \item
+     \item
+     ...
+   \end{itemize}
+
+  } 
+   
+  最外层花括号将使选择的样式具有局部属性,仅对当前列表有效; 去掉花括号将使选择的样式具有全局属性,对整个文档的所有列表有效.
+  
+** 有序列表
+   
+   \begin{enumerate}
+   \item ....
+   \item ....
+    ...
+   \end{enumerate}
+
+   每一项用\item分隔.
+   列表允许嵌套,即每个\item也可以是一个\begin{enumerate}...\end{enumerate},最多允许4级嵌套.
+   默认标号: 一级: 1.,2.,...; 二级: (a),(b),...; 三级: i.,ii.,...; 四级: A.,B.,...
+   
+   修改默认标号样式: \usepackage{enumerate}
+   \begin{enumerate}[标号样式]
+   \item ....
+   \item ....
+    ...
+   \end{enumerate}
+   
+   标号样式:
+   [A] : A,B,C,...
+   [a] : a,b,c,...
+   [1] : 1,2,3,...
+   [I] : I,II,III,...
+   [i] : i,ii,iii,...
+   
+   [{A}1] : A1,A2,A3,...
+   [11] : 11, 22, 33,...
+   [({A}1)] : (A1),(A2),(A3),...
+
+** description
+   \begin{description}
+   \item[] ...
+   \item[] ...
+    ...
+   \end{description}
+   
+   标号由[]内的参数指定.一级无缩进.
 
 * 引用
+
   引用章节用\ref{},引用参考文献用cite{}
+
 * 参考文献(bibliography)
    
   \begin{thebibliography}{widest-label}
@@ -56,5 +475,65 @@
    
 
 
-* 上下标
-  上/下标: a^n/a_n
+* 数学模式
+
+  数学公式内,可用\text{}插入普通文本.
+
+** 行内公式
+
+   $...$
+   \(...\)
+   \begin{math}...\end{math}
+
+** 单行公式
+   
+   $$...$$
+   \[...\]
+   \begin{displaymath}...\end{displaymath}
+   \begin{equation*}...\end{equation*}(需要amsmath宏包) : 带*号表示没有编号.
+   
+** 多行公式
+   
+   \begin{multline*}...\end{multline*} (需要amsmath宏包)
+   其中的公式用\\断行,默认第一行公式居左,最后一行公式居右,中间行的公式居中.
+   可用\begin{split}...\end{split}环境使每一行的公式按需要对齐.
+
+** 上下标
+
+    a^n
+    a_n
+    a^{...}
+    a_{...}
+    a_n^m : 上下标对齐.
+    {a_n}^m : 下标在左,上标在右.
+    {a^m}_n : 上标在左,下标在右.
+
+** 根号
+
+   \sqrt{n} : n的平方根.
+   \sqrt[m]{n} : n的m次方根.
+   
+** 空白
+   
+   \quad : 空白.
+   \; : thickspace.
+   \, : thinspace.
+
+** 符号
+
+   \mathbin : 使其后的符号成为二元符号,这将使该符号两边加入空白.(如:\mathbin\Box)
+   \mathrel : 使其后的符号成为关系运算符,这将使该符号两边加入空白.(如:\mathrel\rho)
+
+* 自定义命令
+** \newcommand{\标识符}{扩展部分}
+    源文件中的"\标识符"部分将被相应的扩展.
+    如: \newcommand{\vec}{(x_1,x_2,\dots,x_n)}
+  
+** \newcommand{\标识符}[n]{扩展部分:f(#1,#2,...,#n)}
+
+    带n个参数的命令.
+    
+    如: \newcommand{\vect}[2]{(#1_1,#1_2,\dotsc,#1_#2)}
+    则\vect{x}{m}将被扩展成: (x_1,x_2,\dots,x_m)
+    扩展部分中的#n将被第n个参数替换,
+
