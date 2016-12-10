@@ -16,124 +16,6 @@
 
   在目录/usr/local/texlive/2015 下安装.
 
-* Auctex
-** 执行命令
-*** C-c-a(TeX-command-run-all)
- 
-    对当前文档执行编译,查看等所有命令.
-
-*** C-c-c(TeX-command-master)
- 
-    对当前buffer所关联的主文件,执行指定命令.
-    主文件由变量'TeX-master'设置,候选命令由'TeX-command-list'变量设置.
-  
-*** C-c-r(TeX-command-region)
- 
-    对选定的区域,执行指定命令.
-  
-*** C-c-b(TeX-command-buffer)
- 
-    对当前buffer,执行指定命令.(用于包含\include或\input的文档)
-
-*** C-c-z(LaTeX-command-section)
-    
-    对光标所在的section(part, chapter, subsection, paragraph, subparagraph), 执行指定命令.
-    用'C-c,M-z'改变级别.
-
-*** 其他
-   C-c-k : 终止当前命令.
-   C-c-l : 居中output buffer.
-   C-c-t-p : 选择输出格式为dvi或pdf.
-   C-c-t-i: toggles interactive mode.
-   C-c-t-o: toggles usage of Omega/lambda.
-   M-x,TeX-error-overview : 查看所有警告和错误列表.
-
-*** C-c-v(TeX-view)
-    
-    根据所生成的文件类型,自动选择相应的显示程序.根据上一条指令,决定显示整个文档还是部分文档.
-
-*** C-c-t-s(toggle TeX-source-correlate-mode)
-    
-    支持在pdf和源文件对应位置之间相互跳转.
-
-** 调试
-*** C-c,`(TeX-next-error)
-    
-    跳转到第一个错误处.
-
-*** M-g,p(TeX-previous-error)
-
-    跳转到上一个错误处.
-*** C-c-t-w(Tex-toggle-debug-warings)
-    
-    切换latex在编译时,是否在警告处停止.
-
-*** C-c-t-b(Tex-toggle-debug-bad-boxes)
-    
-    切换latex在编译时,是否在bad boxes处停止.
-
-** 引号,$号,括号
-
-   " : 自动转换成``,想得到",要连续按两次.
-   
-** 缩进
-
-   <TAB> : 缩进一行.
-   M-q : 缩进一段.
-   M-x,LaTeX-fill-buffer : 缩进整个buffer.
-
-** 插入章节
-   
-   C-c-s : 插入'\chapter', '\section', '\subsection'等.同时附加\label.
-
-** 插入环境
-   
-   C-c-e : 插入'\begin{}'-'\end{}'环境.
-
-** 插入宏
-   
-   C-c-m
-
-** 插入字体
-
-   注: 加"C-u"将会改变光标所在单位的字体.
-   C-c-f-b : 插入\textbf{} (bold face).
-   C-c-f-i : 插入\textit{} (italics).
-   C-c-f-e : 插入\emph{} (emphasized).
-   C-c-f-s : 插入\textsl{} (slanted).
-   C-c-f-r : 插入\textrm{} (roman).
-   C-c-f-f : 插入\textsf{} (sans serif).
-   C-c-f-t : 插入\texttt{} (typewriter).
-   C-c-f-c : 插入\textsc{} (SMALL CAPS).
-   C-c-f-d : 删除最内层的字体.
-
-** 注释
-   
-   C-c,; : 注释所选区域.
-
-** 折叠
-   
-   C-c-o-f : 开启或关闭TeX-fold-mode.
-   
-   C-c-o-b : 根据变量'TeX-fold-type-list',隐藏当前buffer中,所有可以折叠的部分.
-   C-c-o,b : 展开当前buffer中所有被折叠的部分.
-   
-   C-c-o-r : 折叠当前所选区域内所有内容.
-   C-c-o,r : 展开当前所选区域内所有内容.
-   
-   C-c-o-p : 折叠当前段落内所有内容.
-   C-c-o,p : 展开当前段落内所以内容.
-   
-   C-c-o-m : 折叠当前光标所在的宏.(由)
-   C-c-o-e : 折叠当前光标所在的环境.
-   C-c-o,i : 展开当前光标所在的宏或环境.
-   
-   C-c-o-c : 折叠当前光标所在的注释.
-   
-   C-c-o-o : 切换展开/折叠当前光标下的元素.
-   
-   M-x,TeX-fold-math: 折叠当前光标所在的数学宏.
-
 * 宏包
 
   路径:/usr/share/texmf/
@@ -461,9 +343,13 @@
   \usepackagep[options]{natbib}
   
 * BibTeX
+
 ** 引用数据库(.bib)
+
    \bibliography{database1.bib,database2.bib,..}
+
 ** 设置样式(.bst)
+
    \bibliographystyle{style}  (放于\begin{document}之后).
    可用style:
    plain.bst:
@@ -537,3 +423,159 @@
     则\vect{x}{m}将被扩展成: (x_1,x_2,\dots,x_m)
     扩展部分中的#n将被第n个参数替换,
 
+
+* Ebib
+  
+**  打开数据库
+
+    在index窗口
+    'o'. 可以同时打开多个.bib数据库, 每个数据库都有编号, 用'1~9'来快速访问.
+
+** 编辑数据库
+
+   在index窗口中:
+   'a': 增加一项.
+   'd': 删除当前项(不可恢复).
+   'k': 剪切当前项(可恢复).
+   'y': 插入剪切环首的bib项(必须符合格式).可以先从外部将bib项拷贝到剪切环中, 然后用y插入到当前数据库中.
+   'E': 编辑当前项的key.
+   'e': 编辑当前项的各个域值.
+   '!': 让系统为当前项重新产生一个key.
+   'H': 显示当前项的隐藏域.
+   'q': 退出Ebib.
+
+   
+   在entry窗口中:
+   'c': 拷贝当前域的值.
+   'k': 剪切当前域的值.
+   'y': 粘贴剪切环中的值, 重复执行可遍历剪切环.
+   'q': 退出编辑.
+   'd': 删除当前域的值(不可恢复).
+
+** 保存数据库
+
+   在index窗口中:
+   's': 保存数据库.
+   'w': 将当前数据库另存为.
+   'C-u,w' : 将当前数据库另存为, 强制覆盖已有文件.
+
+* Auctex
+
+** 执行命令
+*** C-c-a(TeX-command-run-all)
+ 
+    对当前文档执行编译,查看等所有命令.
+
+*** C-c-c(TeX-command-master)
+ 
+    对当前buffer所关联的主文件,执行指定命令.
+    主文件由变量'TeX-master'设置,候选命令由'TeX-command-list'变量设置.
+  
+*** C-c-r(TeX-command-region)
+ 
+    对选定的区域,执行指定命令.
+  
+*** C-c-b(TeX-command-buffer)
+ 
+    对当前buffer,执行指定命令.(用于包含\include或\input的文档)
+
+*** C-c-z(LaTeX-command-section)
+    
+    对光标所在的section(part, chapter, subsection, paragraph, subparagraph), 执行指定命令.
+    用'C-c,M-z'改变级别.
+
+*** 输出格式选择
+
+   C-c-k : 终止当前命令.
+   C-c-l : 居中output buffer.
+   C-c-t-p : 选择输出格式为dvi或pdf.
+   C-c-t-i : toggles interactive mode.
+   C-c-t-o : toggles usage of Omega/lambda.
+   C-c-t-s : toggles source specials support.
+
+*** Debug
+
+    
+
+*** C-c-v(TeX-view)
+    
+    根据所生成的文件类型,自动选择相应的显示程序.根据上一条指令,决定显示整个文档还是部分文档.
+
+*** C-c-t-s(toggle TeX-source-correlate-mode)
+    
+    支持在pdf和源文件对应位置之间相互跳转.
+
+** 调试
+
+   M-x,TeX-error-overview : 查看所有警告和错误列表.
+
+   C-c,`: 跳转到第一个错误处.
+   M-g,p: 跳转到上一个错误处.
+   C-c-t-w: 切换latex在编译时,是否在警告处停止.
+   C-c-w: TeX-toggle-debug-boxes.
+   C-c-t-b(Tex-toggle-debug-bad-boxes): 切换latex在编译时,是否在bad boxes处停止.
+
+** 引号,$号,括号
+
+   " : 自动转换成``,想得到",要连续按两次.
+   
+** 缩进
+
+   <TAB> : 缩进一行.
+   M-q : 缩进一段.
+   M-x,LaTeX-fill-buffer : 缩进整个buffer.
+
+** 插入章节
+   
+   C-c-s : 插入'\chapter', '\section', '\subsection'等.同时附加\label.
+
+** 插入环境
+   
+   C-c-e : 插入'\begin{}'-'\end{}'环境. 系统会根据\documentclass和
+   \usepackage的设置自动选择. 可用"M-p/n"查看历史记录.
+
+** 插入宏
+   
+   C-c-m/C-c,RET 可用"M-p/n"查看历史记录. 将光标置于部分输入的宏的末尾,
+   利用'M-<TAB>'可将其补全.
+
+** 插入字体
+
+   注: 加"C-u"将会改变光标所在单位的字体.
+
+   C-c-f-b : 插入\textbf{} (bold face).
+   C-c-f-i : 插入\textit{} (italics).
+   C-c-f-e : 插入\emph{} (emphasized).
+   C-c-f-s : 插入\textsl{} (slanted).
+   C-c-f-r : 插入\textrm{} (roman).
+   C-c-f-f : 插入\textsf{} (sans serif).
+   C-c-f-t : 插入\texttt{} (typewriter).
+   C-c-f-c : 插入\textsc{} (SMALL CAPS).
+   C-c-f-d : 删除最内层的字体.
+
+** 注释
+   
+   C-c,; : 注释所选区域.
+
+** 折叠
+   
+   C-c-o-f : 开启或关闭TeX-fold-mode.
+   
+   C-c-o-b : 根据变量'TeX-fold-type-list',隐藏当前buffer中,所有可以折叠的部分.
+   C-c-o,b : 展开当前buffer中所有被折叠的部分.
+   
+   C-c-o-r : 折叠当前所选区域内所有内容.
+   C-c-o,r : 展开当前所选区域内所有内容.
+   
+   C-c-o-p : 折叠当前段落内所有内容.
+   C-c-o,p : 展开当前段落内所以内容.
+   
+   C-c-o-m : 折叠当前光标所在的宏.(由)
+   C-c-o-e : 折叠当前光标所在的环境.
+   C-c-o,i : 展开当前光标所在的宏或环境.
+   
+   C-c-o-c : 折叠当前光标所在的注释.
+   
+   C-c-o-o : 切换展开/折叠当前光标下的元素.
+   
+   M-x,TeX-fold-math: 折叠当前光标所在的数学宏.
