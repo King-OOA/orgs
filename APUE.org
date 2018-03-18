@@ -1,0 +1,1480 @@
+* 第三章 文件I/O
+** 文件描述符
+   
+   文件描述符是非负整数, 用于标识文件. 通常, 0表示标准输入
+   (STDIN_FILENO), 1表示标准输出(STDOUT_FILENO), 2表示标准错误
+   (STDERR_FILENO).
+
+** 打开/关闭文件
+   
+   #include <fcntl.h>
+
+   open/openat函数打开文件时, 将返回最小的可用文件描述符.
+
+   1. int open(char const *pathname, int oflag, (mode_t mode));
+   以指定方式打开由pathname指定的文件.
+
+   2. int openat(int dirfd, char cost *pathname, int oflag, (mode_t mode));
+   功能同上. 文件由目录描述符dirfd和相对路径pathname指定.
+   
+   返回值: 成功返回对应的文件描述符；失败返回-1.
+
+   其中oflag参数由以下常量的"按位或"构成:
+
+    O_RDONLY(0) : 以只读方式打开.
+    O_WRONLY(1) : 以只写方式打开.
+    O_RDWR(2)   : 以读写方式打开.
+   
+   注: 以上三个常量必须有且仅有一个. 以下常量为可选项:
+   
+    O_CREAT : 当指定文件不存在时, 将产生一个新文件. 需要mode参数指定新
+    文件权限. 若文件已经存在, 则该文件不受mode参数的影响. 注: 无法用于
+    产生目录.
+    O_EXCL : 当使用O_CREAT且指定文件已经存在时, 将产生错误(返回-1).
+
+    O_DIRECTORY : 当pathname指定的文件不是目录时, 将产生错误(返回-1).
+    O_NOFOLLOW : 当pathname指定的文件为符号链接时, 将产生错误(返回-1).
+
+    O_SYNC : 每次写操作, 都需要等对文件数据和属性信息的更新完成.
+    O_DSYNC : 类似于O_SYNC, 但是只同步文件的数据信息和必要的属性信息.
+
+    O_TRUNC : 当使用O_WRONLY或O_RDWR方式打开已存在文件时, 将文件长度截取为0.
+
+    O_APPEND : O_APPEND方式打开, 则每次write之前(不影响read操作), 会将
+   文件的当前偏移量设置为文件末尾, 以确保每次写操作都在文件末尾进行.
+   这会影响后续的读取操作.
+    
+    O_NOCITTY : 
+    O_CLOEXEC : 
+    O_NONBLOCK : 
+    O_TTY_INIT
+
+
+    用close关闭文件
+
+    #include <unistd.h>
+
+    int close(int fd);
+    关闭具有文件描述符fd的文件.
+
+    返回值: 成功, 返回0; 失败, 返回-1.
+
+    注: 进程结束时, 其打开的所有文件将由内核自动关闭.
+
+** 产生文件
+
+   #include <fcntl.h>
+
+   int creat(char const *pathname, mode_t mode);
+<==>
+   int open(char const *pathname, O_WONLY | O_CREAT | O_TRUNC, mode);
+  
+    注：该函数只能以"只写"方式打开文件. 目前该函数已经完全可由open替代.
+
+** 文件偏移量
+
+   文件当前偏移量: 用来度量从文件开始处计算的字节数. 通常, 读/写操作都
+   从文件当前偏移量处开始, 并使其增加所读/写的字节数. 一个进程对其所打
+   开的每一个文件都维护一个偏移量. 一个进程可以对同一个文件(以不同的方
+   式)打开多次, 这样便可以获得同一个文件的多个偏移量用于读/写操作, 使
+   其互不干扰.
+
+
+   可用lseek函数显式地为已打开的文件设置当前偏移量:
+
+   #include <unistd.h>
+
+   off_t lseek(int fd, off_t offset, int whence);
+   为文件fd设定当前偏移量. off_t为8字节long int类型. lseek函数只是改变fd
+   文件表项中的偏移量, 并无任何I/O操作.
+
+   返回值: 成功, 返回新的文件偏移量; 失败, 返回-1(由于允许lseek返回负
+   数, 所以不能用"返回值 < 0"来判断操作是否失败).
+   
+   其中新偏移量offset的计算将依赖于基准位置whence. whence由以下符号常
+   量指定:
+
+   SEEK_SET (0): 将新文件偏移量设置为距文件开始处offset个字节.
+   SEEK_CUR (1): 将新文件偏移量设置为文件当前偏移量加offset个字节(offset可为负).
+   SEEK_END (2): 将新文件偏移量设置为文件长度加offset个字节(offset可为负).
+   
+   可以使用 lseek(fd, 0, SEEK_CUR) 来获取文件的当前偏移量.
+
+   注: 管道, FIFO或socket文件无法被lseek.
+
+   由于写操作导致文件偏移量超过文件长度时, 文件长度将相应地增加. 文件
+   的偏移量允许超过文件长度. 此时, 如果执行写操作, 将在文件末尾和写位
+   置之间形成空洞. 空洞不占用磁盘空间, 但是其中的内容在读取时将被视
+   为0.
+
+** 读/写文件
+
+   #include <unistd.h>
+
+   1. ssize_t read(int fd, void *buf, size_t nbytes);
+   从文件fd的当前偏移量处开始, 读取nbytes个字节放入buf, 之后文件偏移量
+   将增加实际读取到的字节数.
+   
+   2. ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
+   从文件fd的偏移量offset处开始, 读取nbytes个字节放入buf. 不改变文件的
+   当前偏移量, 主要用于多线程环境. 注: 该函数定位文件偏移量及随后的读
+   取过程是原子操作.
+   
+   返回值: 成功, 返回实际读取的字节数(如果当前读操作恰好遇到文件尾, 则
+   返回0)；失败, 返回-1.
+
+
+   #include <unistd.h>
+
+   1. ssiz_t write(int fd, void const *buf, size_t nbytes);
+   将buf处开始的nbytes个字节, 写入到文件fd的当前偏移量处(会覆盖文件中
+   的原有内容), 之后文件偏移量将增加实际写入的字节数.
+
+   2. ssiz_t pwrite(int fd, void const *buf, size_t nbytes, off_t offset);
+   将buf处开始的nbytes个字节, 写入到文件fd的偏移量offset处(会覆盖文件
+   中的原有内容). 不改变文件的当前偏移量, 主要用于多线程环境. 注: 该函
+   数定位文件偏移量及随后的写入过程是原子操作.
+
+   返回值: 成功, 返回写入的字节数；失败, 返回-1.
+
+   注: 若文件以O_APPEND方式打开, 则每次write之前, 会将文件的当前偏移量
+   设置为文件末尾, 以确保每次写操作都在文件末尾进行.
+
+** 复制文件描述符
+   
+   用dup/dup2函数为现有的文件描述符复制一个新的文件描述符, 新描述符和现有
+   描述符指向同一个文件表项, 但有其各自的文件描述符标志.
+
+   #include <unistd.h>
+
+   1. int dup(int fd);
+   为现有文件描述符fd复制一个新文件描述符. 系统确保新文件描述符是可用
+   的最小值. (等价于fcntl(fd, F_DUPFD, 0))
+
+   2. int dup2(int fd, int fd2);
+   为现有文件描述符fd指定一个复制品fd2. 如果fd2已经被打开, 则先将其关
+   闭. 若fd等于fd2, 则返回fd2, 并不关闭它. 否则, fd2的FD_CLOEXEC标志将
+   会被清除. (等价于close(fd2);fcntl(fd, F_DUPFD, fd2). 但是dup2为原子
+   操作.)
+
+   返回值: 成功, 返回新文件描述符; 失败, 返回-1.
+
+** I/O同步
+
+   通常, Unix系统会将要写入磁盘的数据缓存起来, 稍后再一并写入. 可用以
+   下函数强制系统立刻将数据写入磁盘.
+   
+   #include <unistd.h>
+
+   1. int fsync(int fd);
+   强制即将写入文件fd的(位于内核缓冲区中的)数据(包括所有数据和文件属性
+   信息)立刻写入磁盘, 并等待写操作结束后才返回(阻塞操作).
+
+   2. int fdatasync(int fd);
+   功能类似于fsync. 但只是同步文件数据和必要的文件属性信息(例如文件长
+   度). 比fsync高效(阻塞操作).
+
+   以上两个函数返回值: 成功, 返回0; 失败, 返回-1.
+
+   3. void sync(void);
+   只是将所有修改过的块缓冲区方入写队列, 然后就返回, 并不等待实际写磁
+   盘操作结束(非阻塞操作). 该函数由系统守护进程周期性调用.
+
+** 改变已打开文件的状态
+
+   fcntl函数可以用来改变已打开文件的各种状态.
+
+   #include <fcntl.h>
+
+   int fcntl(int fd, int cmd, ...(int arg));
+
+   返回值: 成功, 根据cmd参数返回相应的值; 失败, 返回-1.
+   
+   1.复制文件描述符: cmd = F_DUPFD/F_DUPFD_CLOEXEC, arg = n(整数).
+   为fd复制一个新文件描述符并返回. 新描述符是>=n的最小未打开描述符, 其
+   文件描述符标志FD_CLOEXEC被清除/设置.
+   
+   2.获取/设置文件描述符标志.
+   (1) cmd = F_GETFD.
+   返回fd的文件描述符标志.
+   (2) cmd = F_SETFD, arg = n(整数).
+   将fd的文件描述符标志设置为第3个参数n.
+
+   3.获取/设置文件状态标志.
+   (1) cmd = F_GETFL.
+   返回文件fd的文件状态标志. 注: 若要获取文件的访问方式(O_RDONLY,
+   O_WRONLY, O_RDWR), 需要先用返回的文件状态标志和屏蔽字O_ACCMODE进行
+   &, 然后在和3个访问方式标志进行比较.
+   (2) cmd = F_SETFL, arg = n(整数).
+   将文件fd的文件状态标志设置为第3个参数n. 注: 只能改变除文件访问方式以
+   外的其它(某些)文件状态标志.
+
+   注: 修改文件描述符或文件状态标志时, 需要先获得现有的标志值, 在其基
+   础上进行修改, 最后在设置新的标志值.
+
+** /dev/fd/
+   
+   open("/dev/fd/n", mode);
+   相当于以mode方式再次打开文件描述符n所指向的文件.
+   
+** ioctl
+
+   主要用于各种设备的驱动.
+
+   #include <sys/ioctl.h>
+
+   int ioctl(int fd, int request, ...);
+
+* 第四章 文件和目录
+** 文件属性
+*** stat函数族
+
+    有关一个文件的所有信息都包含在其i-node中, 可由stat函数族来查看.
+
+    #include <sys/stat.h>   
+
+    1. int stat(char const *pathname, struct stat *buf);
+    将由绝对路径pathname指定文件的属性信息, 存储在buf中.
+
+    2. int fstat(int fd, struct stat *buf);
+    将由文件描述符fd指定文件的属性信息, 存储在buf中.
+
+    3. int lstat(char const *pathname, struct stat *buf);
+    功能同stat. 只是若指定文件为符号链接, 则显示该符号链接自身的信息.
+    
+    4. int fstatat(int dirfd, char const *pathname, struct stat *buf, int flag);
+    dirfd为某目录的文件描述符(设置为AT_FDCWD时, 表示当前目录),
+    pathname为基于该目录的相对路径, 指向指定文件(若pathname为绝对路径,
+    则忽略dirfd). 将指定文件的属性信息存储在buf中. flat控制当指定文件
+    为符号链接时, 是否跟随符号链接(缺省跟随). 当设置为
+    AT_SYMLINK_NOFOLLOW时, 将不跟随符号链接.
+    
+    返回值: 成功返回0; 失败返回-1.
+
+*** struct stat结构
+
+    struct stat {
+      mode_t      st_mode; /*记录文件类型及其权限*/
+      ino_t       st_ino;  /*文件的i-node编号*/
+      dev_t       st_dev;  /*文件所在文件系统的设备号*/
+      dev_t       st_rdev;  /*字符设备或块设备的设备号*/
+      nlink_t     st_nlink; /*指向该文件的(硬)连接数量*/
+      uid_t       st_uid;  /*该文件所有者的user ID*/
+      gid_t       st_gid;  /*该文件所有组的group ID*/
+      off_t       st_size; /*文件包含的字节数*/
+      stuct timespec st_atime; /*最近一次访问时间*/
+      stuct timespec st_mtime; /*最近一次修改时间*/
+      stuct timespec st_ctime; /*最近一次属性改变时间*/
+      blksize_t   st_blksize; /*具有最佳I/O性能的磁盘块大小*/
+      blkcnt_t    st_blocks; /*文件所占用的磁盘块数*/
+    }
+
+    字段说明:
+    1. st_size: 对于普通文件, 表示其包含的字节数(包括空洞), 可以为0;对
+       目录文件, st_size通常为16或512的倍数, 不可能为0; 对于符号链接,
+       表示其所指向路径的长度(不以NULL结尾), 不可能为0.
+
+** 文件类型
+
+   一个文件的类型信息, 记录在其stat结构的st_mode成员中. 要获取指定文件
+   的类型信息, 必须首先对其执行stat函数族, 获取其stat结构, 然后用其
+   st_mode成员做为参数, 执行以下宏:
+
+   #include <sys/stat.h>
+
+   1. S_ISREG(st_mode) : 是否是普通文件. 
+   2. S_ISDIR(st_mode) : 是否是目录.
+   3. S_ISCHR(st_mode) : 是否是字符设备.
+   4. S_ISBLK(st_mode) : 是否是块设备.
+   5. S_ISFIFO(st_mode): 是否是管道(FIFO).
+   6. S_ISLNK(st_mode):  是否是符号链接.
+   7. S_ISSOCK(st_mode):  是否是socket文件.
+      
+   返回值: 是对应类型文件, 返回真(非0); 否则, 返回假(0). 
+
+   以上宏具体实现为:
+
+   1. #define S_ISREG(st_mode)  (((st_mode) & S_IFMT) == S_IFREG)
+   2. #define S_ISDIR(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
+   3. #define S_ISCHR(st_mode)  (((st_mode) & S_IFMT) == S_IFCHR)
+   4. #define S_ISBLK(st_mode)  (((st_mode) & S_IFMT) == S_IFBLK)
+   5. #define S_ISFIFO(st_mode) (((st_mode) & S_IFMT) == S_IFIFO)
+   6. #define S_ISLNK(st_mode)  (((st_mode) & S_IFMT) == S_IFLNK)   
+   7. #define S_ISSOCK(st_mode) (((st_mode) & S_IFMT) == S_IFSOCK)
+
+** 文件权限
+*** 进程访问文件
+    
+   每个进程都与3组id相关联:
+
+   1. real-user/group-id : 标识哪个用户(组)启动了该进程.
+   2. effective-user/group-id : 用于检查该进程访问文件时的权限(通常等于组1中的id).
+   3. saved-user/group-id: 
+
+   通常情况下, 内核将基于进程的 effective-user/group-id 来检查进程访问
+   文件时的权限. 当进程对文件要求某项权限(读/写/执行)时, 内核按照如下
+   次序进行检查:
+
+   1. 若进程的effective-user-id为root, 则无条件允许.
+
+   2. 若进程的effective-user-id等于文件的st_uid, 则检查文件的
+      S_IRUSR/S_IWUSR/S_IXUSR 相应位是否设置.
+
+   3. 若进程的effective-group-id等于文件的st_gid, 则检查文件的
+      S_IRGRP/S_IWGRP/S_IXGRP 相应位是否设置.
+
+   4. 否则, 检查文件的S_IROTH/S_IWOTH/S_IXOTH 相应位是否设置.
+
+   通过access和faccessat函数, 内核可以基于进程的real-user/group-id 来
+   检查其访问权限.
+   
+   #include <unistd.h>
+   
+   1. int access(char *pathname, int mode);
+
+      基于进程的real-user/group-id, 来检查其是否对由pathname指定的文件
+      具有某项权限. mode可以是: 
+      (1) F_OK 检查文件是否存在;
+      (2) R_OK/W_OK/X_OK 检查是否具有读/写/执行的权限.
+
+   2. int faccessat(int dirfd, char *pathname, int mode, int flag);
+
+      功能同access.文件由目录描述符dirfd及相对路径pathname来指定(dirfd
+      为AT_FDCWD代表当前目录, pathname为绝对路径时将忽略dirfd). flag为
+      AT_EACCESS时, 将基于进程的 effective-user/group-id 来检查.
+
+    返回值: 成功, 返回0; 失败, 返回-1.  
+   
+*** 文件权限常量
+
+   每个文件有4组访问权限与其相关联, 记录在其stat结构的st_mode成员中,用
+   以下权限常量进行测试和设置:
+
+   #include <sys/stat.h>
+
+   1. S_IRUSR/S_IWUSR/S_IXUSR/S_IRWXU: 用户 读/写/执行/所有.
+   2. S_IRGRP/S_IWGRP/S_IXGRP/S_IRWXG: 组   读/写/执行/所有.
+   3. S_IROTH/S_IWOTH/S_IXOTH/S_IRWXO: 其他 读/写/执行/所有.
+   4. S_ISUID/S_ISGID/S_ISVTX: set-user-id/set-group-id/sticky-bit(save-text位).
+      
+   权限说明:    
+   1. 要用open打开某文件时, 首先需要对该文件所在路径上的所有(上级)目录具有"执行"权限.
+   2. 要创建/删除某文件, 只需对其所在目录具有"执行"和"写"权限.
+   3. 对目录的"读"权限, 是指允许读取目录的内容, 即目录所包含的文件列表;
+      对目录的"执行"权限, 是指允许访问目录下的文件.
+   4. 若(可执行)文件的set-user/group-id位被设置了, 则该文件被执行时,
+      其对应进程的effective-user/group-id将被设置为该文件的
+      st_uid/st_gid, 而与该进程自身的的real-user/group-id无关.
+   5. sticky-bit对普通文件没有影响. 若某个目录的sticky-bit被设置, 其中
+      的文件若要被删除或重命名, (除了对该目录具有"执行"和"写"权限之外)
+      还必须满足如下要求之一: (1)文件的所有者; (2)目录的所有者; (3) 超
+      级用户. 通常给公共目录(如:/tmp/)设置sticky-bit, 以防止文件被其他
+      用户重命名或删除.
+
+*** 改变文件权限      
+
+   chmod函数族可以用来改变已有文件的权限. 只有文件所有者或超级用户才能
+   改变文件权限(即调用chmod进程的effective-user-id为root或等于文件的
+   st_uid).
+   
+   #include <sys/stat.h>
+
+   1. int chmod(const char *pathname, mode_t mode);
+   改变由路径pathname指定文件的权限.
+
+   2. int fchmod(int fd, mode_t mode);
+   改变由文件描述符fd指定文件的权限.
+
+   3. int fchmodat(int dirfd, char *pathname, mode_t mode, int flag);
+   改变由目录描述符dirfd和相对路径pathname指定文件的权限. 当flag为
+   AT_SYMLINK_NOFOLLOW时, 不会跟踪符号链接.
+
+   返回值: 成功, 返回0; 失败, 返回-1.
+
+   其中mode参数通过文件权限常量进行组合来设置, 例如:
+   chmod("file", (statbuf.st_mode & ~S_IXGRP) | S_ISGID);
+   将关闭组执行权限, 同时设置set-group-id.
+
+   在命令行中:
+
+   1. chmod u+s file : 设置文件的set-user-id位.
+   2. chmod g+s file : 设置文件的set-group-id位.
+   3. chmod o+t dir  : 设置目录的sticky-bit.   
+
+   若文件的set-user/group-id被设置, 则通过ls查看时, user/group的执行位
+   将显示'S', 若同时也设置了执行权限, 则显示's'. 若目录的stickbit被设
+   置了, 则other的执行位将显示'T', 若同时也设置了执行权限, 则显示't'.
+   
+*** 权限屏蔽位(umask)
+
+   新文件的初始权限, 由创建时赋予该文件的权限及创建该文件进程的umask共
+   同决定. uamsk是进程属性, 指明了当前进程创建文件时, 需要被屏蔽掉的权
+   限位.
+
+   #include <sys/stat.h>
+   
+   mode_t umask(mode_t cmask);
+   将当前进程的umask设置为cmask(只影响当前进程), 返回原来的umask. 参数
+   cmask由9个文件权限常量(S_IRUSR, S_IWUSR, ...)进行"按位或"来设置(或者
+   用3位8进制表示法设置). 这些权限将在进程创建文件时被屏蔽掉.
+
+   在命令行中: 
+   $ umask 3位八进制 
+   可以用来设置当前shell的umask(shell默认的umask为:0002).
+
+   $ umask -S
+   显示当前shell允许的文件权限.
+
+** 文件所属
+   
+   文件(目录)的所属权, 包括两项: 
+   
+   1.文件的所有者(st_uid)
+   2.文件所属的组(st_gid)
+
+*** 新文件的所属权
+
+   1. 新文件的st_uid等于其创建进程的effective-user-id.
+   2. 若新文件所在目录的set-group-id位被设置了(默认情况), 则新文件的st_gid等于所
+      在目录的st_gid; 否则, 新文件的st_gid等于其创建进程的effective-group-id.
+
+*** 改变文件所属
+
+   chown函数族, 用来改变文件的user和group(st_uid/st_gid). 当文件的
+   _POSIX_CHOWN_RESTRICTED属性被设置时(默认情况), 只有超级用户才可以更
+   改文件的st_uid; 文件的所有者只能更改文件的st_gid, 且只能使其变为更
+   改进程的effective-group-id.
+
+   #include <unistd.h>
+
+   1. int chown(const char *pathname, uid_t owner, gid_t group);
+   将由路径pathname指定的文件的st_uid及st_gid分别设置为owner和group.
+
+   2. int fchown(int fd, uid_t owner, gid_t group);
+   将由文件描述符fd指定的文件的st_uid及st_gid分别设置为owner和group.
+
+   3. int fchownat(int dirfd, const char *pathname, uid_t owner, gid_t group, int flag);
+   将由目录描述符dirfd及相对路径pathname指定的文件的st_uid及st_gid分别
+   设置为owner和group. 当flag为AT_SYMLINK_NOFOLLOW时, 将不跟踪符号链接.
+
+   4. int lchown(const char *pathname, uid_t owner, gid_t group);
+   功能同chown. 当指定文件位符号链接时, 将改变符号链接本身的所有权.
+
+   返回值: 成功, 返回0; 失败, 返回-1.
+   
+   注: 1. owner/group参数为-1时, 文件对应的原值将保持不变.
+   2. 当一个文件的st_uid/st_gid被更改后, 其set-user-id/set-group-id位
+   将被自动清除.
+
+** 文件大小
+
+   文件的大小(byte)记录在其stat结构的st_size成员中. ls显示的文件字节数
+   正是文件的st_size.
+
+  注:
+  1. 符号链接的st_size等于其所指向的文件名的长度(不包含结尾Null字符).
+   
+  2. 文件中允许存在"空洞"(hole), 此时文件的st_size大于实际占用的磁盘字
+     节数. 文件中存在空洞的部分, 在读取时将被视为0.
+
+   文件可由以下函数进行截取:
+
+   #include <unistd.h>
+
+   1. int truncate(const char *pathname,  off_t length);
+   将由路径pathname指定的文件, 截取到length个字节. 若文件的st_size >
+   length, 则文件末尾超出length的部分将被截断; 若文件的st_size <
+   length, 则文件末尾到length之间的部分将形成空洞.
+
+   2. int ftruncate(int fd, off_t length);
+   功能同truncate. 文件由文件描述符fd指定.
+
+   返回值: 成功, 返回0; 失败, 返回-1.
+
+** 硬链接
+
+*** 创建   
+
+   只允许为同一个文件系统上的文件创建硬链接, 且不允许为目录创建硬链接.
+   
+   #include <unistd.h>
+
+   1. int link(char const *existingpath, char const *newpath);
+   为已有文件(由existingpath指定)创建硬链接(由newpath指定). 若newpath
+   已经存在, 则出错; newpath路径上的所有上级目录必须已经存在.
+
+   2. int linkat(int efd, char const *existingpath, int nfd, char const *newpath, int flag);
+   功能同上. 已有文件由目录描述符efd和相对链接existingpath指定, 硬链接
+   由目录描述符nfd和相对路径newpath指定. 若已有文件为符号链接且flag被
+   设置为AT_SYMLINK_FOLLOW, 则为该符号链接所指文件创建硬链接; 否则为符
+   号链接本身创建硬链接.
+
+   返回值: 成功, 返回0; 失败, 返回-1.
+
+*** 删除
+    
+    要删除一个文件必须具有该文件所在目录的"执行"和"写"权限. 只有当一个
+    文件的链接数(st_nlink)为0时, 系统才删除该文件的数据. 若一个文件被
+    某个进程打开, 则该文件数据不会被删除, 即使该文件链接数为0 (此时该
+    文件已不可被ls列出, 且其数据将在文件关闭或进程结束后被删除). 所以,
+    通常当进程创建临时文件后应立即对其unlink, 确保即使程序意外崩溃后,
+    该临时文件也会被删除.
+
+    #include <unistd.h>
+
+    1. int unlink(char const *pathname);
+    删除由路径pathname指定的(链接)文件. 若pathname为符号链接, 则删除该
+    符号链接本身. 没有函数可以删除符号链接所指文件. 注：unlink无法移除
+    目录.
+
+    2. int unlinkat(int dirfd, char const *pathname, int flag);
+    删除由目录描述符dirfd及相对路径pathname指定的(链接)文件. 若flag被
+    设置为AT_REMOVEDIR, 则可以用来删除目录(类似于rmdir).
+
+    返回值: 成功, 返回0; 失败, 返回-1.
+
+    注: 应该使用rmdir函数来删除目录.
+
+** 符号链接
+
+   相比硬链接，符号链接可以: 
+   (1) 跨越文件系统. (2) 指向目录. (3) 指向不存在的文件.
+
+   当一个符号链接指向其路径上的某个上级目录时, 将产生“环”.
+
+*** 创建
+
+    #include <unistd.h>
+
+    1. int symlink(char const *actualpath, char const *sympath);
+    创建符号链接sympath指向actualpath.
+
+    2. int symlinkat(char const *actualpath, int dirfd, char const *sympath);
+    功能同上. 被指向文件由目录描述符fd和相对两句actualpath指定.
+    
+    返回值: 成功, 返回0; 失败, 返回-1.
+
+*** 读取
+
+    #include <unistd.h>
+
+    1. ssize_t readlink(const char *pathname, char *buf, size_t bufsize);
+    读取由pathname指定的符号链接本身的内容(即所指文件的相对路径), 将其
+    放入大小为bufsize的buf中(末尾不自动添加NULL, 想以字符串的形式输出,
+    可先将buf初始化为0).
+
+    2. ssize_t readlinkat(int dirfd, const char *pathname, char *buf, size_t bufsize);
+    功能同上. 符号链接由目录描述符dirfd和相对链接pathname指定.
+
+    返回值: 成功, 返回读取的字节数；失败, 返回-1.
+
+*** 删除
+
+    可用unlink和unlinkat函数来删除符号链接.
+
+** 移动(重命名)文件
+
+   #include <stdio.h>
+
+   1. rename(char const *oldname, char const *newname);
+      将由oldname指定的文件重命名为newname.
+
+   2. renameat(int oldfd, char const *oldname, int newfd, char const *newname);
+      功能同rename. 只是由文件描述符和相对路径来指定文件.
+
+   注: 若newname指定的文件不存在, 则没有任何问题; 否则:
+   (1) 若oldname为文件, 则其只能覆盖(同名)文件. 无法覆盖(同名)目录.
+   (2) 若oldname为目录, 则其只能覆盖(同名)非空目录. 无法覆盖(同名)非空目录或文件.
+   (3) 若oldname为符号链接, 则只处理符号链接，不影响其所指向的文件.
+
+   返回值: 成功, 返回0; 失败, 返回-1.
+   
+** 文件时间
+   
+   每个文件有3种类型的时间与其关联:
+   1.上一次访问时间(st_atime) (ls -u)
+   2.上一次修改时间(st_mtime) (ls 默认显示)
+   3.上一次i-node被修改的时间(st_ctime) (ls -c)
+   
+*** 修改时间
+
+    可用futimens和utimenasat函数来设置文件的访问时间和修改时间。
+    
+    #include <sys/stat.h>
+
+    1. int futimens(int fd, struct timespec times[2]);
+       
+** 目录
+*** 创建/删除
+    
+    #include <sys/stat.h>
+
+    1. int mkdir(char const *pathname, mode_t mode);
+    创建一个由pathname指定的空目录, 其权限由mode指定(会受到创建进程
+    umask的影响).
+  
+    2. int mkdirat(int dirfd, char const *pathname, mode_t mode);
+    功能同上.只是新目录由目录描述符dirfd和相对路径pathname指定.
+
+    #include <unistd.h>
+    
+    3. int rmdir(char const *pathname);
+    删除由pathname指定的目录(必须为空).
+
+    以上3个函数的返回值: 成功, 返回 0; 失败, 返回 -1.
+
+*** 打开/关闭
+
+    #include <dirent.h>
+
+    1. DIR *opendir(char const *pathname);
+    打开由pathname指定的目录. 返回DIR类型的指针.   
+    
+    2. DIR *fdopendir(int fd);
+    将由(open打开的)文件描述符指定的目录, 转化为DIR类型.   
+    
+    返回值: 成功, 返回对应指针; 失败, 返回NULL.
+
+    3. int closedir(DIR *dp);
+    关闭dp指定的目录.
+
+    返回值: 成功, 返回 0; 失败, 返回 -1.
+
+*** 读取
+
+    #include <dirent.h>
+
+    struct dirent *readdir(DIR *dp);
+    将目录描述符dp指定目录的当前文件信息, 放入struct dirent结构中. 每
+    次调用readdir将读取目录中的一个文件项. 目录中的前两个文件是"." 和
+    "..".
+    
+    struct dirent 结构至少包括以下成员:
+    (1) ino_t d_ino; 所读取文件的i-node编号.
+    (2) char d_name[]; 所读取文件的文件名(以NULL结尾).
+
+    返回值: 成功, 返回非NULL指针; 失败或遇到目录尾, 返回NULL.
+
+*** 改变目录偏移量
+
+    #include <dirent.h>
+    
+    1. long telldir(DIR *dp);
+    返回dp所指定目录的当前偏移量.
+    
+    2. void seekdir(DIR *dp, long loc);
+    将dp所指定目录的当前偏移量设置为loc.
+   
+    3. void rewinddir(DIR *dp);
+    将dp所指定目录的当前偏移量归零.   
+
+*** 进程工作目录
+   
+   #include <unistd.h>
+
+   1. char *getcwd(char *buf, size_t size)
+   将调用进程工作目录的绝对路径, 保存在大小为size的buf中.
+    
+   返回值: 成功, 返回buf; 失败, 返回NULL.
+
+   2. int chdir(const char *pathname)
+   将调用进程的工作目录设置为绝对路径pathname指向的目录.(跟随符号链接)
+
+   3. int fchdir(int fd)
+   将调用该函数进程的工作目录设置为文件描述符fd指向的目录.(跟随符号链接)
+   
+   返回值: 成功, 返回0; 失败, 返回-1.
+* 第五章 标准I/O库
+** 流及其面向
+
+   标准I/O库函数围绕"流"进行. 当(用fopen)打开一个流时, 将令一个指向
+   FILE结构的指针与其相关联, 该FILE结构包含了标准I/O库管理该流所需的信
+   息: 对应的文件描述符, 流缓冲区的指针, 缓冲区长度, 缓冲区当前的字符
+   数以及出错标志等. 系统为每一个进程预定义了3个流: 标准输入(stdin),
+   标准输出(stdout)和标准错误(stderr).
+
+   注: 标准I/O库的各结构体在"/usr/include/libio.h"中定义; 各函数在
+   "/usr/include/stdio.h"中定义. FILE结构体在libio.h中被定义为_IO_FILE.
+
+   
+   #include <stdio.h>
+
+   int fileno(FILE *fp);
+   返回流fp所对应的文件描述符.
+
+   一个流要么是面向单字节的, 要么是面向宽字节的. 当一个流最初被创建时,
+   其定向是未设置的, 第一个在该流上执行的I/O函数(单字节函数或宽字节函
+   数)将决定了该流的定向. 可以用fwide函数设置一个未定向流的定向.
+
+   #include <stdio.h>
+   #include <wchar.h>
+
+   int fwide(FILE *fp, int mode);
+
+   尝试设置流fp的面向. 若mode为负, 尝试将fp设置为面向单字节的流; 若
+   mode为正, 尝试将fp设置为面向宽字节的流; 若mode为0, 则返回fp已有的面
+   向值(1:宽字节, -1:单字节, 0:待定), 而不改变其面向. 注: fwide函数不
+   能改变已面向流的面向. 另外, 该函数无出错返回, 若想检查错误信息, 需
+   要提前清除errno的值, 待调用fwide后再检测该值.
+
+** 流缓冲
+   
+   标准I/O库为流提供了以下3种类型的缓冲:
+
+   1. 全缓冲. 对于写, 当流的缓冲区被填满时, 才调用内核进行实际写操作
+      (write); 对于读, 只有当缓冲区的内容被全部读出后, 在才调用内核进
+      行下一次读操作(read), 此时将再次读满缓冲区.
+   2. 行缓冲. 当在输入或输出中遇到换行符(或缓冲区满)时, 才调用用内核进
+      行实际I/O操作.
+   3. 无缓冲. 每个字符的输入或输出都将调用内核进行实际I/O操作.
+
+   通常, 若流与终端设备相关联, 则其是行缓冲的; 否则, 是全缓冲的. 标准
+   错误流stderr总是无缓冲的.
+   
+   在一个流被打开后且执行任何操作之前, 可用以下函数改变其缓冲类型:
+
+   #include <stdio.h>
+
+   1. void setbuf(FILE *fp, char *buf);
+   若buf为NULL, 则关闭流fp的缓冲; 否则, buf应指向大小为BUFSIZ(定义在
+   <stdio.h>中)的用户缓冲区, 这将使fp变为全缓冲(若fp指向终端, 则为行缓
+   冲). 注: 该函数已弃用.
+
+   2. int setvbuf(FILE *fp, char *buf, int mode, size_t size);
+   (1) 若mode为_IONBF, 则关闭流fp的缓冲, 并忽略参数buf和size. (2)若
+   mode为_IOFBF或_IOLBF, 则将fp变为全缓冲或行缓冲. 此时, 既可以由用户
+   指定缓冲区buf及其大小size, 也可以由系统自动分配缓冲区(参数buf为
+   NULL)及其大小(通常为BUFSZ). 返回值: 成功, 返回0; 出错, 返回非0.
+
+   可以用fflush函数强制冲洗流的缓冲区.
+
+   3. int fflush(FILE *fp);
+   对于输出流, 调用write将流fp(用户)缓冲区中的数据写入内核缓冲区. (若
+   fp为NULL, 则强制冲洗所有流的缓冲区). 对于输入流, 将抛弃缓冲区中所有
+   已读入但未使用的数据. 若成功, 返回0; 否则, 返回EOF.
+
+** 打开/关闭流
+
+   #include <stdio.h>
+
+   1. FILE *fopen(char const *path, char const *mode);
+   以mode方式打开path指定的文件, 并用一个标准I/O流与之相关联. 
+
+   返回值: 成功, 返回相应的文件指针; 失败, 返回NULL.
+
+   2. FILE *freopen(char const *path, char const *mode, FILE *fp);
+   以mode方式打开path指定的文件, 并将由fp指定的流与之相关联. 若fp已经
+   与某文件相关联, 则先关闭该文件. 若fp已经(由fwide函数)面向, 则清除面
+   向. 该函数通常用于将一个预定义流(stdin, stdout, stderr)与某个指定文
+   件相关联, 之后, 预定义流也将变为"全缓冲".
+
+   返回值: 成功, 返回fp; 失败, 返回NULL.
+
+   3. FILE *fdopen(int fd, char const *mode);
+   将一个标准I/O流与文件描述符fd(所指定的文件)相关联, mode必须与fd已有
+   的打开方式相容. 在对fd进行写时, 不会将其内容清空. 当流关闭时, fd也
+   会被关闭.
+
+   mode有以下几种, 其中'b'代表二进制文件, 但所有满足POSIX标准的系统都
+   不区分文本文件和二进制文件, 因此'b'将被忽略:
+   
+   r/rb       : O_RDONLY.
+   w/wb       : O_WRONLY | O_CREAT | O_TRUNC.
+   a/ab       : O_WRONLY | O_CREAT | O_APPEND.
+   r+/r+b/rb+ : O_RDWR.
+   w+/w+b/wb+ : O_RDWR | O_CREAT | O_TRUNC.
+   a+/a+b/ab+ : O_RDWR | O_CREAT | O_APPEND.
+   
+   注: 由O_CREAT产生的文件具有'0666'(rw-rw-rw-)权限, 并且受进程umask的
+   影响.
+   
+   4. int fclose(FILE *fp);
+   关闭流fp, 同时冲洗其缓冲区. 当进程结束时, 其所打开的所有流的缓冲区
+   都将被冲洗.
+
+   返回值: 成功, 返回0; 失败, 返回EOF.
+
+** 读/写流
+*** 字符I/O
+    
+    #include <stdio.h>
+
+**** 以下函数每次从流中读取一个字符:
+
+    1. int fgetc(FILE *fp);
+    从流fp(的缓冲区)中读取一个字符.
+
+    2. int getc(FILE *fp);
+    同上. 但可实现为宏.
+
+    3. int getchar(void);
+    从标准输入中读取一个字符. 等同于getc(stdin).
+
+    返回值: 成功, 返回下一个字符; 出错或到达文件尾, 返回EOF.
+
+    以上函数在出错时或是到达文件尾时, 都将返回EOF, 为了区分这两种情况,
+    需要调用以下函数:
+
+    4. int ferror(FILE *fp);
+    若读写流fp时出错, 返回非0; 否则, 返回0.
+
+    5. int feof(FILE *fp);
+    若读流fp时遇到文件尾, 返回非0; 否则, 返回0.
+
+    6. void clearerr(FILE *fp);
+    清除流fp的出错标志和文件结束标志.
+
+    可以用ungetc函数将一个字符压送回到流中:
+    
+    7. int ungetc(int c, FILE *fp);
+    将(任意)字符c压送回流fp的(系统)缓冲区中. 若成功, 返回c; 出错, 返回
+    EOF. 注: 即使用setvbuf为fp自定义了用户缓冲区, 该函数总是将c压回到
+    系统的缓冲区中. 每次成功执行ungetc函数后, 都将相应流的文件结束标志
+    清除.
+
+**** 以下函数每次向流中写入一个字符:
+
+    8. int fputc(int c, FILE *fp);
+    将字符c写入到流fp(的缓冲区)中.
+
+    9. int putc(int c, FILE *fp);
+    同上. 可实现为宏.
+
+    10. int putchar(int c);
+    将字符c写入到标准输出中. 等同于putc(c, stdout).
+    
+    返回值: 成功, 返回c; 出错, 返回EOF.
+
+*** 行I/O
+    
+    #include <stdio.h>
+
+    1. char *fgets(char *buf, int size, FILE *fp);
+    从流fp中, 读取最多size-1个字节到buf中. 当读入换行符或遇到文件尾时
+    停止. 在最后一个读入的字符后添加'\0'.
+    
+    返回值: 成功, 返回buf; 出错或到达文件尾返回NULL.
+
+    2. int fputs(char const *s, FILE *fp);
+    将字符串s(以'\0'结尾), 写入到流fp中(不包括'\0'字符).
+
+    返回值: 成功, 返回非负值; 出错, 返回EOF.
+
+*** 块(对象)I/O
+    
+    #include <stdio.h>
+
+    1. size_t fread(void *buf, size_t size, size_t num, FILE *fp);
+    从流fp中读取num个大小为size的对象到buf中.
+    
+    2. size_t fwrite(void *buf, size_t size, size_t num, FILE *fp);
+    将buf中num个大小为size的对象写入到流fp中.
+
+    返回值: 实际读取/写入的对象数. (若返回值<num, 则对于fread, 说明出
+    错或遇到文件尾, 需要用ferror和feof做进一步判断; 对于fwrite, 则出错.)
+
+    注: 这两个函数只能在同一类型系统下使用, 无法跨系统.
+    
+*** 格式化I/O
+**** 格式化输出
+    
+    格式化输出任务由printf函数族完成:
+
+    #include <stdio.h>
+
+    1. int printf(char const *format, ...);
+    将格式化后的数据写入到标准输出.
+
+    2. int fprintf(FILE *fp, char const *format, ...);
+    将格式化后的数据写入到指定流.
+
+    3. int dprintf(int fd, char const *format, ...);
+    将格式化后的数据写入到由文件描述符fd指定的文件.
+
+    4. int sprintf(char *buf, char const *format, ...);
+    将格式化后的数据写入到buf中, 并添加NULL字符. 必须确保buf足够大, 否
+    则可能造成缓冲区溢出.
+    
+    5. int snprintf(char *buf, size_t size, char const *format, ...);
+    将格式化后的数据写入到大小为size的buf中, 并添加'\0'字符. 超过缓冲
+    区长度的数据将被丢弃.
+
+    返回值: 成功, 返回输出的字符数(不包括'\0'字符); 出错, 返回负值.
+	
+    有以下5个printf函数的变体, 分别对应于以上5个函数, 只是可变参数列
+    表"..."替换成了"va_list arg":
+    
+    #include <stdio.h>
+    #include <starg.h>
+
+    1. int vprintf(char *const format, va_list arg);
+    2. int vfprintf(FILE *fp, char const *format, va_list arg);
+    3. int vdprintf(int fd, char const *format, va_list arg);
+    4. int vsprintf(char *buf, char const *format, va_list arg);
+    5. int vsnprintf(char *buf, size_t size, char const *format, va_list arg);
+
+**** 格式化输入
+
+    格式化输入任务由scanf函数族完成:
+
+    #include <stdio.h>
+
+    1. int scanf(char const *format, ...);
+    分析标准输入中的字符序列, 根据format模式, 提取指定类型的变量存入到
+    各参数中.
+
+    2. int fscanf(FILE *fp, char const *format, ...);
+    分析指定流中的字符序列, 根据format模式, 提取指定类型的变量存入到各
+    参数中.
+
+    3. int sscanf(char const *buf, char const *format, ...);
+    分析buf中的字符序列, 根据format模式, 提取指定类型的变量存入到各参
+    数中.
+    
+    返回值: 成功, 返回实际存入到各参数的个数; 失败或到达文件尾, 返回
+    EOF.
+
+    类似于pritnf函数族, scanf函数组也有如下变体:
+
+    #include <stdio.h>
+    #include <starg.h>
+    
+    1. int vscanf(char const *format, va_list arg);
+    2. int vfscanf(FILE *fp, char const *format, va_list arg);
+    3. int vsscanf(char const *buf, char const *format, va_list arg);
+** 定位流
+
+   有3组函数用来定位标准I/O流:
+
+   #include <stdio.h>
+
+   1. long ftell(FILE *fp);
+   返回流fp的文件位置指示器的当前值(出错返回-1). 
+   
+   2. int fseek(FILE *fp, long offset, int whence);
+   设置流fp的文件位置指示器的当前值, 基于起始位置whence和偏移量offset.
+   offset和whence的解释方式同lseek. 返回值: 成功, 返回0; 出错, 返回-1.
+
+   3. off_t ftello(FILE *fp);
+   同ftell. 只是返回值类型变为off_t.
+   
+   4. int fseeko(FILE *fp, off_t offset, int whence);
+   同fseek. 只是偏移量offset类型变为off_t.
+   
+   5. int fgetpos(FILE *fp, fpos_t *pos);
+   将流fp的文件位置指示器的当前值放入pos指向的对象中. 
+   返回值: 成功, 返回0; 出错, 返回-1.
+
+   6. int fsetpos(FILE *fp, fpos_t const *pos);
+   将流fp的文件位置指示器的当前值设置为pos所指对象的值.
+   返回值: 成功, 返回0; 出错, 返回-1.
+
+   7. void rewind(FILE *fp);
+   将流fp的文件位置指示器的值设置为文件的起始位置.
+
+** 临时文件
+   
+    ISO C通过以下函数创建临时文件:
+
+    #include <stdio.h>
+
+    1. char *tmpnam(char *buf);
+    用于产生一个独一无二的(临时)文件名, 该文件名通常具有
+    "/tmp/fileXXXXXX"的形式. 当buf为NULL时, 产生的文件名将存入一个静态
+    区域中, 返回指向该区域的指针(每次调用函数将会重写该区域). 若buf不
+    为NULL, 则其应该指向长度至少为'L_tmpnam'(Linux中为20)的数组, 产生
+    的文件名将存入该数组中, 并返回buf. tmpnam函数最多可以产生
+    TMP_MAX(Linux中为238328)个文件名. (注: 该函数在UNIX系统中已被弃用).
+
+    2. FILE *tmpfile(void);
+    以"wb+"模式创建一个临时二进制文件, 并返回该文件的文件指针(若出错将
+    返回NULL). 在关闭文件或程序结束时, 该文件将被自动删除. tmpfile通常
+    的实现方法是: 先调用tmpnam产生一个临时文件名, 用该文件名创建一个文
+    件并立刻对其unlink.
+
+    UNIX下建议使用以下两个函数创建临时目录/文件:
+    
+    #include <stdlib.h>
+
+    1. char *mkdtemp(char *template);
+    根据绝对路径字符串template, 创建临时目录. template必须为字符数组,
+    且最后6个字符必须为"XXXXXX", 例如:"/tmp/dirXXXXXX", 函数会将这6个
+    字符替换成独一无二的字符串. 创建的临时目录具有S_IRWXU权限(受调用进
+    程umask的影响).
+
+    返回值: 成功, 返回路径字符串template; 失败, 返回NULL.
+
+    2. int mkstemp(char *template);
+    根据绝对路径字符串template(模式同上), 以S_IRUSR | S_IWUSR权限创建
+    临时文件并以读写方式打开, 返回对应的文件描述符. 注: 创建的临时文件
+    不会被自动删除.
+
+    返回值: 成功, 返回对应的文件描述符; 失败, 返回-1.
+** 内存流
+
+   内存流是标准I/O流, 但是它并不与底层文件相关联. 注: 内存流只适用于文
+   本数据, 并不适用于二进制数据.
+
+   #include <stdio.h>
+
+   FILE *fmemopen(void *buf, size_t size, char const *mode);
+
+   以mode方式创建一个内存流, 以及与流相关联的大小为size的缓冲区buf(注:
+   这里的内存buf充当了"文件"的作用, 必须对内存流进行冲洗后才有内容写入
+   到buf中). 若buf为NULL, 则系统将自动分配大小为size的缓冲区, 且在流被
+   关闭时自动释放该缓冲区(主要用于将数据写入一个临时缓冲区中然后读取).
+   其中mode类似于fopen, 只是当以"追加写"方式打开时, "文件"的初始位置将
+   设置为buf中的一个null字符处(若不存在null字符, 则设置为buf结尾的后一
+   个字节处, 此时将无法向buf中写入数据); 否则, 设置为buf起始处. 每次写
+   入数据时, 将在末尾添加一个null字符. 当内存流用于读时, 将读取buf中的
+   内容, 只有当读取超过buf末尾时, 才会返回EOF.
+
+* 第六章 系统数据文件和信息
+** /etc/passwd
+
+   该文件所有用户可读, 只有root可以改. 文件的每一行包括以下字段:
+
+   用户名:口令:用户ID:组ID:注释性信息:用户主目录:用户登录Shell
+
+   这些字段分别对应于"struct passwd"类型结构的各个成员:
+
+   struct passwd {
+       char   *pw_name;       /* 用户名*/
+       char   *pw_passwd;     /* 口令 */
+       uid_t   pw_uid;        /* 用户ID */
+       gid_t   pw_gid;        /* 组ID */
+       char   *pw_gecos;      /* 用户注释信息 */
+       char   *pw_dir;        /* 主目录 */
+       char   *pw_shell;      /* 用户Shell */
+   };
+
+   用以下函数获取/etc/passwd文件中的项(一行):
+
+   #include <pwd.h>
+
+   1. struct passwd *getpwuid(uid_t uid);
+   根据用户ID, 将/etc/passwd文件中的对应项存入一个"struct passwd"结构
+   体中, 返回该结构体指针.
+
+   2. struct passwd *getpwnam(char const *name);
+   根据用户名, 将/etc/passwd文件中的对应项存入一个"struct passwd"结构
+   体中, 返回该结构体指针.
+
+   以上两个函数的返回值: 成功, 返回对应指针; 出错, 返回NULL.
+
+   3. struct passwd *getpwent(void);
+   根据/etc/passwd文件指针的位置, 将当前项存入一个"struct passwd"结构
+   体中, 返回该结构体指针. 注: 在调用getpwent查看完相关文件后, 一定要
+   用endpwent关闭相关文件.
+
+   返回值: 成功, 返回对应指针; 出错或遇到文件尾, 返回NULL.
+
+   4. void setpwent(void);
+   将/etc/passwd文件的文件指针设置为文件的起始位置.
+
+   5. void endpwent(void);
+   关闭相关文件.
+
+** /etc/shadow
+
+   该文件只有root用户可读写. 文件的每一行包括以下字段:
+   
+   用户名:被加密口令:上次修改口令(距1970.1.1)的天数:两次修改口令所允许
+   的最少间隔天数:两次修改口令所允许的最多间隔天数(即口令有效期):提前
+   多少天警告用户口令将过期:口令过期之后多少天禁用此用户:用户过期日期
+   (距1970.1.1的天数):保留字段.
+
+   这些字段分别对应于"struct spwd"类型结构体中的各个成员:
+
+   struct spwd {
+       char *sp_namp;     /* 用户名 */
+       char *sp_pwdp;     /* 加密口令 */
+       long  sp_lstchg;   /* 上次修改口令日期 */
+       long  sp_min;      /* 修改口令最少间隔天数*/
+       long  sp_max;      /* 口令有效期 */
+       long  sp_warn;     /* 提前警告用户的天数 */
+       long  sp_inact;    /* 过期后多少天禁用用户*/
+       long  sp_expire;   /* 用户过期日期 */
+       unsigned long sp_flag;  /* 保留字段 */
+   };
+   
+     
+   用以下函数获取/etc/shadow文件中的项(一行):
+
+   #include <shadow.h>
+
+   1. struct spwd *getspnam(char *const name);
+   根据用户名, 将/etc/shadow文件中的对应项存入一个"struct spwd"结构
+   体中, 返回该结构体指针.
+
+   2. struct spwd *getspent(void);
+   根据/etc/shadow文件指针的位置, 将当前项存入一个"struct spwd"结构体
+   中, 返回该结构体指针. 注: 在调用getspent查看完相关文件后, 一定要用
+   endspent关闭相关文件.
+
+   返回值: 成功, 返回对应指针; 出错或遇到文件尾, 返回NULL.
+
+   3. void setspent(void);
+   将/etc/shadow文件的文件指针设置为文件的起始位置.
+
+   4. void endspent(void);
+   关闭相关文件.
+
+** /etc/group
+   
+   该文件所有用户可读, 只有root可以改. 文件的每一行包括以下字段:
+
+   组名:加密组口令:组ID:指向组成员名的指针数组(NULL结尾)
+
+   这些字段分别对应于"struct group"类型结构的各个成员:
+
+   struct group {
+       char   *gr_name;        /* 组名 */
+       char   *gr_passwd;      /* 组口令 */
+       gid_t   gr_gid;         /* 组ID */
+       char  **gr_mem;         /* 成员名数组*/
+   };
+
+   
+   可以用以下函数获取/etc/group文件中的项(一行):
+
+   #include <grp.h>
+
+   1. struct group *getgrgid(gid_t gid);
+   根据组ID, 将/etc/group文件中的对应项存入一个"struct group"结构体中,
+   返回该结构体指针.
+
+   2. struct group *getgrnam(char const *name);
+   根据组名, 将/etc/group文件中的对应项存入一个"struct group"结构体中,
+   返回该结构体指针.
+
+   以上两个函数的返回值: 成功, 返回对应指针; 出错, 返回NULL.
+
+   3. struct group *getgrent(void);
+   根据/etc/group文件指针的位置, 将当前项存入一个"struct group"结构体
+   中, 返回该结构体指针. 注: 在调用getgrent查看完相关文件后, 一定要用
+   endgrent关闭相关文件.
+
+   返回值: 成功, 返回对应指针; 出错或遇到文件尾, 返回NULL.
+
+   4. void setgrent(void);
+   将/etc/group文件的文件指针设置为文件的起始位置.
+
+   5. void endgrent(void);
+   关闭相关文件.
+** 附属组ID
+
+   每个用户可以最多属于NGROUPS_MAX(通常为16)个附属组.
+
+   可以用以下函数获取和设置附属组ID:
+
+   #include <unistd.h>
+
+   1. int getgroups(int n, gid_t list[]);
+   将调用进程的所有附属组ID放入长为n的list中. n必须确保能容纳该进程的
+   附属组ID总数, 否则, 将出错. 若n为0, 则不修改list, 返回该进程的附属
+   组ID总数.
+
+   返回值: 成功, 返回附属组ID数; 出错, 返回-1.
+
+   2. int setgroups(int n, const gid_t list[]);
+   将调用进程的附属组ID设置为list中的ID(需要root权限). n为list中的ID数,
+   n不能大于NGROUPS_MAX.
+   
+   3. int initgroups(char *const username, gid_t basegid);
+   初始化用户的附属组ID(包括用户的基本组basegid).
+
+   以上两个函数的返回值: 成功, 0; 出错, 返回-1.
+** 时间和日期
+
+   Linux中提供的基本时间是距Epoch(1970年1月1日 00:00:00)的秒数, 用
+   time_t(long int)表示.
+
+   #include <time.h>
+
+   time_t time(time_t *tloc);
+   返回当前时刻距Epoch的秒数. 若tloc不为NULL, 则将该秒数也存入tloc所指
+   的变量内. 
+   
+   返回值: 成功, 返回秒数; 出错, 返回-1.
+
+
+   struct timespec {
+       time_t tv_sec; /*秒*/
+       long tv_nsec; /*纳秒*/
+   }   
+
+   #include <sys/time.h>
+
+   clockid_t可以由以下标识符指定:
+
+   1. CLOCK_REALTIME: 自Epoch的秒数(可设定).
+   2. CLOCK_MONOTONIC: 自Epoch的秒数(不可设定).
+   3. CLOCK_PROCESS_CPUTIME_ID: 调用进程的CPU时间.   
+   4. CLOCK_THREAD_CPUTIME_ID: 调用线程的CPU时间.   
+
+   1. int clock_gettime(clockid_t clock_id, struct timespec *tsp);
+   获取由clock_id指定时钟的时间, 将其存入tsp所指的struct timespec结构
+   中.
+   
+   2. int clock_settime(clockid_t clock_id, struct timespec *tsp);
+   将clock_id指定时钟的时间, 设置为tsp所指的struct timespec结构中的时间.
+
+   3. int clock_getres(clockid_t clock_id, struct timespec *res);
+   获取由clock_id指定时钟的精度, 将其存入res所指的struct timespec结构
+   中.
+
+   以上三个函数的返回值: 成功, 返回0; 出错, 返回-1.
+* 进程
+** 环境变量
+   
+   全局变量"environ"为字符指针数组(extern char **environ), 其元素为指
+   向环境变量字符串(形式为"NAME=value")的指针, 数组最后一个元素为
+   NULL. 注: 环境表environ通常位于进程地址空间的最高位, 无法进行扩展.
+   因此, 当向环境表中添加环境变量时, 系统会将环境表移至进程堆中进行扩
+   展.
+
+   #include <stdlib.h>
+
+   1. char *getenv(char *name);
+   返回与环境变量name相关联的value的指针. 若name不存在, 返回NULL.
+
+   2. int putenv(char *str);
+   将形式为"name=value"的字符串str, 直接添加到环境表中. 若name已经存在,则
+   将其覆盖. 注: str不能是自动变量. 返回值: 成功, 返回0; 出错, 返回
+   非0.
+
+   3. int setenv(char const *name, char const *value, int overwrite);
+   若name不存在, 则将"name=value"填加到环境表中. 若name已经存在, 且
+   overwrite非0, 则将name的值修改为value; 若overwrite为0, 则name的值不
+   变, 仍返回成功(0). 注: 该函数会自动为"name=value"字符串分配空间.
+
+   4. int unsetenv(char const *name);
+   从环境表中删除变量name. 若name不存在, 则不进行任何修改, 仍返回成功.
+
+   以上两个函数的返回值: 成功, 返回0; 出错, 返回-1.
+
+   5. int clearenv(void);
+   清空环境表, 并将environ置为NULL. 返回值: 成功, 返回0; 出错, 返回非0.
+
+   注:以上所有函数只能影响当前进程及其衍生或调用的子进程的环境变量, 无
+   法改变其父进程的环境变量.
+
+** 内存分配(malloc)
+
+   #include <stdlib.h>
+
+   1. void *malloc(size_t size);
+   分配size字节大小的存储空间, 不初始化.
+
+   2. void *calloc(size_t num, size_t size);
+   分配num个size字节大小的存储空间, 并将其初始化为0. 
+   
+   3. void *realloc(void *p, size_t size);
+   将p所指向的存储空间调整为size字节大小. 若p为NULL, 则功能同malloc.
+   
+   以上3个函数的返回值: 成功, 返回指向新分配区域的指针; 出错, 返回
+   NULL.
+   
+   4. void free(void *p);
+   释放p所指向的存储空间.   
+** 跨函数(栈帧)跳转(setjmp/longjmp)
+
+   setjmp和longjmp函数可以进行跨函数跳转, 即可以跨过(抛弃)函数调用栈上
+   的若干栈帧, 直接返回回到调用路径上的某个函数. 通常用于深层嵌套函数
+   中的出错处理.
+
+   #include <setjmp.h>
+
+   jmp_buf env;
+
+   1. int setjmp(jmp_buf env);
+   setjmp函数将当前栈帧的上下文信息保存在jmp_buf类型的(全局)变量env中,
+   供稍后的longjmp函数使用. 返回值: 直接调用, 返回0; 从longjmp中返回时,
+   返回longjmp的第二个参数. 同一个setjmp可以对应多个longjmp函数, 可由
+   longjmp的第二个参数进行区分.
+
+   2. void longjmp(jmp_buf env, int val);
+   跳转到先前保存env信息的setjmp函数处, 非零值val将作为对应setjmp函数
+   的返回值. (若val为0, 将被自动替换为1).
+
+   注: setjmp与longjmp通过全局变量env相关联. 当longjmp返回时, 存储在寄
+   存器中的变量(register变量, 及使用优化编译后的自动变量)将恢复到
+   setjmp时的值. 若不想使值回滚, 则需要将(自动)变量声明为volatile类型.
+
+** 进程资源
+** 进程标识(pid)
+
+   每个进程都有一个唯一的进程ID(pid), 可以用以下函数获取与进程相关的
+   id:
+
+   #include <unistd.h>
+
+   1. pid_t getpid(void);
+   返回调用进程的pid.
+
+   2. pid_t getppid(void);
+   返回调用进程父进程的pid.
+
+   3. uid_t getuid(void);
+   返回调用进程的real-user-id.
+
+   4. uid_t geteuid(void);
+   返回调用进程的effective-user-id.
+
+   5. gid_t getgid(void);
+   返回调用进程的real-group-id.
+
+   6. gid_t getegid(void);
+   返回调用进程的effective-group-id.
+
+   注: 以上所有函数都没有出错返回.
+
+   Linux系统pid为1的进程为/lib/systemd/systemd.
+
+** 进程创建(fork/exec)
+*** fork
+   
+    #include <unistd.h>
+
+   1. pid_t fork(void);
+   创建一个新进程. 返回值: 父进程返回子进程的pid, 子进程返回 0; 出错,
+   返回 -1.
+   
+   父子进程共享代码段. 数据段, 堆, 栈内容采用写时复制, 即先只复制父进
+   程的页表(及其它进程管理结构)到子进程中, 若某一时刻, 某进程要求修改
+   数据, 则在为其分配内存, 同时修改相应进程中的页表.
+
+   2. pid_t vfork(void);
+   功能及返回值同fork. 与fork的区别在于: 父进程在子进程执行exit或exec
+   之后才允许运行; 子进程在执行exec或exit之前, 与父进程共享全部地址空
+   间(即若此时在子进程中改变数据, 将体现在父进程中.
+
+*** exec
+
+    #include <unistd.h>
+
+   可以用exec函数族来将当前进程(不一定是子进程)的地址空间替换为指定程
+   序:
+   
+   1. int execl(char const *path, char const *arg0, char const *arg1,
+      ..., NULL);
+   将当前进程映像替换为路径path所指定的程序, 并赋予参数arg0, arg1, ...
+
+   2. int execle(char const *path, char const *arg0, char const *arg1,
+      ..., NULL, char *const envp[]);
+   将当前进程映像替换为路径path所指定的程序, 并赋予参数arg0, arg1,
+   ..., 并赋予环境向量envp.
+ 
+   3. int execlp(char const *file, char const *arg0, char const *arg1,
+      ..., NULL);
+   将当前进程映像替换为文件名file(路径通过搜索环境变量PATH得到)所指定
+   的程序, 并赋予参数arg0, arg1, ....
+
+   4. int execv(char const *path, char *const argv[]);
+   将当前进程映像替换为路径path所指定的程序, 并赋予参数向量argv中的参
+   数.
+
+   5. int execve(char const *path, char *const argv[], char *const
+      envp[]);
+   将当前进程映像替换为路径path所指定的程序, 并赋予参数向量argv中的参
+   数, 和环境向量envp.
+
+   6. int execvp(char const *file, char *const argv[]);
+   将当前进程映像替换为文件名file(路径通过搜索环境变量PATH得到)所指定
+   的程序, 并赋予参数向量argv.
+
+   7. int fexecve(int fd, char *const argv[], char *const envp[]);
+   将当前进程映像替换为文件描述符fd所指定的程序, 并赋予参数向量argv和
+   环境向量envp.
+
+   以上函数的返回值: 成功, 不返回任何值; 出错, 返回-1.
+
+** 进程终止(exit)
+
+   #include <stdlib.h>
+
+   1. void exit(int status);
+   先执行清理操作(执行由atexit函数注册的函数,以及关闭流等), 然后退出.
+   该函数为库函数, 会调用_exit或_Exit函数.
+
+   2. int atexit(void (*fun)(void));
+   进程退出前将执行由atexit注册的函数, 执行时的次序与注册时的次序相反.
+   返回值: 成功, 返回0; 出错, 返回非0.
+   
+   3. void _Exit(int status);
+   不执行任何清理工作, 直接退出进程, 并进入内核. 该函数为系统调用.
+   
+
+   #include <unistd.h>
+
+   4. void _exit(int status);
+   同_Exit函数. 该函数为系统调用.
+
+** 进程等待(wait)
+
+   调用进程可用wait函数族来检查其子进程的状态变化(但子进程无法用其检查
+   父进程的状态变化). 若子进程的状态已经发生变化, 调用wait函数族将立刻
+   返回.
+
+   若子进程先于父进程终止, 且父进程未(通过wait函数族)对其回收, 则子进
+   程将变为"僵尸"进程. 僵尸进程的内存和打开文件均已被回收, 但其pid, 终
+   止状态, 以及CPU使用时间等信息会被保留, 仍会占用进程表中的一项.  若
+   父进程终止, 则其(包括僵尸状态的)子进程将变为孤儿进程, 会被init进程
+   回收.
+
+   #include <sys/wait.h>
+   
+   1. pid_t wait(int *status_p)
+   阻塞调用进程, 直到其某个子进程终止, 将其终止状态存入status_p所指向
+   的整型变量中(若不关心终止状态, 则令status_p为NULL). 返回该子进程的
+   pid; 若调用进程没有子进程, 返回-1, 同时errno被置为ECHILD.
+   
+   2. pid_t waitpid(pid_t pid, int *status_p, int options);
+   阻塞调用进程, 直到由pid指定的子进程的状态发生变化(由options指定),
+   将其状态存入status所指向的整型变量中(若不关心其状态, 则令status_p为
+   NULL), 返回该子进程的pid; 若pid指定的子进程不存在, 或此进程存在, 但
+   不是调用进程的子进程, 则waitpid返回-1, 且errno被设置为ECHILD.
+
+   参数pid可为以下值:
+   (1) pid == -1 : 等待任意子进程.
+   (2) pid > 0   : 等待进程ID等于pid的子进程.
+   (3) pid == 0  : 等待进程组ID与调用进程相同的子进程. 
+   (4) pid < -1  : 等待进程组ID等于|pid|的子进程.
+   
+   参数options可为以下值的"按位或":
+
+   (1) WNOHANG    : 若没发现子进程退出, 则立即返回. 返回值为0.
+   (2) WCONTINUED : 若某个被暂停的(stopped)子进程被SIGCONT信号重新唤醒,
+                    则返回.
+   (3) WUNTRACED  : 若某个子进程被暂停(但没有被ptrace跟踪), 则返回.
+   
+   注: 若不想使用以上宏, 则将options设为0. 
+   wait(NULL) <==> waitpid(-1, NULL, 0)
+
+   
+   若将进程状态存入变量status, 则可通过以下(互斥)宏来检查:
+
+   (1) WIFEXIT(status) : 当子进程正常终止时(即调用exit/_exit, 或在main
+   中return)为真. 此时, 可用宏WEXITSTATUS(status), 来获取子进程传递给
+   exit/_exit/return的参数.
+
+   (2) WIFSIGNALED(status): 当子进程被信号终止时为真(异常终止). 此时,
+   可用宏WTERMSIG(status), 来获取导致子进程终止的信号值. 同时, 若子进
+   程产生了core dump, 则宏WCOREDUMP(status)为真.
+
+   (3) WIFSTOPPED(status): 当子进程被信号暂停(stopped)时为真. 此时, 可
+   用宏WSTOPSIG(status), 来获取导致子进程暂停的信号值.
+
+   (4) WIFCONTINUED(status): 当进程被信号SIGCONT重新唤醒时为真.
+
+   3. int waitid(idtype_t idtype, id_t id, siginfo_t *info_p, int options);
+   成功, 返回0; 出错, 返回-1.   
+
+   参数idtype可为以下值:
+   (1) P_PID  : 等待进程id等于参数id的子进程.
+   (1) P_PGID : 等待进程组id等于参数id的子进程.
+   (1) P_ALL  : 等待任意子进程, 参数id被忽略.
+
+   参数options同wait, 只是多了WNOWAIT: 保持子进程的当前状态, 留给后续
+   的wait函数族处理.
