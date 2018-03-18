@@ -1,0 +1,893 @@
+* 执行代码
+
+   C-x-e : 执行光标前一条语句(eval-last-sexp).
+   C-M-x : 执行光标所在函数(eval-defun).
+   M-x,eval-region : 执行所选区域中的代码.
+
+* 字符串
+
+   带双引号的字符序列: "abc", "cde".
+    1. 拼接 
+    (concat s1 s2 s3 ...): 将字符串s1, s2, s3, ...连接在一起并返回.
+    
+    (concat '(?CH1 CH2 CH3 ...)) : 将字符列表'(?CH1 CH2 CH3 ...)转换为
+    字符串"CH1CH2CH3...".
+    
+    (concat [CH1 CH2 CH3 ...]) : 将字符向量[CH1 CH2 CH3 ...]转换为字符
+    串"CH1CH2CH3...".
+
+    2. 返回子串
+    (substring STR START &optional END): 返回STR中位于[START, END-1]部
+    分的子串. 起始位置START从0开始. 若没有终止位置END参数, 则默认到字
+    符串尾. STR参数也可以是向量, 此时每个分量看做一个"字符".
+
+    (symbol-name SYMBOL) : 返回符号SYMBOL所对应的字符串.
+    (length STR) : 字符串STR所包含字符的数目.
+
+    3. 在字符串中搜索: 
+    (string-match REGEXP STRING &optional START) : 在STRING中从START开
+    始(缺省为0)搜索匹配REGEXP的子串, 返回该子串的首字符下标. 若搜索失
+    败, 则返回nil.
+
+
+    (match-string )
+
+    4. 在当前buffer中搜索
+    
+    (search-forward STR &optional BOUND NOERROR COUNT) :
+    从光标处开始向右搜索STR, 若搜索成功则将光标置于目标字符串的最后一个
+    字符之后. 若是反向搜索, 择将光标置于目标字符串第一个字符处. 返回光标最后所在位置.
+    
+    BOUND是当前buffer中的某个位置, 用于限制搜索范围不超过该位置: nil表示无限制,即搜索全文.
+    NOERROR表示搜索失败后, 所采取的行动:为nil则报错,为t则返回nil.
+    COUNT为一个数字,表示搜索STR的第几次出现, 默认为1.负数表示反向搜索..
+
+   (re-search-forward) : 为以上函数的正则表达式版本.
+   
+   (search-backword) : 反向搜索字符串.
+   (re-search-backward) : 为以上函数的正则表达式版本.
+   
+   变量 'case-fold-search' 设置是否大小写敏感, 非nil为不敏感.
+
+   4. 在字符串中替换
+   (replace-regexp-in-string REGEXP STR1 STR2) : 在STR2中将所有匹配
+   REGEXP的部分替换为STR1, 并返回替换后的字符串.
+
+   5. 查找后替换
+   (replace-match NEWSTR) : 将最后一次查找到的内容, 替换为NEWSTR.
+
+   6. 分割提取
+    (split-string STR &optional SEPARATOR): 根据分隔符SEPARATOR将
+    STRING分割成子串(子串不包含分隔符),返回由子串构成的list. SEPARATOR
+    是字符串(可以是正则表达式).
+
+   7. 格式化
+   (format "%s %d" STR NUM): 类似与printf中的构造字符串.
+   
+   8. 构造
+   (make-string N ?CH) : 产生由N个CH字符组成的字符串.
+   (string ?CH1 ?CH2 ?CH3 ...) : 产生字符串“CH1CH2CH3...".
+
+   9. 转换
+   (vconcat STR) : 将字符串转换为字符向量, 向量的分量为每个字符所对应
+   的数值.
+   
+   (append STR nil) : 将字符串转换为字符列表, 列表的分量为每个字符所对
+   应的数值.
+   
+   (string-to-char STR) : 返回STR第一个字符的ASCII值.
+   (char-to-string CH) : 将字符CH转化为单字符字符串.
+
+   (downcase STR-or-CH) : 将字符串STR或字符CH转换为小写。
+   (upcase STR-or-CH) : 将字符串STR或字符CH转换为大写。
+   (capitalize STR) : 将字符串STR中每个单词首字母大写，其它字符小写.
+   (upcase-initials STR) : 将字符串STR中每个单词首字母大写，其它字符不变.
+
+* 字符
+
+   ?字符 : 该字符的ASCII值. 例如: ?a, ?\(, ?\), ?\\.
+
+* 数
+
+   elisp中只有整数和浮点数两种数字类型.
+   
+   可表示的整数范围由:
+   [most-negative-fixnum, most-positive-fixnum] 确定.
+
+   (eql NUM1 NUM2): 判断数NUM1和数NUM2的类型和值是否同时相同.
+   
+**  十进制
+
+     -21, 0, 157.
+
+** 二进制
+
+     以#b开头: #b1001001
+    
+** 八进制
+    
+    以#o开头: #o377
+
+** 十六进制
+   
+    以#x开头: #xFFCA
+
+** 浮点数
+
+    64位精度: -10.004, 3.1415926
+    注: "2." 是整数, "2.0" 是浮点数.
+
+** 科学计数
+
+    6.02e23, 5e-10
+   
+* 布尔值
+
+   假值: nil, ().
+   真值: 其他一切非nil对象, 包括: 0, 空字符串等.
+   
+* 数组(向量)
+   
+   由[]括起来, 元素之间由空白字符分隔.
+   数组中的元素可以是混合类型, 并且允许嵌套数组.
+   
+   [-2 0 3 5 13 4]
+   ["aa" "bb" "cc" "dd"]
+   ["fds" 22 89.4 [3 "vv"]]
+
+   通常用make-vevtor来构建数组.
+
+* 列表(list)
+  
+  (list ARG1 ARG2 ...) : 将参数构成列表返回.
+
+* 有序对(pair)
+
+   形式为: (第一个元素 . 第二个元素)
+
+   例如: (1 . 2), (?a . 1), (1 . nil) <==> (1), (nil . nil) <==> (nil)
+
+   (car (1 . 2)): 1
+   (cdr (1 . 2)): 2
+
+   可以用于构建关联列表(alist), 其本质是二元组列表:
+
+   '( (apple . "red")
+      (banana . "yellow")
+      (orange . "orange"))
+      
+   
+* 变量
+** 全局变量
+    
+    (setq 变量1 值1 变量2 值2 ...) : 给全局变量赋值.
+    
+** 局部变量
+
+    (let ((变量1 值1) 变量2 (变量3 值3) ... )
+         (body)
+    )
+    在let的范围内给变量初始化值, 变量2被初始化为nil.
+
+    let*和let类似, 只是在定义后面的变量时, 可以使用前面刚刚定义过的变
+    量.
+
+* 条件语句
+** if
+
+    (if 条件
+       为真时执行语句
+       为假时执行语句
+       为假时执行语句
+           .....
+     )
+     
+     注: 若条件为真时, 需要执行多条语句, 则应用progn.
+     if语句可嵌套. 返回最后一条语句的值.
+
+     (if a a b) <==> (or a b)
+
+** cond
+
+    (cond (条件1 执行体)
+          (条件2 执行体)
+            ......
+    )
+    
+    依次测试条件, 第一个非nil条件的执行体将被执行.
+    若所有条件均为nil, 则返回nil.
+
+** when/unless
+    
+    when和unless均为lisp宏.
+
+    (when 条件
+       为真时执行语句
+       为真时执行语句
+           ....
+    ) 
+       等价于:
+   
+   (if 条件
+      (progn 
+         为真时执行语句
+         为真时执行语句
+            ....
+       )
+    )
+
+    (unless 测试条件
+         为假时执行语句
+	 为假时执行语句
+	 ...)
+
+* 循环语句
+
+** while
+
+    (while (条件)
+         (执行体)) 
+    若条件为真, 则执行执行体.
+
+** dolist
+
+    (dolist (CAR-ELEMENT LIST [return-value])
+          (BODY))
+     遍历LIST, 将LIST中的当前元素赋给CAR-ELEMENT, 并执行BODY.
+     最后执行return-value(可选), 并将其值返回.
+
+     
+** dotimes
+
+    (dotimes (i n [return-value])
+        (执行体))
+    i从0到n-1递增, 执行执行体n次.
+    最后执行return-value(可选), 并将其值返回.
+
+* 数学函数
+
+    (+ n1 n2 n3 ...) : n1+n2+n3+...
+    (- n1 n2 n3 ...) : n1-n2-n3-...
+    (* n1 n2 n3 ...) : n1*n2*n3*...
+    (/ n1 n2 n3 ...) : n1/n2/n3/...., 整数相除, 结果向下取整.
+    (% n1 n2) : n1 % n2
+    (- n) : -n.
+    (1+ n) : 返回n+1, 原值n不变.
+    (1- n) : 返回n-1, 原值n不变.
+
+    (exp n) : e的n次方.
+    (expt n m) : n的m次方.
+    (abs n) : n的绝对值.
+    (sqrt n) : n的平方根.
+    (log n &optional BASE) : 以BASE为底, n的对数. 默认BASE为e.
+    (log10 n) : 以10为底, n的对数.
+    (logb n) : 以2为底, n的对数.
+
+    三角函数: sin, cos, tan, asin, acos, atan.
+
+    (random t) : 初始化随机数种子.否则, 每次产生的随机数相同.
+
+    (random &optional LIMIT) : 产生位于 [most-negative-fixnum,
+    most-positive-fixnum] 之间的一个随机数. 若有LIMIT, 则产生[0,
+    LIMIT)之间的随机数.
+
+* 布尔函数
+
+   (not OBJ) : 若OBJ为nil，返回t；否则, 返回nil. 等价于(null obj).
+   
+   
+   (or 参数1 参数2 ...) : 依次求解各个参数,返回第一个非nil的参数值;若
+   所有参数值均为nil,返回nil.
+   
+   (and 参数1 参数2 ...) : 依次求解各个参数,若某个参数的值为nil,则返回
+   nil;若所有参数均为非nil,返回最后一个参数的值.
+   
+
+* 类型转换函数
+   
+   (string-to-number STR) : 将字符串STR转化为对应的数(整数或浮点数).
+   (number-to-string NUM) : 将数NUM(整数或浮点数)转化成对应字符串.
+
+
+   (float INT) : 将整数INT转化为浮点数.
+   (truncate FLOAT) : 向0取整.
+   (floor FLOAT) : 向下取整.
+   (ceiling FLOAT) : 向上取整.
+   (round FLOAT) : 四舍五入.
+   
+* buffer相关
+    
+    (buffer-name &optional BUF) : 以字符串形式,返回指定buffer对象(缺省
+    为当前buffer)的名称.
+
+    (read-buffer PROMPT DEFAULT-BUF-NAME t/nill) : 返回读入的buffer名
+    称. 若输入空串，则返回第二个参数。第三个参数若为t, 则必须输入已存
+    在的buffer名；否则，允许输入不存在的buffer名.
+
+    (buffer-file-name &optional BUF) : 以字符串形式, 返回指定buffer对
+    象(缺省为当前buffer)所关联文件的完整路径;若不关联任何文件, 则返回
+    nil.
+
+    (current-buffer) : 返回当前buffer对象.
+
+    (buffer-size &optional BUF) : 返回指定buffer大小(字符数)(缺省为当
+    前buffer).
+
+    (other-buffer) : 返回最近访问的buffer对象.
+
+    (with-temp-buffer BODY) : 创建一个临时buffer使其变为当前buffer, 在
+    其中执行BODY, 返回BODY最后一条语句的值. 然后删除临时buffer, 恢复以
+    前的buffer.
+
+    (with-current-buffer BUFFER-OR-NAME BODY) : 将指定buffer暂时作为当
+    前buffer来执行BODY, 返回BODY中最后一条语句的值. 最后恢复以前的
+    buffer. 注: (with-current-buffer BUFFER-OR-NAME BODY) <==>
+    (save-current-buffer (set-buffer BUFFER-OR-NAME) BODY).
+
+    (save-current-buffer BODY) : 记录当前buffer, 然后执行BODY, 最后恢
+    复当前buffer. 返回BODY中最后一条语句的值.
+
+    (save-buffer) : 保存当前buffer内容到其关联文件.
+
+    (kill-buffer &optional BUFFER-OR-NAME) : 关闭指定buffer(对象或名称
+    字符串). 缺省为关闭当前buffer.
+
+    (switch-to-buffer BUFFER-OR-NAME) : 在当前窗口显示指定buffer(若用
+    名称指定的buffer不存在, 则产生新的空白buffer).
+
+    (set-buffer BUFFER-OR-NAME) : 将指定buffer(名称或对象)变为当前
+    buffer, 并返回该buffer对象. 并不将显示切换到该buffer.
+
+    (get-buffer BUFFER-OR-NAME) : 返回指定buffer对象, 若不存在则返回nil.
+    
+    (get-buffer-create BUFFER-OR-NAME) : 返回指定buffer对象, 若不存在
+    则新建buffer.
+    
+    (erase-buffer) : 清除当前buffer的内容.
+    
+    (barf-if-buffer-read-only) : 若当前buffer为只读,则警报并终止后续过程.
+
+    (bufferp OBJ) : 如果OBJ为某个buffer对象,返回真.
+
+    (narrow-to-region START END) : 将对当前buffer的操作, 限制在START与
+    END之间的部分.
+    
+    (save-restriction BODY) : 保存当前buffer当前的状态, 执行完BODY后恢
+    复. 与(narrow-to-region)连用.
+
+
+** 抽取buffer内容
+   
+   (buffer-string) : 以字符串的形式返回当前buffer中的所有内容.(受
+   narrow-to-region影响.)
+
+   (buffer-substring START END) : 返回当前buffer中位于[START, END-1]的
+   子串, 并包含其属性信息. START从1开始. 允许START和END以任意顺序给出.
+
+   (buffer-substring-no-properties START END) : 功能同以上函数.返回不
+   带属性的纯文本.
+
+* file和directory相关
+  
+   注:以下FILENAME均为路径字符串.
+
+** 读取文件
+
+   (insert-file-contents FILENAME) : 将由FILENAME指定的文件的内容, 插
+   入到当前buffer的光标处.
+
+** 写入到文件
+
+   (append-to-file START END FILENAME) : 将当前buffer中位于START和END
+   之间的内容, 直接添加到磁盘中的指定文件之后, 该文件不应被打开. 若文
+   件不存在则创建文件.
+
+   (with-temp-file FILENAME BODY) : 创建临时buffer, 执行BODY, 再将临时
+   buffer中的内容写入到指定文件, 删除临时buffer, 恢复先前的buffer, 返
+   回BODY最后一条语句的值.
+   
+** 拷贝/删除/重命名
+
+   (find-file FILENAME) : 创建buffer打开由FILENAME指定的文件. 若文件不
+   存在则新建同名buffer. 返回buffer对象. (速度较慢).
+
+   (find-alternate-file FILENAME) : 打开文件FILENAME, 以取代(kill)当前
+   buffer.
+
+   (write-file FILENAME &optional CONFIRM) : 将当前buffer的内容保存在
+   由FILENAME指定的文件中. 如果CONFIRM为non-nil, 则在FILENAME已经存在
+   时, 询问是否覆盖.
+
+   (rename-file FILENAME NEWNAME &optional OK-IF-ALREADY-EXISTS) : 将
+   指定文件重命名, 若NEWNAME存在, 则报错(除非第三个参数为非nil, 若第三
+   个参数为一个数, 则要求用户确认是否覆盖已存在文件; 若为其它值, 将直
+   接覆盖已存在文件).
+
+   (set-visited-file-name FILENAME) : 将当前buffer关联的文件重命名为
+   FILENAME, 同时改变当前buffer的名称为FILENAME.
+
+   (copy-file FILENAME NEWNAME &optional OK-IF-ALREADY-EXISTS) : 将指
+   定文件拷贝到新文件. 若NEWNAME存在, 则报错(除非第三个参数为非nil: 若
+   第三个参数为一个数, 则要求用户确认是否覆盖已存在文件; 若为其它值,
+   将直接覆盖已存在文件).
+
+   (copy-directory DIRNAME NEWNAME) : 将指定目录(包括其内容)拷贝到新目录.
+
+   (delete-file FILENAME &optional TRASH) : 删除指定文件(若为符号链接,
+   删除符号链接本身). 若TRASH为非nil, 则将文件放进回收站.
+
+   (delete-directory DIRNAME &optional RECURSIVE) : 删除指定目录, 若
+   RECURSIVE为t, 则同时删除目录下文件.
+
+** 路径字符串提取
+
+   (file-name-directory "/home/pz/test.txt") : 返回"/home/pz/".
+   (file-name-nondirectory "/home/pz/test.txt") : 返回"test.txt".
+   (file-name-extension "/home/pz/test.txt") : 返回"txt".
+   (file-name-sans-extension "/home/pz/test.txt") : 返回"/home/pz/test".
+   (expand-file-name "test.txt") : 返回文件的完整路径"/home/pz/test".
+   (file-relative-name "/home/pz/test.txt" "/home/") : 返回"pz/test.txt".
+
+** 其他
+
+   (file-exists-p FILENAME) : 判断文件是否存在. 存在返回t; 否则, 返回
+   nil.
+
+* 谓词函数
+** 数
+   (numberp OBJ) : 判断OBJ是否是数字.
+   (intergerp OBJ) : 判断OBJ是否是整数.
+   (floatp OBJ) : 判断OBJ是否是浮点数.
+   (zerop OBJ) : 判断OBJ是否是为0.
+   (wholenump OBJ) : 判断OBJ是否是非负整数.
+
+** 字符串
+   (stringp OBJ) : 判断OBJ是否是字符串.
+   (string-or-null-p OBJ) : 判断OBJ是否是字符串或nil.
+   (char-or-string-p OBJ) : 判断OBJ是否是字符串或字符.
+
+** 其它
+   (symbolp OBJ) : 判断OBJ是否为符号.
+  (listp OBJ) : 判断OBJ是否为列表.
+
+  (file-symlink-p PATH) : 判断PATH是否是符号链接文件.如果是，则返回该
+  链接所指向的文件路径；否则返回nil.
+
+  (yes-or-no-p PROMPT): 在minibuffer中显示PROMPT字符串, 若用户回答'y',
+   则返回t; 若键入'n',则返回nil.
+
+* 关系运算
+
+   (>,<,=,>=,<=,/= 数1 数2) : 判断两个值的算术大小关系,参数必须是数(或标记). 例如: (= 2 2.0) --> t.
+
+   (char-equal CH1 CH2) : 判断字符CH1和CH2是否相等. 当变量
+   case-fold-search为t时(通常情况)忽略大小写; 当该变量为nil时, 考虑大
+   小写.
+
+   (string<,string= S1 S2) : 判断字符串S1和S2的字典序关系.
+   (equal 对象1 对象2) : 测试两个对象是否具有相同的类型和值, 例如: (equal 3 3.0) --> nil.
+   (eq 对象1 对象2) : 测试两个Lisp对象是否是同一个内部对象(但具有不同的名字).
+   (not (equal 对象1 对象2)) : 通用的不等判断(/= 只能用于判断数).
+   
+* 列表
+  
+  由'开头的多元组(不加', 将会被当做函数调用)
+  
+  '(1 2 3)
+
+  
+    注: 以下函数均不改变原列表.
+    (car 列表) : 返回列表中的第一个元素.
+    (cdr 列表) : 返回除第一个元素以外,剩余的列表.
+    (cons 元素 列表) : 将元素插入到原列表首,构成新列表并返回.
+    (length 列表) : 返回列表中元素的个数.
+    (nthcdr n 列表) : 返回去掉前n个(n从1开始)元素后,剩余的列表.
+    (nth n 列表) : 返回列表中的第n个(n从0开始)元素. n<0时,视为0; n>列表长度时,函数返回nil.
+    (reverse 列表) : 返回反转后的列表.
+
+    注:以下函数会改变原列表.
+    (setcar 列表 元素) : 将列表的第一个元素替换为指定元素,并返回该元素.
+    (setcdr 列表1 列表2) : 将列表1中除去第一个元素剩余的列表,替换为列表2,并返回列表2.
+    (add-to-list 列表 元素 &optional append) : 将元素插入列表首, 若append非nil, 则插入到列表尾.
+    (push 元素 列表) : 将元素插入列表首.
+
+    (print 元素) : 打印列表中的某个元素.
+
+* 常用函数
+  
+** 拷贝相关
+
+    (filter-buffer-substring 起始位置 终止位置 &optional 是否删除):
+    返回当前buffer中起始位置与终止位置之间的文本. 若第三个参数非nil, 则同时
+    在buffer中删除该文本.
+    
+    (copy-region-as-kill 起始位置 终止位置):
+    将当前buffer中, 位于起始位置和终止位置之间的文本, 拷贝到剪切环中. 若上
+    一条命令也为将文本拷贝到剪切环, 则将和上次文本合并; 否则, 在剪切环
+    中新建一项.
+    
+** 剪切相关
+
+    (zap-to-char 数字 字符) : 剪切从光标起直到(并包括)第'数字'个'字符'
+    间的文本.
+
+    (kill-append 字符串 before-p) : 将字符串参数连接到剪切环最近一项之后, 若
+    before-p非nill, 则将字符串连接到剪切环最近一项之前.
+    
+** 函数参数相关
+    
+    (prefix-numeric-value 参数) : 将由(interactive "P")得到的"raw prefix argument"转换成数值.
+
+** 测试函数
+
+    (fboundp 参数) : 测试参数是否时定义过的函数.若是, 则返回t; 否则, 返回nil.
+
+** 函数调用
+
+    (funcall 函数名 参数列表) : 调用指定函数, 并将参数列表传给它.
+    
+** (highlight-lines-matching-regexp REGEXP &optional FACE)
+   
+   将当前buffer中, 匹配REGXP的行的颜色设置为FACE.
+
+** (count-lines START END) 
+
+   返回位于START和END之间区域所包含的行数.
+
+** 别名
+   
+   (defalias 'SYMBOL 'FUN) : 用SYMBOL当作函数FUN的别名.
+
+* 错误处理
+  
+  (error MESSAGE) : 终止当前运行过程, 并输出错误信息.
+
+* 插入文本
+
+  (insert STR-OR-CHAR) : 在当前光标后插入字符串或字符, 同时将光标移动
+  到插入内容之后.
+
+  (insert-file-contents FILENAME) : 将由FILENAME指定的文件的内容, 插
+  入到当前buffer的光标处.
+  
+  (insert-buffer-substring BUFFER &optional START END): 将源BUFFER(名
+  称或对象)中START和END之间的内容,拷贝到当前buffer光标后.若不指定起始
+  位置或终止位置则拷贝源buffer中的全部内容.
+  
+* 光标
+
+** 光标位置
+     
+    (point) : 返回当前buffer中光标所在位置.
+    (point-min) : 当前buffer所允许的最小光标位置.(受narrow-to-region影响)
+    (point-max) : 当前buffer所允许的最大光标位置.(受narrow-to-region影响)
+
+    (region-beginning) : 返回区域首的位置.
+    (region-end) : 返回区域尾的位置.
+    
+    (line-beginning-position) : 当前行首的位置.
+    (line-end-position) : 当前行尾的位置.
+    
+    (save-excursion BODY): 保存光标和标记位置,在执行完BODY后将其恢复,
+    同时恢复到初始buffer.
+
+** 光标移动
+
+    (goto-char POS) : 将光标移动到指定位置(数字或标记), 并返回该位置.
+    (forward-char N) : 将光标向前移动N个字符.
+    (backward-char N) : 将光标向后移动N个字符.
+
+    (beginning-of-buffer) : 光标移动到buffer起始位置,并将原光标位置保存到标记.
+    (end-of-buffer) : 光标移动到buffer末尾,并将原光标位置保存到标记.
+
+    (beginning-of-line) :光标移动到当前行首.
+    (end-of-line) : 光标移动到当前行末尾.
+
+    (beginning-of-defun) :光标移动到当前函数首.
+    (end-of-defun) : 光标移动到当前函数末尾.
+
+    (forward-line &optional N) : 将光标移动到下(N为正)/上N(N为负)行行
+    首. 缺省光标移动到下一行行首.
+    
+    (skip-chars-forward STR &optional LIM) : 将光标向右移动, 停止在第
+    一个不属于字符串STR的字符处或停止在LIM处, 返回跳过的字符数. STR可
+    以是正则表达式.  
+    (skip-chars-backword STR &optional LIM) : 以上函数的反向版本.
+
+** 取得光标下对象
+  
+  (current-word) : 返回光标下单词.
+
+  (thing-at-point THING &optional NO-PROPERTIES) : 返回光标下文本对象.
+  THING可以是 `symbol', `list', `sexp', `defun', `filename', `url',
+  `email', `word', `sentence', `whitespace', `line',
+  `number',`page'. 若NO-PROPERTIES为non-nil, 返回纯文本.
+
+  (bounds-of-thing-at-point THING) : 以(start . end)形式返回光标下对象
+  的首尾边界位置.
+
+* 窗口
+
+  (window-start) : 返回当前窗口中第一个字符在buffer中的位置.
+  (set-window-start WINDOW POS) : 将WINDOW对象的起始位置设置为POS. 若
+  WINDOW为nil,则为当前窗口. 返回POS.
+  
+  (window-hscroll) : 返回当前窗口的水平移动的列数.
+  (set-window-hscroll WINDOW COLUMN) : 将WINDOW对象的水平移动列数设置
+  为COLUMN. 若WINDOW为nil,则为当前窗口. 返回POS.
+
+
+* 时间
+
+  (current-time-string) : 以字符串形式返回当前时间及日期.
+  (format-time-string FORMATSTRING) : 以不同的形式格式化当前时间。
+
+* 高阶函数
+
+  获取函数对象:(function FUNNAME)或#'FUNNAME.  
+
+  elisp区分变量和函数，要以函数作为参数必须传递函数对象，在调用函数中
+  使用(funcall FUNOBJ arg1 arg2 ...)来调用相关函数.
+
+* lambda过程
+  (lambda (形参)
+    BODY)
+    
+  与defun定义的函数类似，只是没有与过程相关的名字。
+
+  使用funcal调用lambda过程:
+  (funcall (lambda (name) (message "name:%s" name)) "pz")
+  
+  可以将lambda过程赋值给一个变量, 然后用funcall调用该变量:
+  (setq show-name (lambda (name) (message "name:%s" name)))
+  (funcall show-name "pz")
+
+* advice
+
+
+  advice可以用于在指定函数执行之前/后，执行一段代码，可以影响函数的参数/返回值.
+
+  (defadvice FUNNAME (before/after ADVICENAME activate/inactivate compile))
+
+* marker
+
+  marker可以保存buffer中的某个特定点的相对位置, 使其不受buffer内容变化
+  的影响.
+
+  (make-marker) : 返回一个空的marker. 例如: (defvar marker
+  (make-marker): 将产生一个新的(未指向任何位置的)marker.
+
+  (set-marker MARKER POSITION &optional BUFFER)
+  在BUFFER中(缺省为当前buffer)将标记变量MARKER设置为POSITION.
+  
+  (set-marker MARKER nil) : 弃用MARKER.
+
+* 符号附属性质
+  
+  每一个符号(变量, 函数，命令)都可以拥有附属性质, 由多个(PROPNAME
+  VALUE)构成列表。
+
+  (put SYMBOL PROPNAME VALUE) : 为符号SYMBOL添加附属性质PROPNAME, 其值
+  为VALUE. 例如: (put 'man 'name 'pz).
+
+  (get SYMBOL PROPNAME) : 取得符号SYMBOL附属性质PROPNAME的值，若SYMBOL
+  无附属性质PROPNAME, 则返回nil. 例如: (get 'man 'name).
+  
+* 剪切/复制/删除/粘贴
+** 剪切
+
+  (kill-region START END) : 剪切当前buffer中位于START与END之间的文本,
+  将其保存到剪切环.
+
+** 复制
+
+  (kill-ring-save START END) : 将当前buffer中位于START与END之间的文本,
+  拷贝到剪切环.
+
+  (kill-new STR &optional REPLACE) :将STR插入到剪切环首, 若REPLACE非
+  nil, 则替换剪切环首的元素.
+
+** 删除
+   
+   (delete-region START END) : 删除当前buffer中位于START和END之间的文
+   本, 不放入剪切环, 无法找回.
+   
+   (delete-and-extract-region START END) : 功能同上, 但同时返回(带有属
+   性的)被删除文本.
+
+** 粘贴
+   
+   (yank) : 在光标后粘贴最近一次剪切/复制的文本. 
+
+* 超链接
+
+   (browse-url URL) : 在浏览器中打开URL.
+
+* 预定义变量
+
+   fill-column : 当每一行超过多少个字符后, 将自动换行.
+   this-command : 当前正在执行的函数.
+   last-command : 上一次执行的函数.
+   kill-ring : 剪切环(列表类型), 实际上是指向剪切环第一项的指针.
+   kill-ring-max : 剪切环的最大允许长度.   
+   kill-ring-yank-pointer : 指向下一次待yank的项.
+   buffer-file-name : 当前buffer所关联的文件(的绝对路径).
+   current-prefix-arg : 当前编辑命令的(原本)前缀参数(可以为数字, 负号, C-u,
+   或nil). 即(interactive "P")的返回值.
+   last-command : 记录上一个命令的名称.
+
+* 删除
+
+   (delete-char N &optional KILL) : 删除光标后N个(如果N为负数, 则删除
+   光标前字符). 如果KILL为t则剪切.
+
+   
+
+* 标记和区域
+
+** 标记(mark)
+    
+    标记是buffer中的某个位置, 用于确定区域.
+    
+    (push-mark &optional POS) : 在指定位置处(缺省为当前光标处)设置标记,
+    将原有标记放入标记环.
+
+** 区域(region)
+
+    [最近标记处, 当前光标处]之间的部分构成区域(region). 一旦在buffer中
+    设置了标记, 就会存在区域.
+
+    变量'mark-active'控制是否激活区域.(设置为t则激活区域)
+    变量'transient-mark-mode'控制是否高亮激活区域.(设置为t则高亮激活区域)
+
+    (region-beginning) : 返回区域首的位置.
+    (region-end) : 返回区域尾的位置.
+
+    (use-region-p) : 如果满足 (1) transient-mark-mode 处于激活状态;
+    (2) mark-active 为 't'; (3) 区域非空(通过use-empty-active-region
+    检测). 则返回t, 否则返回nil.
+
+    (fill-region START END) : 按照fill-column的值来重排所选区域.
+
+* 字符编码
+
+  (set-buffer-file-coding-system )
+  
+* 大小写转换
+  
+  (upcase STR) : 将STR中的小写字母变为大写, 并返回. 不改变原字符串.
+
+  (upcase-region pos1 pos2) : 将当前buffer中位于pos1和pos2之间的文本转
+  化为大写.
+  
+* 特殊语句
+  
+** defun
+
+    (defun 函数名 (参数列表)
+        "函数说明"
+	(interactive)
+	(函数体)
+    )
+    
+    其中若参数列表中出现"&optional", 表示其后所有的参数都是可选的.
+    函数体中未被赋值的实参将被赋予"nil".
+
+** defvar
+    
+    (defvar VAR VALUE "COMMENT") : 声明并初始化变量.
+    若变量已经初始化过, 则不改变量原值.
+
+** interactive
+   
+   含有"iteractive"的函数, 可以通过"M-x"进行调用.
+    
+   1. (interactive STR): STR的初始部分为参数类型字符, 依次规定了传递给函
+   数的各个参数的类型, 参数类型字符间用'\n'分隔. 在参数类型字符之后,是
+   提示字符串.
+
+   参数类型字符:
+    'p' : 向该函数传递一个前缀参数.(由"C-u"传递, 若无参数输入, 默认为1)
+    'P' : 向该函数传递一个原本前缀参数.(由"C-u"传递, 若无参数输入, 则为nil).
+    'c' : 向该函数传递一个字符型参数.
+    's' : 向该函数传递一个字符串型参数.
+    'b' : 向函数传递一个已存在的buffer名.
+    'n' : 向该函数传递一个整数/浮点数型参数.
+    'r' : 向该函数传递两个数, 作为区域的首(mark)和尾(point)位置. 调用
+    该函数前, 区域必须激活.
+
+
+    注: 若参数字符串以"*"开头, 则当前buffer为只读时, 将会产生只读错误
+    (即使该函数不修改当前buffer的内容).
+
+
+    2. (interactive LIST) : 可以向函数传递一个列表.
+
+
+** condition-case
+
+    (condition-case
+          参数1
+	  正常处理部分
+	  错误处理部分)
+   
+   当一切正常时, 执行正常处理部分; 若有错误发生, 则执行错误处理部分.
+   错误处理部分可包括多个错误处理函数, 每个函数包括两个部分:
+   1.出错情况; 2.相应的处理过程.
+   
+   第一个被匹配到的错误处理函数将被执行.
+
+
+    
+** dolist/dotimes
+
+* 语句块
+    
+   (progn exp1 exp2 ...): 
+   将一些系列表达式聚合在一起, 形成语句块(用在if语句的then部分). 
+   依次执行各个表达式, 并返回最后一个表达式的值.
+
+* 正则表达式
+   
+  M-x, re-builder: 启动正则编辑环境.
+
+** 重复次数 : 以下操作符自身不是表达式的组成部分,作为后缀操作符,表示将其前导表达式重复的若干次.它总是作用于'最小的'可能前导表达式.
+** 特殊字符
+   '.' : 匹配除换行符以外的任意一个字符. (例如: 'a.b')
+   '*' : 匹配(最小)前导正则表达式任意多次(0次或多次). (例如:'ca*r': 'cr','car','caaar',...)
+   '+' : 匹配(最小)前导正则表达式至少一次(1次或多次).(例如: 'ca+r': 'car','caar','caaar',...)
+   '?' : 匹配(最小)前导正则表达式0次或1次.(例如: 'ca?r': 'cr', 'car')
+   '*? ', '+?', '??' : 是以上三个操作符的非贪心版本,它们尽可能匹配少的字符. 
+   '\{n\}' : 重复恰好n次. (例如: 'x\{4\}': 'xxxx')
+   '\{n,m\}' : 重复至少n次,但不超过m次,即在区间[n,m]内. (例如: '\{0,1\}'等价于'?','\{0,\}'等价于'*','\{1,\}'等价于'+')
+   
+   '^' : 仅匹配行首的空串. 所以'^foo'仅匹配出现在行首的'foo'. (仅当'^'仅位于正则表达式首,或跟在'\('及'\|'后时,才具有这种功能.)
+   '$' : 仅匹配行尾的空串. 所以'x+$' 仅匹配出现在行尾的一个或多个'x'.(仅当'$'仅位于正则表达式尾,或在'\)'及'\|'之前时,才具有这种功能.)
+   
+  '[字符集]': 表示匹配字符集中的任意一个字符.(例如: '[ab]*': 任意由'a','b'字符组成的序列,包括空串).
+  字符集可以是一个范围, 如: '[a-z$%.]'表示匹配小写字母的集合, 及'$', '%', '.'. 当搜索是大小写敏感时, 范围的起始和终止必须都是大写,小写,或非字母字符,混合使用大小写将导致错误.
+  字符集也可以是字符类,如: [:alnum:], [:alpha:], [:digit:], [:lower:], [:upper:]等,更多请查看(Char Classes).
+  注: 要包括']'字符,必须将其放在字符集的第一个位置.如[]a],将匹配']'和'a'.
+  要包括'-'字符,必须将其放在字符集的第一/最后一个位置,或放在一个范围的后面. 如[]-],将匹配']'和'-'.
+  
+   '[^字符集]': 表示匹配除字符集以外的任意(一个)字符,包括换行符. 例如'[^a-zA-Z0-9]',将匹配除了字母和数字以外的任意字符.
+   要包括'^'字符,只需将其置于除第一个位置以外的任意位置.
+
+** 字符类
+
+   [:ascii:] : 任意ASCII字符.
+   [:nonascii:] : 任意非ASCII字符.
+   [:alpha:] : 任意字母.
+   [:alnum:] : 任意字母和数字.
+   [:blank:] : 空格和制表符.
+   [:space:] : 空白字符.
+   [:cntrl:] : ASCII控制字符.
+   [:digit:] : 0~9.
+   [:lower:] : 小写字符.
+   [:upper:] : 大写字符.
+   [:punct:] : 标点字符.
+   
+   [:word:] : 任意具有单词语法(在syntax class table中定义)的字符.
+   [:xdigit:] : 任意十六进制字符(0~9, a~f, A~F).
+
+   [:unibyte:] : 任意单字节字符.
+   [:multibyte:] : 任意多字节字符.
+
+   [:print:] : 任意ASCII字符, 除了:控制字符, 回退符(delete character).
+   [:graph:] : 任意ASCII字符, 除了:控制字符, 空格, 回退符(delete character).
+
+** 反斜杠
+
+   '\' : 可以转义特殊字符,如: '\$','\['等.(但是无法转义'-'和']'.)
+   '\|' : 两个正则表达式的'or', 将作用两边最长的可能的正则表达式. (例如: 'foo\|bar': 'foo'或'bar')
+   '\(...\)' : 用于将正则表达式分组, 限制其范围. '\(foo|\bar\)x': 'foox'或'barx'. 'ba\(na\)*': 'ba', 'ban', 'banana',...
+   '\(?:...\)' : 这个分组不记录匹配的子串, 不能用'\D'来引用.
+   '\D' : 匹配和结构'\(...\)'第D次出现时所匹的同样的文本.
+   '\`' / '\'' : 匹配空串,但是仅在字符串或缓冲区的开始/结尾处.
+   '\=' : 匹配空串,但是仅在光标(point)处.
+   '\b' / '\B' : 匹配空串,但是仅/不在单词(word)的开始或结尾处. ('\bfoo\b' : 仅匹配单词独立的'foo'. '\bballs?\b' : 仅能匹配独立的'ball'或'balls')
+   '\<' / '\>' : 匹配空串,但是仅在单词的开始/结尾处.
+   '\w' / '\W' : 匹配任何(/非)构成单词的字符.(由语法表决定这些字符是什么)
+   '\_<' / '\_>' : 匹配空串,但是仅在符号(symbol)开始/结尾处. symbol: 由'\w'和'_'构成的字符序列.
+   '\sC' / '\SC': 匹配任意(/不)符合语法'C'的字符. C: 'w'(组成单词), '-'或' '(空白符)
+   '\cC' / '\CC' : 匹配任意(/不)属于字符类'C'的字符. 用'M-x, describe-categories' 来查看字符类.

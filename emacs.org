@@ -85,13 +85,17 @@
   M: modified. "*" 表示修改过.
 
 ** 备份文件
+
      file-name~为备份文件.在打开某个文件后进行第一次保存时(C-x-s),将
      (提前)对原文件做一次备份,其后的所有保存动作将不影响该备份文件.当
      下一次再打开该文件并保存时,老的备份文件将被新的备份文件代替. 变量
      make-backup-files控制是否保留备份文件,默认为't'保留.
   
 ** 文件锁定
-   当buffer含有未被保存的内容时,其所关联的文件将被锁定,其他人若试图修改该文件将会被警告,有三中选项可以选择:
+
+   当buffer含有未被保存的内容时,其所关联的文件将被锁定,其他人若试图修
+   改该文件将会被警告,有三中选项可以选择:
+
    s: 获得该文件的锁定权.
    p: 强行编辑该文件.
    q: 放弃修改.
@@ -99,16 +103,23 @@
    当系统崩溃时,可能造成先前被锁定的文件未解锁,从而造成错误.
 
 ** 时间戳
+
    在文件的前8行内添加:
    Time-stamp: " "
    Time-stamp: <>
    在before-save-hook中添加time-stamp函数,即可在保存文件时自动更新时间戳.
 
 ** 自动更新buffer
-   M-x,revert-buffer : 放弃对当前buffer所作的修改,恢复到文件上一次被保存时的状态.(revert之后无法用undo恢复所作的修改)
+
+   M-x,revert-buffer : 放弃对当前buffer所作的修改,恢复到文件上一次被保
+   存时的状态.(revert之后无法用undo恢复所作的修改)
+
    auto-revert-mode : 每隔5秒根据文件内容自动更新当前buffer的内容.
+
    global-auto-revert-mode : 自动更新所有本地buffer的内容.(不更新远程文件的buffer)
+
    auto-revert-tail-mode : 仅更新buffer尾.
+
    变量auto-revert-interval: 控制自动更新的间隔.
    
 ** 临时文件(18.6.3)
@@ -121,17 +132,20 @@
    
 ** 文件/目录符号链接等(18.7)
 ** 列出/新建/删除目录(18.8)
+
    C-x-d [目录名] : 列出目录下的文件名.
    C-u,C-x-d : 列出目录下文件的详细信息.
    M-x,make/delete-directory [目录名] :新建/删除目录.
    
 ** 比较文件(18.9)
+
    M-x,diff [文件1] [文件2] : 调用系统的diff命令,比较指定两个文件的差异. 参数配置在"diff-switches"变量中.
    M-x,diff-backup [文件名]: 比较指定文件和其最近的备份文件.
    M-x,diff-buffer-with-file [buffer名] : 比较指定buffer和其关联的文件.
    M-x,compare-windows : 比较当前窗口和下一个窗口中的内容.
    
 ** 其他文件操作
+
    M-x,delete-file : 删除指定文件.
    M-x move-file-to-trash : 将指定文件移动到回收站.
    M-x,vc-delete-file : 删除加入到版本控制的文件.
@@ -179,8 +193,7 @@
 
    M-x,make-indirect-buffer : 为指定"base buffer"创建间接buffer.
    M-x,clone-indirect-buffer : 为当前buffer创建间接buffer.
-   C-x,4,c: 为当前buffer再另一窗口中创建并选中其间接buffer.
-   
+   C-x,4,c: 为当前buffer在另一窗口中创建并选中其间接buffer.
    
 * 窗口(20)
 
@@ -374,7 +387,6 @@
    '\sC' / '\SC': 匹配任意(/不)符合语法'C'的字符. C: 'w'(组成单词), '-'或' '(空白符)
    '\cC' / '\CC' : 匹配任意(/不)属于字符类'C'的字符. 用'M-x, describe-categories' 来查看字符类.
 
-
 * 查找和替换
 ** 查找
   
@@ -556,18 +568,48 @@
    折行; 否则断行.  truncate-partial-width-windows: 设定窗口宽度, 小于
    此宽度时,则折行.
 
-
 * 缩写
 
   注: 局部缩写(l)仅适用于和定义时主模式相同的缓冲区.
 
-  C-x,a,l/g : 为光标前一个单词指定局部/全局缩写.
-  C-x,a,i,l/g : 为光标前一个单词指定局部/全局全称.
+  C-x,a,l/g : 为光标前一个单词指定局部/全局缩写.数字前缀N表示为光标前N
+  个单词指定缩写.数字前缀0表示为所选区域定义缩写.负前缀(C-u,-) 将清除
+  当前定义.
+
+  C-x,a,i,l/g : 为光标前一个单词指定局部/全局全称.数字前缀表示为光标前
+  多少个单词指定全程. 数字前缀0表示为所选区域指定全称. 负前缀(C-u,-)
+  将清除当前定义.
+
+  M-': 允许向缩写附加前缀. 例如: 'cnst' 代表 'construct', 先输入're',
+  再输入M-', 再输入cnst, 再输入空格或标点, 则最后展开为'reconstruct'.
+  
+  M-/: 补全光标前部分, 每次执行'M-/'给出一个后选项. 搜索顺序为: 当前
+  buffer光标前内容, 当前buffer光标后内容, 其他buffer. 键入'<SPC> M-/'
+  可以继续补全候选内容之后的内容. 补全默认忽略大小写,变
+  量'dabbrev-case-fold-search'为t时忽略大小写; 为nil时, 大小写起作用.
+  详见emacs 29.7.
+  
+  C-M-/: 功能同上. 只是一次性给出补全列表,而非一次一个.
+
   C-x,a,e : 将光标前的缩写展开成全称.(如果已定义)
+  M-x,expand-region-abbrevs: 展开所选区域内的所有缩写.
+
+  M-x,define-global-abbrev <RET> ABBREV <RET> EXP <RET>: 为缩写ABBREV
+  定义扩展EXP(全局).
+  
+  M-x,define-mode-abbrev <RET> ABBREV <RET> EXP <RET>: 为缩写ABBREV
+  定义扩展EXP(局部).
 
   M-x,list-abbrevs : 查看(各mode下)所定义的缩写列表.
   M-x,edit-abbrevs : 编辑所有缩写.
   M-x,kill-all-abbrevs : 清除所有已定义的缩写.
+  
+  系统默认的缩写文件由变量'abbrev-file-name'定义, 其默认值为: "~/.emacs.d/abbrev_defs".
+  M-x,write-abbrev-file: 将已定义的缩写保存到指定文件.
+  M-x,read-abbrev-file: 载入指定保存有缩写定义的文件.
+  
+  M-x,insert-abbrevs: 将所有定义的缩写插入到当前光标处.
+  M-x,define-abbrevs: 解析当前buffer, 载入所有定义的缩写.
 
 * 交换位置
   
@@ -694,6 +736,13 @@
 
   C-h,P : 显示某个已安装包的相关信息.
 
+* 浏览URL
+
+  M-x, browse-url <RET> URL <RET> : 在浏览器中打开指定URL. 若光标处为
+  URL,则默认打开光标处URL.
+
+  
+
 
 * 其它
   
@@ -776,17 +825,110 @@
 
 * cc-mode
 
-  M-x,c-version : 查看版本
-  C-M-h : 选中当前函数,重复使用可以连续选择下面的函数.
-  C-M-q : 缩进一个括号包裹的完整表达式,光标必须置于起始括号上.
-  C-c-q : 缩进当前光标所在的函数.
-  C-c-c : 注释所选区域.
-  C-u-c-c : 取消所选区域注释.
-  M-; : 在当前行尾加上一条注释. 若前加"C-u", 则删除当前行的所有注释内容.
-  C-M-a/e : 光标移动到函数(结构体)首/尾.可以连续移动,也可以加参数前缀.
-  M-a/e : 光标移动到语句首/尾.可以连续移动,也可以加参数前缀.
-  C-c-n/p : 移动到下/上一个条件编译语句块.
-  
+  用于编写C/C++, Java, AWK程序. M-x,c-version : 查看版本
+
+** hooks
+
+   c-initialization-hook: 当cc-mode初始化时运行, 每个emacs-sesion只运
+   行一次.用于设置键绑定.
+   c-mode-common-hook : cc-mode的主hook, 跨语言, 在特定语言hook前运行.
+   c-mode-hook : c语言环境hook.
+
+
+** Minor modes
+
+   ‘C-c C-l’ (‘c-toggle-electric-state’)
+   Toggle electric minor mode.  When the command turns the mode off,
+   it also suppresses auto-newline mode.
+   
+   ‘C-c C-a’ (‘c-toggle-auto-newline’)
+   Toggle auto-newline minor mode.  When the command turns the mode
+   on, it also enables electric minor mode.
+   
+   ‘M-x c-toggle-hungry-state’(2)
+   Toggle hungry-delete minor mode.
+   
+   ‘M-x c-toggle-auto-hungry-state’(3)
+   Toggle both auto-newline and hungry delete minor modes.
+   
+   ‘C-c C-w’ (‘M-x subword-mode’)
+   Toggle subword mode.
+   
+   ‘M-x c-toggle-syntactic-indentation’
+   Toggle syntactic-indentation mode.
+
+   mode-line:
+   l: electric mode.
+   a: auto-newline mode.
+   h: hungry delete mode.
+   w: subword mode.
+
+** 缩进
+
+   <TAB> : 缩进当前行.
+   C-M-q : 缩进一个括号包裹的完整表达式,光标必须置于起始括号上.
+   C-c-q : 缩进当前光标所在的函数(类, 宏定义).
+   C-M-\ : 缩进所选择的区域.
+   M-j : 在当前光标处断行并缩进.
+
+** 光标移动
+   
+   C-M-a/e : 光标移动到函数(结构体)首/尾.可以连续移动,也可以加参数前缀.
+   M-a/e : 光标移动到语句首/尾.可以连续移动,也可以加参数前缀.
+   C-c-n/p : 移动到下/上一个条件编译语句块.
+
+** Hungry Delete
+
+   当hungry delete mode开启时:
+   C-d : 前向hungry delete.
+   <Backspace> : 后向hungry delete.
+
+   无论hungry delete mode是否开启:
+   C-c-d : 前向hungry delete.
+   C-c-<Backspace> : 后向hungry delete.
+
+** 选择
+
+   C-M-h : 选中当前函数,重复使用可以连续选择下面的函数.
+   
+** 注释
+   
+   C-c-c : 注释所选区域. 
+   C-u-c-c : 取消所选区域注释.
+   M-; : 在当前行尾加上一条注释. 若前加"C-u", 则删除当前行的所有注释内容.
+   
+** 其它
+
+   C-c-\ : 删除或添加所选区域末尾的反斜杠.用于多行宏编辑.
+
+   C-c-e : 在另一个buffer内, 展开所选区域内的宏."C-u"前缀将在当前宏处
+   直接展开.
+
+** font lock
+   
+   变量'*-font-lock-extra-types'可以自定义语法高亮的类型.
+   变量c-doc-comment-style: 用于设置文档注释的风格.
+
+
+
+** style
+
+   所有的style及其参数设置都保存在变量'c-style-alist'中.
+
+   C-c,.(c-set-style) : 改变当前buffer的style.
+   "c-default-style": 打开新buffer时设置的默认style.
+   "c-indentation-style" : 该变量用于查看当前buffer的style.
+   
+   注：在.emacs配置文件中设置的变量, 将会覆盖style中的相同变量.
+   
+    In all cases, the style described in ‘c-default-style’ is
+    installed _before_ the language hooks are run, so you can always
+    override this setting by including an explicit call to
+    ‘c-set-style’ in your language mode hook, or in
+    ‘c-mode-common-hook’.
+
+
+   
 * shell mode
   
   <RET> : 将光标所在行作为输入,发送给shell.
@@ -846,165 +988,13 @@
   '?' : 显示选项列表.
 
 
-* Dired
-** 进入与退出
-  
-   C-c-f, [目录] / C-x,d [目录] : 在当前窗口中,用Dired打开某目录. 加"C-u"可以指定ls的参数.
-   C-x,4/5,d [目录] : 在另一窗口/框架中打开Dired.
-   进入到Dired buffer后,可用"q"退出Dired并返回原buffer.
-   dired-listing-switches : 控制ls命令的参数.
-  
-** 光标移动
-
-   n/p : 光标移动到下/上一个文件名首.
-   j [文件名] : 将光标移动到指定文件上.
-
-** 搜索
-
-   M-s,f,C-s : 正向递增搜索文件名.(仅匹配文件名)
-   M-s,f,C-M-s : 正向正则递增搜索文件名.(仅匹配文件名)
-   dired-isearch-filenames : 为t时,"C-s"将执行文件名搜索;为'dwim'时,仅当光标处于文件名时,"C-s"才执行文件名搜索.
-   
-** 打开文件
-
-   'f' : 在当前窗口打开光标所在文件.
-   'o' : 在另一窗口打开光标所在文件,并选中.
-   C-o : 在另一窗口打开光标所在文件,但不选中.
-   'v' : 用view-mode打开光标所在文件.可以用'q'退出.
-   '^' : 进入当前目录的上层目录.
-
-** 删除文件
-
-   d/u : 将当前文件标记为待删除/移除当前文件标记,并将光标移动至下一文件.
-   可对选中区域的所有文件执行操作.(参数前缀表示正向重复的次数,负参数表示反向重复的次数).
-
-   x : 删除所有被标记文件.
-
-   注: 只能删除空目录无法,无法删除非空目录.
-   dired-recursive-deletes : 非nil,则可以直接删除非空目录.
-   delete-by-moving-to-trash : 设为t则将文件放入回收站.
-
-** 标记文件
-
-*** 降文件标记为D
-
-   'd' : 标记 当前文件.
-   '#' : 标记所有 自动保存的文件.("#file#").
-   '~' : 标记所有 备份文件文件.("file~")
-   '.' : 标记 将除最新和最旧之外的所有备份文件.
-   '% &' : 标记所有 文件名匹配变量dired-flag-garbage-files所定义的正则表达式的文件.(包括Latex产生的特定文件,和.bak, .orig, .rej文件.)
-   '% d [regexp]' : 标记所有 文件名匹配regexp的文件.
-   
-*** 将文件标记为*   
-
-   'm'  : 标记 当前文件.
-   '**' : 标记所有 可执行文件. "C-u"前缀,反标记.
-   '*@' : 标记所有 符号链接. "C-u"前缀,反标记.
-   '*/' : 标记所有 目录(除了"."和".."). "C-u"前缀,反标记.
-   '*s' : 标记所有 文件(除了"."和"..").
-   '% m [regexp]' : 标记所有 文件名匹配regexp的文件.
-   '% g [regexp]' : 标记所有 文件内容匹配regexp的文件.
-   '* c [oldmark] [newmark]' : 将所有标记为oldmark的文件标记为newwark.
-      
-   'u/Backspace'  : 反标记下/上一个文件. 可对选中区域的所有文件执行操作.正/负参数表示正/反向重复的次数(正/负参数表示反/正向重复的次数).
-   M-Backspace [mark] : 反标记所有 标记为mark的文件.
-   'U'  : 反标记 所有文件.
-   't'  : 反标记所有标记为*的文件,同时将所有未被任何标记的文件标记为*.
-   
-   M-{/} : 移动到上/下一个被标记文件.
-   
-** 文件操作
-
-   注: 以下所有操作,若带有正/负参数,则代表对下/上参数个文件执行;
-   若有*标文件,则对*标文件执行; 否则,对当前文件执行.
-
-   'C [new]' : 将文件拷贝到目标目录中.
-   'D' : 删除文件.
-   'R [new]' : 移动或重命名. 若是单个文件,则new为新文件名; 若是多个文件,new为目标目录(此时相当于mv命令).
-   'H/S [new]' : 创建硬/符号链接. 若是单个文件,则new为新链接名; 若是多个文件,new为目标目录.
-   'M [newnode]' : 改变文件的权限(mode). newmode可以是8进制或符号表示法.
-   'G [newgroup]' : 改变文件的组(group).
-   'O [newowner]' : 改变文件的所有者(owner).(需要root权限)
-   'T [timestap]' : 改变文件的时间戳.默认为当前时间.
-   'P [command]' : 打印文件.
-   'Z' : 压缩文件. 若文件已经时压缩文件,则对其解压.
-   ':d' : 解密文件.
-   ':v' : 核实文件的数字签名.
-   ':s' : 对文件进行数字签名.
-   ':e' : 加密文件.
-   'L'  : 载入指定的emacs lisp文件.
-   'B'  : 字节编译指定的emacs lisp文件.
-   'A [regexp]' : 在所有指定文件中搜索regexp.(tag-search)
-   'Q [regexp]' : query-replace-regexp.
-   
-** shell命令
-
-   30.8
-   
-** 文件重命名
-   
-   注: 以下所有操作,若带有正/负参数,则代表对下/上参数个文件执行;
-   若有*标文件,则对*标文件执行; 否则,对当前文件执行.
-
-   '% u/l' : 将文件名变为大/小写.
-   `% R FROM  TO ' : 
-   `% C FROM  TO ' : 
-   `% H FROM  TO ' :
-   `% S FROM  TO ' :
-
-** 比较文件
-   '= [file]' : diff-mode比较当前文件和指定文件file.
-
-** 子目录
-   
-   'i' : 将当前目录下的内容插入到Dired buffer末尾. (可用"C-u,SPC"返回到光标原先位置).
-   'l' : 更新子目录内容.
-   C-u,k : 移除子目录的显示.光标需要置于显示的子目录文件所在行上.
-   
-   </> : 移动到上/下一个子目录.
-   C-x,[/] : 向上/下跨过目录的完整列表.
-   C-M-n/p : 移动到下/上一个子目录列表头.
-   C-M-u/d : 移动到当前目录的 父/第一个显示的子 目录头.
-   
-   注: 隐藏目录下的文件将不受任何文件操作的影响.
-   '$' : 将当前光标所在子目录列表隐藏/使可见.
-   'M-$' : 将当前dired-buffer中的所有子目录列表隐藏/使可见.
-
-** 更新dired buffer
-   
-   'g' : 更新整个dired buffer的内容,保留已有的文件标记.
-   'l' : 更新指定文件或目录. (*标文件,当前文件,前/后N个文件)
-   'k' : 仅删除*标文件的文件行(并不删除文件本身).删除的文件行可用'g'命令恢复.
-   's' : 切换文件的排序方式(字母序或时间序). mode-line中有显示.
-   'C-u,s,[swithces]' : 以switches重新ls.
-   
-** 编辑dired buffer
-
-   C-x-q : 进入编辑模式.(Wdired-mode)
-   C-c-c : 保存编辑结果并退出编辑模式.
-   
-** 其他
-   
-   '+' : 新建目录.
-   M-s,a,C-s : 对*标文件执行增量搜索.
-   M-s,a,C-M-s : 对*标文件执行正则增量搜索.
-   'w' : 将(当前文件或*标文件的)文件名复制到kill ring中. "C-u 0"前缀,复制文件的绝对路径; "C-u"前缀, 复制文件相对于当前dired buffer默认目录的路径.
-   '(' : 切换是否显示文件详细信息(权限,时间等等)
-   M-x,dired-compare-directories : 比较当前dired buffer和另一个目录的内容.
-
-** dired-x
-   C-x,M-o : 切换是否忽略不感兴趣的文件.
-   '*O': 标记不感兴趣的文件
-   
-   C-x-j : 跳转到当前buffer所在的目录(dired).
-
 * Ivy
 
 ** 控制变量
    
    'ivy-height' : 候选列表中项数(列表高度).默认为10.
   
-**  在候选列表中导航:
+** 在候选项列表中导航:
   
     C-n/p : 下/上一个候选项.
     M-</> : 第一个/最后一个后选项.
@@ -1074,7 +1064,6 @@
    'FlyC-' : Flycheck没有找到语法检查器.用'C-c,!,v'确认.
    'FlyC!' : 语法检查失败,查看*message*.
    'FlyC?' : 语法检查出现可疑结果,查看*message*.
-
 
 * 比较文件
 
@@ -1176,27 +1165,47 @@ Ediff使用POSIX diff和diff3程序来比较文件间的差异,然后将输出�
    其他与合并有关的命令：
    '$$'
    '$*'
-   
 
+* Programs
 
-
-
+  M-x,imenu,[函数名]: 跳转到指定函数. (26.2.3)
+  M-x,which-function-mode: 在mode-line显示当前所在函数名. (26.2.4)
+  
+** 缩进
+   <TAB> : 缩进当前行或所选区域.
+  
 * org
 
 ** 折叠/展开
 
-   <TAB> : 展开/折叠当标题内容.
+   <TAB> : 展开/折叠当标题下内容.
    S-<TAB> : 展开/折叠所有标题内容.
 
 ** 结构编辑
 
    M-<RET> : 在当前光标后插入同级标题.若光标处于一行的中间, 则该行后面内容成为新的同级标题.
-   M-S-<RET> : 在当前光标后插入与当前标题同级的TODO项.若光标处于一行的中间, 则该行后面内容成为新的TODO项.
-   
-   M-<left>/<right> : 升高(减少*)/降低(增加*)当前标题层级(当前项必须是标题).
-   M-<up>/<down> : 将当前子树向上/下移动.
+   C-<RET> : 在当前子树后插入同级标题.
 
-   C-x,n,s/w : 仅显示当前子树内容, 屏蔽其他.w恢复.
+   M-S-<RET> : 在当前光标后插入与当前标题同级的TODO项.若光标处于一行的中间, 则该行后面内容成为新的TODO项.
+   C-S-<RET> : 在当前子树后插入与当前标题同级的TODO项.
+
+   M-<left>/<right> : 升高(减少*)/降低(增加*)当前标题层级.
+   M-S-<left>/<right> : 提升/降低当前子树一个层级.
+   M-S-<up>/<down> : 将当前子树向上/下移动(光标必须处于子树标题.). 
+
+   C-c,@ : 选定当前子树.
+   C-c-x-w : 剪切当前子树. 数字前缀"N"表示剪切N个子树.
+   C-c-x,M-w : 复制当前子树. 数字前缀"N"表示复制N个子树.
+   C-c-x-y : 粘贴剪切环中的子树.将根据粘贴从处的位置，来自动调整子树的层级.
+   C-c-x-c: 克隆当前子树.
+   C-c-w : refile.
+   C-c,^ : 排序.
+
+   C-x,n,s: 只显示当前子树内容.
+   C-x,n,b: 只显示当前块.
+   C-x,n,w: 恢复.
+
+   C-c,*: 将标题行变为普通行;或将当前行变为标题行.
    
 ** 稀疏树
 
@@ -1204,12 +1213,12 @@ Ediff使用POSIX diff和diff3程序来比较文件间的差异,然后将输出�
    
    C-c,/ : 启动稀疏树查找模块.
    
-** 移动
+** 光标移动
 
    C-c-n/p : 移动到下/上一个标题.
    C-c-f/b : 移动到下/上一个同级标题.
    C-c-u : 移动到上级标题.
-   C-c-j : 移动到指定位置.
+   C-c-j : 不改变当前文档的可视性布局，在另一个临时buffer中显示当前文档。
    
 ** 列表
 
@@ -1226,3 +1235,272 @@ Ediff使用POSIX diff和diff3程序来比较文件间的差异,然后将输出�
    S-M-<RET> : 在当前项下, 插入新的TODO项.
    C-c,, : 设置当前TODO项的优先级. 
    S-<up>/<down> : 上调/下调当前TODO项的优先级.
+
+* TRAMP
+
+  /sudo::文件路径 : 以root权限打开指定文件.
+
+  访问文件:
+  /[METHOD:][USER@][HOST#PORT:][PATH]
+* Dired
+** 进入与退出
+  
+   C-c-f, [目录] / C-x,d [目录] : 在当前窗口中,用Dired打开某目录. 加"C-u"可以指定ls的参数.
+   C-x,4/5,d [目录] : 在另一窗口/框架中打开Dired.
+   进入到Dired buffer后,可用"q"退出Dired并返回原buffer.
+   dired-listing-switches : 控制ls命令的参数.
+  
+** 光标移动
+
+   n/p : 光标移动到下/上一个文件名首.
+   j [文件名] : 将光标移动到指定文件上.
+
+** 搜索
+
+   M-s,f,C-s : 正向递增搜索文件名.(仅匹配文件名)
+   M-s,f,C-M-s : 正向正则递增搜索文件名.(仅匹配文件名)
+   dired-isearch-filenames : 为t时,"C-s"将执行文件名搜索;为'dwim'时,仅当光标处于文件名时,"C-s"才执行文件名搜索.
+   
+** 打开文件
+
+   'f' : 在当前窗口打开光标所在文件.
+   'o' : 在另一窗口打开光标所在文件,并选中.
+   C-o : 在另一窗口打开光标所在文件,但不选中.
+   'v' : 用view-mode打开光标所在文件.可以用'q'退出.
+   '^' : 进入当前目录的上层目录.
+
+** 删除文件
+
+   d/u : 将当前文件标记为待删除/移除当前文件标记,并将光标移动至下一文件.
+   可对选中区域的所有文件执行操作.(参数前缀表示正向重复的次数,负参数表示反向重复的次数).
+
+   x : 删除所有被标记文件.
+
+   注: 只能删除空目录无法,无法删除非空目录.
+   dired-recursive-deletes : 非nil,则可以直接删除非空目录.
+   delete-by-moving-to-trash : 设为t则将文件放入回收站.
+
+** 标记文件
+
+*** 降文件标记为D
+
+   'd' : 标记 当前文件.
+   '#' : 标记所有 自动保存的文件.("#file#").
+   '~' : 标记所有 备份文件文件.("file~")
+   '.' : 标记 将除最新和最旧之外的所有备份文件.
+   '% &' : 标记所有 文件名匹配变量dired-flag-garbage-files所定义的正则表达式的文件.(包括Latex产生的特定文件,和.bak, .orig, .rej文件.)
+   '% d [regexp]' : 标记所有 文件名匹配regexp的文件.
+   
+*** 将文件标记为*   
+
+   'm'  : 标记 当前文件.
+   '**' : 标记所有 可执行文件. "C-u"前缀,反标记.
+   '*@' : 标记所有 符号链接. "C-u"前缀,反标记.
+   '*/' : 标记所有 目录(除了"."和".."). "C-u"前缀,反标记.
+   '*s' : 标记所有 文件(除了"."和"..").
+   '% m [regexp]' : 标记所有 文件名匹配regexp的文件.
+   '% g [regexp]' : 标记所有 文件内容匹配regexp的文件.
+   '* c [oldmark] [newmark]' : 将所有标记为oldmark的文件标记为newwark.
+      
+   'u/Backspace'  : 反标记下/上一个文件. 可对选中区域的所有文件执行操作.正/负参数表示正/反向重复的次数(正/负参数表示反/正向重复的次数).
+   M-Backspace [mark] : 反标记所有 标记为mark的文件.
+   'U'  : 反标记 所有文件.
+   't'  : 反标记所有标记为*的文件,同时将所有未被任何标记的文件标记为*.
+   
+   M-{/} : 移动到上/下一个被标记文件.
+   
+** 文件操作
+
+   注: 以下所有操作,若带有正/负参数,则代表对下/上参数个文件执行;
+   若有*标文件,则对*标文件执行; 否则,对当前文件执行.
+
+   'C [new]' : 将文件拷贝到目标目录中.
+   'D' : 删除文件.
+   'R [new]' : 移动或重命名. 若是单个文件,则new为新文件名; 若是多个文件,new为目标目录(此时相当于mv命令).
+   'H/S [new]' : 在指定位置为当前项创建硬/符号链接. 若是单个文件,则new为新链接名; 若是多个文件,new为目标目录.
+   'M [newnode]' : 改变文件的权限(mode). newmode可以是8进制或符号表示法.
+   'G [newgroup]' : 改变文件的组(group).
+   'O [newowner]' : 改变文件的所有者(owner).(需要root权限)
+   'T [timestap]' : 改变文件的时间戳.默认为当前时间.
+   'P [command]' : 打印文件.
+   'Z' : 压缩文件. 若文件已经时压缩文件,则对其解压.
+   ':d' : 解密文件.
+   ':v' : 核实文件的数字签名.
+   ':s' : 对文件进行数字签名.
+   ':e' : 加密文件.
+   'L'  : 载入指定的emacs lisp文件.
+   'B'  : 字节编译指定的emacs lisp文件.
+   'A [regexp]' : 在所有指定文件中搜索regexp.(tag-search)
+   'Q [regexp]' : query-replace-regexp.
+   
+** shell命令
+
+   30.8
+   
+** 文件重命名
+   
+   注: 以下所有操作,若带有正/负参数,则代表对下/上参数个文件执行;
+   若有*标文件,则对*标文件执行; 否则,对当前文件执行.
+
+   '% u/l' : 将文件名变为大/小写.
+   `% R FROM  TO ' : 
+   `% C FROM  TO ' : 
+   `% H FROM  TO ' :
+   `% S FROM  TO ' :
+
+** 比较文件
+   '= [file]' : diff-mode比较当前文件和指定文件file.
+
+** 子目录
+   
+   'i' : 将当前目录下的内容插入到Dired buffer末尾. (可用"C-u,SPC"返回到光标原先位置).
+   'l' : 更新子目录内容.
+   C-u,k : 移除子目录的显示.光标需要置于显示的子目录文件所在行上.
+   
+   </> : 移动到上/下一个子目录.
+   C-x,[/] : 向上/下跨过目录的完整列表.
+   C-M-n/p : 移动到下/上一个子目录列表头.
+   C-M-u/d : 移动到当前目录的 父/第一个显示的子 目录头.
+   
+   注: 隐藏目录下的文件将不受任何文件操作的影响.
+   '$' : 将当前光标所在子目录列表隐藏/使可见.
+   'M-$' : 将当前dired-buffer中的所有子目录列表隐藏/使可见.
+
+** 更新dired buffer
+   
+   'g' : 更新整个dired buffer的内容,保留已有的文件标记.
+   'l' : 更新指定文件或目录. (*标文件,当前文件,前/后N个文件)
+   'k' : 仅删除*标文件的文件行(并不删除文件本身).删除的文件行可用'g'命令恢复.
+   's' : 切换文件的排序方式(字母序或时间序). mode-line中有显示.
+   'C-u,s,[swithces]' : 以switches重新ls.
+   
+** 编辑dired buffer
+
+   C-x-q : 进入编辑模式.(Wdired-mode)
+   C-c-c : 保存编辑结果并退出编辑模式.
+   
+** 其他
+   
+   '+' : 新建目录.
+   M-s,a,C-s : 对*标文件执行增量搜索.
+   M-s,a,C-M-s : 对*标文件执行正则增量搜索.
+   'w' : 将(当前文件或*标文件的)文件名复制到kill ring中. "C-u 0"前缀,复制文件的绝对路径; "C-u"前缀, 复制文件相对于当前dired buffer默认目录的路径.
+   '(' : 切换是否显示文件详细信息(权限,时间等等)
+   M-x,dired-compare-directories : 比较当前dired buffer和另一个目录的内容.
+
+** dired-x
+   C-x,M-o : 切换是否忽略不感兴趣的文件.
+   '*O': 标记不感兴趣的文件
+   
+   C-x-j : 跳转到当前buffer所在的目录(dired).
+
+* IBuffer
+
+  进入IBuffer-mode时, 键入'h'可查看以下命令:
+
+** 标记buffer
+
+   'm': 标记当前buffer.
+   'u': 反标记当前buffer.
+   'd': 将当前buffer标记为待删除.
+   'DEL': 反标记当前buffer, 同时将光标上移一行.
+   'M-DEL': 反标记所有buffer.
+   't': 反标记所有已标记的buffer, 同时标记所有未标记的buffer.
+   
+   '* M': 基于major mode标记buffer.
+   '* s': 标记所有系统buffer, 即名为*name*的buffer.
+   '* r': 标记所有只读buffer.
+   '* /': 标记所有dired-mode的buffer.
+   '* h': 标记所有help-mode, apropos-mode等mode的buffer.
+   
+   '* u': 标记所有已修改但未保存的buffer, 这些buffer必须关联磁盘上的文件.
+   '* m': 标记所有已修改的buffer, 无论这些buffer是否关联磁盘上的文件.
+   '* e': 标记所有具有关联文件但该文件当前不存在的buffer.
+   '.' :  标记所有时间晚于"ibuffer-old-time"的buffer.
+
+   '% n': 标记所有名称匹配指定正则表达式的buffer.
+   '% m': 标记所有major mode匹配指定正则表达式的buffer.
+   '% f': 标记所有文件名匹配指定正则表达式的buffer.
+
+** 处理被标记的buffer
+
+   'x': 删除所有被标记为待删除的buffer.
+   'D': 删除所有被标记buffer.
+   'S': 保存所有被标记的buffer.
+
+   'A': 将当前frame水平分割成多个窗口, 每个窗口显示一个被标记的buffer.
+   'H': 为每个被标记的buffer新建一个frame并显示.
+   'T': 切换所有被标记buffer的只读模式.
+   'V': revert所有被标记的buffer.
+   'k': 将被标记的buffer移除IBuffer列表, 但不删除.
+   'P': 打印被标记的buffer.
+
+   'M-s a C-s': 在所有被标记buffer中进行增量查找.
+   'M-s a C-M-s': 在所有被标记buffer中进行正则表达式查找.
+   'U': 在所有被标记buffer中进行正则表达式替换.
+   'Q': 在所有被标记buffer中进行询问替换(query replace).
+   'I': 同'Q', 但使用正则表达式.
+   'O': 列出所有被标记buffer中匹配指定正则表达式的行.
+
+   'X': 将被标记buffer的内容pipe到某个shell命令.
+   'N': 将被标记buffer的内容替换为某个shell命令的输出.
+   '!': 将被标记buffer的文件作为参数传递给某个shell命令.
+
+   'E': 为每个被标记的buffer执行一个特定的命令.
+   'W': 同'E', 但当命令执行时显示该buffer.
+   
+** 过滤器
+   
+   使用过滤器之后, IBuffer列表中将只显示符合条件的buffer. 以下过滤器可
+   以组合使用:
+
+   '/ m': 基于当前正在使用的major mode进行过滤.
+   '/ M': 基于derived major mode进行过滤.
+   '/ n': 基于buffer名进行过滤.
+   '/ c': 基于buffer内容进行过滤.
+   '/ f': 基于buffer所关联的文件名进行过滤.
+   '/ >': 基于buffer大小进行过滤(只选择size大于指定大小的buffer).
+   '/ >': 基于buffer大小进行过滤(只选择size小于指定大小的buffer).
+   '/ e': 基于指定elisp谓词函数进行过滤.
+   '/ s': 保存当前所用的过滤器, 并为其命名.
+   '/ r': 切换到指定的已保存过滤器.
+   '/ a': 将所保存的过滤器添加到当前过滤器中.
+   '/ o': 将最近两个使用的过滤器进行'逻辑或'.
+   '/ p': 移除最近使用的过滤器.
+   '/ !': 逆转最近使用的过滤器的逻辑关系.
+   '/ d': Break down the topmost filter.
+   '/ /': 移除所有过滤器.
+
+** 过滤器组
+
+   '/ g': 创建基于当前过滤器的buffer组.
+   '/ P': 移除最近使用的过滤器组.
+   'TAB': 光标移动到下一个过滤器组.
+   'M-p': 光标移动到上一个过滤器组.
+   '/ \': 移除所有活跃的过滤器组.
+   '/ S': 保存当前过滤器组并为其命名.
+   '/ R': 恢复上一个保存的过滤器组.
+   '/ X': 删除上一个保存的过滤器组.
+
+** 排序
+   
+   's a': 基于buffer名的字典序排序.
+   's f': 基于buffer所关联文件名的字典序排序.
+   's v': 基于buffer的最近访问时间排序.
+   's m': 基于buffer的主模式进行排序.
+   's s': 基于buffer大小进行排序.
+   's i': 反转当前顺序.
+   ','  : 轮询以上顺序.
+
+** 其它命令
+   
+   'g': 刷新IBuffer列表.
+   '`': 精简列表显示格式.
+   'n/p': 光标下/上移一行.
+   'q' : 退出.
+   '=' : 查看当前buffer与其关联文件之间的差异.
+   'RET': 在当前窗口显示当前buffer.
+   'o' : 在另一窗口显示当前buffer, 并选中.
+   'C-o': 在另一窗口显示当前buffer.
+   'b' : 从IBuffer列表中删除(但不kill)当前buffer.
+

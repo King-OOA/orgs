@@ -1,0 +1,962 @@
+#+TODO: TODO(t) | HALFDONE(h!/@) CANCELED(c@) DONE(d) 
+
+* 七月
+** 7.27
+*** 工作
+**** DONE [#A] 毕业论文：第3章完成"New Grah Model"以前的翻译内容。
+**** CANCELED [#B] APUE: 复习4.15节；完成4.16节。
+     - State "CANCELED"   from "TODO"       [2017-07-27 四 22:14] \\
+       没带钥匙，进不去房子。
+**** DONE [#C] TEP: 完成内存虚拟化第3节。
+
+*** 锻炼
+**** DONE 正拉4组。
+**** CANCELED 跑步半小时。
+     - State "CANCELED"   from "TODO"       [2017-07-27 四 22:15] \\
+       没带钥匙
+**** DONE 核心力量练习
+
+** 7.28     
+*** 工作
+**** DONE 毕业论文： 第3章完成实验部分以前的翻译内容。
+**** DONE APUE:  复习4.15节；完成4.16节。
+**** TODO ORG: 2.1, 2.2, 2.3.1.
+*** 锻炼
+**** DONE 反拉4组(12，10，8，7)。
+**** DONE 跑步半小时。
+**** DONE 核心力量练习(平板支撑2:35)
+
+** 7.29
+*** 工作
+**** DONE 毕业论文：第3章实验第一部分。
+**** DONE 交版面费。
+**** DONE TPE: 内存: 15.1, 15.2.
+**** DONE ORG: 2.1, 2.2, 2.3.1.
+*** 锻炼
+**** DONE 正拉4组(11, 9, 7, 6).
+**** TODO 平板支撑4组(2:35起).
+**** TODO 跑步半小时.
+
+** 7.30
+*** 工作
+**** DONE 毕业论文：第3章全部完成。
+**** DONE APUE: 4.17.
+**** TODO TPE: 15.3, 15.4.
+**** TODO ORG: 2.32, 2.33, 2.4.
+*** 锻炼
+**** DONE 反拉4组(12, 10, 8, 7).    
+**** DONE 平板支撑4组(2:35起).
+**** DONE 跑步半小时.
+** 7.31
+*** 工作
+**** DONE 毕业论文：第1章introduction,related work, notations 。
+**** TODO TPE: 15.3, 15.4.
+**** TODO ORG: 2.32, 2.33, 2.4.
+*** 锻炼
+**** DONE 正拉4组(12, 10, 8, 7).    
+**** TODO 平板支撑4组(2:35起).
+**** TODO 跑步半小时.
+今天破戒!由于前两天上楼的缘故, 心里一直发毛.
+
+
+* 八月
+** 1日
+*** 工作
+**** DONE 毕业论文：第1章完成过滤模块.
+**** TODO 提交proofs.
+*** 锻炼
+**** TODO 反拉4组(12, 10, 8, 7).    
+**** TODO 平板支撑4组(2:35起).
+**** TODO 跑步半小时.
+今天破戒!由于前两天上楼的缘故, 心里一直发毛.
+** 2日
+*** 工作
+**** TODO 毕业论文：第1章完成AMT构建和verifcation.
+**** DONE 提交proofs.
+*** 锻炼
+**** TODO 反拉4组(12, 10, 8, 7).    
+**** TODO 平板支撑4组(2:35起).
+**** TODO 跑步半小时.
+今天下午华为电面，晚上啥都没干，看一晚上porn.
+** 3日
+*** 工作
+**** DONE 毕业论文：第1章完成AMT构建.
+**** DONE APUE: 4.18.
+**** DONE TPE: 15.3, 15.4.
+*** 锻炼
+**** DONE 反拉4组(12, 10, 8, 7).    
+**** DONE 平板支撑4组(2:35起).
+**** DONE 跑步半小时.
+
+** 4日
+*** 工作
+**** DONE 毕业论文：第1章verifcation, character map.
+**** DONE APUE: 4.19.
+**** DONE TPE: 内存虚拟化第15章看完.
+*** 锻炼
+**** DONE 正拉4组(12, 10, 8, 7).    
+**** HALFDONE 平板支撑4组(2:35起).
+     - State "HALFDONE"   from "TODO"       [2017-08-04 五 19:56]
+**** TODO 跑步半小时.
+** 5日
+*** 工作
+**** TODO 毕业论文：第1章翻译到实验部分前.
+**** DONE TPE: 内存虚拟化 16.1.
+*** 锻炼
+**** TODO 反拉4组(12, 10, 8, 7).    
+**** TODO 平板支撑4组(2:35起).
+**** DONE 跑步半小时.
+**** 总结
+今日老婆回娘家，独自一人扫楼后下午破戒。马上立秋了，到了收敛的日子，争
+取戒一个秋天!
+** 6日(1/11)
+*** 工作
+**** DONE 毕业论文：第1章翻译到实验部分前.
+**** APUE: 
+**** DONE TPE: 内存虚拟化 16.2.
+
+*** 锻炼
+**** DONE 反拉4组(12, 10, 8, 7).    
+**** TODO 平板支撑4组(2:35起).
+**** DONE 跑步半小时.
+**** 总结
+今天爸妈玩崆峒山归来，状态还行。
+
+** 7日(2/12)
+*** 工作
+**** DONE 毕业论文：第1章完成.
+**** TODO APUE: 4.20.
+**** TODO TPE: 内存虚拟化 16.2.
+
+*** 锻炼
+**** DONE 正拉4组(11, 9, 7, 6).    
+**** TODO 平板支撑4组(2:35起).
+**** TODO 跑步半小时.
+**** 总结
+今天陪老婆去医院, 下大雨返回. 状态一般, 写论文花了不少时间.导致其它任务没有完成.
+** 8日(3/13)
+*** 工作
+**** DONE 毕业论文：第2章前3节.
+**** DONE APUE: 4.21.
+**** DONE TPE: 内存虚拟化 16.3.
+
+*** 锻炼
+**** DONE 反拉4组(11, 9, 7, 6).    
+**** TODO 平板支撑4组(2:35起).
+**** TODO 跑步半小时.
+**** 总结
+** 9日(0/14)
+*** 工作
+**** DONE 毕业论文：第2章"实现技术"之前.
+**** TODO APUE: 4.20.
+**** TODO TPE: 内存虚拟化 16.4, 16.5.
+
+*** 锻炼
+**** DONE 反拉4组(11, 9, 7, 6).    
+**** TODO 平板支撑4组(2:35起).
+**** TODO 跑步半小时.
+**** 总结
+下午看porn, 但每犯瘾.
+** 10日(0/15)
+*** 工作
+**** TODO 毕业论文：第2章"实现技术"一节.
+
+*** 锻炼
+**** TODO 跑步半小时.
+**** 总结
+** 12日(1/17)
+*** 工作
+**** DONE 毕业论文：第2章完成.
+**** DONE TPE: 16.4, 16.5.
+**** DONE APUE: 4.22 例子之前.
+*** 锻炼
+**** DONE 跑步半小时.
+**** DONE 反拉(13, 11, 8, 7)
+**** 总结
+** 13日(/)
+*** 工作
+**** TODO 毕业论文：致謝，调格式.
+**** TODO TPE: 16.6, 16.67.
+**** TODO APUE: 4.22.
+*** 锻炼
+**** TODO 跑步半小时.
+**** TODO 正拉(13, 11, 8, 7)
+**** 总结
+** 25日(4/31)
+*** 工作
+**** DONE 毕业论文：通篇检查, 提交查重.(上午)
+**** TODO 填写论文自评表.(下午)
+**** DONE APUE: 4.23.
+*** 锻炼
+**** TODO 跑步半小时.
+**** DONE 正拉(13, 11, 8, 7)
+**** 总结
+** 26日(/)
+*** 工作
+**** TODO 毕业论文：修改所有图。
+**** DONE APUE: 第4章结束.
+**** DONE TPE: 16.1, 16.2, 16.3f
+*** 锻炼
+**** TODO 跑步半小时.
+**** DONE 反拉(13, 11, 8, 7)
+**** TODO 冥想5分钟.
+**** 总结
+
+
+* 九月
+
+十一之前: 完成APUE第三章(文件I/O); TPE第18章(分页); <接口>完成第9章(哈
+希表)和第3章(原子).
+
+** 20日(1)
+*** DONE OS: APUE(3.4, 3.5), TPE(17章结束).
+*** DONE 提交论文.
+** 21日(2)
+*** DONE OS: APUE(3.6, 3.7, 3.8); TPE(在确保APUE任务完成的前提下，第18章能看多少算多少).
+*** DONE C: 接口(8.1, 8.2).
+*** DONE emacs: elisp(第2章完成, 第3章完成declare variables). cc-mode(1, 2, 3).
+*** DONE Linux: 基础命令(进程命令ps及相关).
+*** DONE 杂事: 洗毛巾（中午完成)。
+
+** 22日(3)
+*** DONE OS: APUE(回顾3.8, 3.9 多做实验); TPE(18.1).
+*** DONE C: 接口(8.3看完).
+*** DONE emacs: elisp(Saving and Restoring Point). cc-mode(4.1, 4.2).
+*** DONE Linux: 基础命令(进程命令ps及相关，继续).
+*** DONE 杂事: 洗鞋（中午完成)。
+
+** 23日(4)
+*** DONE 提交明审论文
+*** OS
+**** DONE APUE(3.10)
+**** DONE TPE(18.2).
+*** DONE C: 接口(8.3实现并运行).
+*** emacs: 
+**** DONE elisp(Window Appearence, Detecting Errors). 
+**** DONE cc-mode(4.3).
+*** DONE Linux: 基础命令(grep).
+*** DONE 杂事: 洗背心（中午完成)。
+晚上看<金刚狼3>
+
+** 24日(5)
+*** OS
+**** DONE APUE(3.11)
+**** DONE TPE(18.3, 18.4).
+*** DONE C: 接口(8.2实现并运行).
+*** emacs: 
+**** DONE elisp(Generalizing the Solution). 
+**** DONE cc-mode(4.4).
+*** TODO Linux: 基础命令(grep).
+*** DONE 杂事: 收拾桌子（中午完成)。
+今天手机吵架, 晚上心情很差.
+
+** 25日(6)
+*** OS
+**** DONE APUE(3.12, 3.13)
+**** DONE TPE(温习18.3, 18.4).
+*** DONE C: 接口(第3章原子看完).
+*** emacs: 
+**** DONE elisp(Using this-command). 
+**** DONE cc-mode(4.5).
+*** TODO Linux: 基础命令(grep).
+*** DONE 杂事: 厨房拖地（中午完成)。
+
+** 26日
+*** OS
+**** DONE APUE(3.14第一个例子)
+**** DONE TPE(18章看完).
+*** TODO C: 接口(第3章实现).
+*** emacs: 
+**** TODO elisp(Using this-command). 
+**** TODO cc-mode(4.6).
+*** TODO Linux: 基础命令(grep).
+*** TODO 杂事: 厨房水池清理.（中午完成)。
+    
+今日破戒，由于昨晚handjob.
+
+** 27日(1)
+*** OS
+**** DONE APUE(3.14完成)
+**** DONE TPE(温习18.1).
+*** TODO C: 接口(第3章实现).
+*** emacs: 
+**** TODO elisp(Using this-command). 
+**** TODO cc-mode(4.6).
+*** DONE SCIP: 1.1.1~1.1.3
+*** DONE 杂事: 理发, 存钱.（中午完成)。
+    
+** 28日(2)
+*** OS
+**** DONE APUE(第3章看完:3.15, 3.16)
+**** DONE TPE(温习18.2 ~ 18.4).
+*** DONE C: 接口(第3章实现).
+*** emacs: 
+**** TODO elisp(Using this-command). 
+**** TODO cc-mode(4.6).
+*** TODO SCIP: 1.1.4 ~ 1.1.6.
+*** TODO 杂事: 清理水池.
+上午帮大姨搬东西，送她回去。晚上去高陵住, 只能写程序。
+
+
+** 29日(3)
+*** OS
+**** TODO APUE(第3章看完习题)
+**** DONE TPE(结束第18章).
+*** TODO C: 接口(第3章，第9章最后完善).
+*** emacs: 
+**** TODO elisp(Using this-command). 
+**** TODO cc-mode(4.6).
+*** DONE SCIP: 1.1.4 ~ 1.1.6.
+*** TODO 杂事: 清理水池.
+
+** 30日(4)
+*** OS
+**** DONE APUE(第3d章看完习题)
+*** TODO C: 接口(第3章，第9章最后完善).
+*** TODO SCIP: 温习1.1.4 ~ 1.1.6(包括习题).
+
+* 十月
+
+十一期间(1~8号)任务:
+TPE:第19章过一篇.
+
+** 1日(5)
+*** OS
+**** DONE APUE(5.4)
+**** DONE TPE(19.1).
+*** TODO C: 接口(第3章，第9章最后完善).
+*** MLCS论文：1, 2节。
+*** emacs: 
+**** TODO elisp(Using this-command). 
+**** TODO cc-mode(4.6).
+*** TODO SCIP: 1.1.7包括习题.
+*** TODO 杂事: 清理水池.
+
+** 2日(6)
+*** OS
+**** TODO APUE(5.5)
+**** TODO TPE(19.2).
+*** TODO C: 接口(第3章，第9章最后完善).
+*** MLCS论文：1, 2节。
+*** emacs: 
+**** DONE elisp(Using this-command). 
+**** TODO cc-mode(4.6).
+*** DONE SCIP: 1.1.7包括习题.
+*** TODO 杂事: 清理水池.
+
+
+** 3日(7)
+*** OS
+**** DONE APUE(5.5)
+**** DONE TPE(19.2).
+*** DONE SCIP: 1.1.8.
+*** TODO C: 接口(第3章，第9章最后完善).
+*** DONE MLCS论文：1, 2节。
+*** emacs:
+*** DONE elisp(Symbol Properties). 
+**** DONE cc-mode(4.6).
+*** DONE 杂事: 刷马桶, 灶台.
+
+** 4日(8)
+*** OS
+**** DONE APUE(5.6)
+**** DONE TPE(19.3).
+*** DONE C: 接口(习题3.8).
+*** TODO MLCS论文：3节算法部分(证明之前)。
+*** emacs: 
+**** TODO elisp(第3章看完). 
+**** DONE cc-mode(4.7, 4.8).
+*** DONE SCIP: 1.2.1.
+*** TODO 杂事: 卫生间.
+
+** 5日(9)
+*** OS
+**** DONE APUE(5.7, 5.8)
+**** DONE TPE(19.4).
+*** DONE C: 接口(习题3.9).
+*** TODO MLCS论文：3节算法部分(证明之前)。
+*** emacs: 
+**** TODO elisp(第3章看完). 
+**** DONE cc-mode(4.9, 4.10).
+*** DONE SCIP: 1.2.1习题, 1.2.2 实例之前.
+*** TODO 杂事: 卫生间.
+
+** 6日(10)
+*** DONE 论文总结
+*** OS
+**** TODO APUE(温习5.7, 5.8; 看5.9)
+**** TODO TPE(19.5).
+*** TODO MLCS论文：3节算法部分(证明之前)。
+*** emacs: 
+**** DONE elisp(第3章看完). 
+*** TODO SCIP: 习题1.10, 1.2.2实例.
+*** TODO 杂事: 卫生间.
+
+** 7日()
+
+*** TODO MLCS论文：3节算法部分看懂。
+*** TODO SCIP: 习题1.10, 1.2.2实例.
+*** TODO 杂事: 卫生间.
+
+** 8日
+
+   今天破戒.
+
+** 9日(1)
+*** 上午:
+**** DONE APUE(温习5.7, 5.8; 看5.9)
+**** DONE TPE(19.5).
+*** 下午: 
+**** DONE 讨论课ppt初稿.
+*** 晚上:
+**** DONE elisp(第3章看完). 
+**** DONE SCIP: 1.2.2实例.
+
+** 10日(2)
+*** 上午:
+**** DONE APUE(5.10)
+**** DONE TPE(19章看完).
+*** 下午: 
+**** DONE 深入研究算法, 完善讨论课ppt.
+*** 晚上:
+***** TODO elisp(第4章:Inserting the Current Time). 
+***** TODO SCIP: 1.2.2节习题.
+
+** 11日(3)
+*** 上午:
+**** DONE TPE(温习19章缀后两节)
+*** 下午: 
+    讨论
+*** 晚上:
+***** DONE elisp(第4章:Inserting the Current Time). 
+***** TODO SCIP: 1.2.3, 练习1.14.
+
+** 12日
+*** 上午:
+**** TODO APUE(5.10)
+**** DONE TPE(温习19.1, 19.2).
+*** 下午: 
+**** TODO emacs: cc-mode: 第6章.
+**** 
+*** 晚上:
+***** TODO elisp(第4章:User Options and Docstrings). 
+***** TODO SCIP: 1.2.2节习题.
+下午破戒.
+
+
+** 13日(1)
+*** 上午:
+**** DONE APUE(5.11)
+**** DONE TPE(温习19.3, 19.4).
+*** 下午: 
+**** DONE C接口: 9.1
+**** 
+*** 晚上:
+***** TODO elisp(第4章:User Options and Docstrings). 
+***** DONE SCIP: 1.2.3, 练习1.14.
+
+** 14日(2)
+*** 上午:
+**** DONE APUE(5.12)
+**** DONE TPE(第19章结束).
+*** 下午: 
+**** DONE emacs: cc-mode: 第6章.
+**** 
+*** 晚上:
+**** DONE C接口: 9.2.
+**** TODO elisp(第4章:User Options and Docstrings). 
+
+** 15日()
+*** 上午:
+**** TODO APUE(5.13)
+**** TODO TPE(第19章Homework).
+*** 下午: 
+**** TODO emacs: cc-mode: 6.1.
+*** 晚上:
+**** TODO C接口: 9.2看完.
+**** TODO elisp(第4章:User Options and Docstrings). 
+
+** 18日(6)
+*** 上午:
+**** DONE TPE(20.1).
+*** 晚上:
+**** DONE C接口: 9.3.1看完.
+
+** 19日()
+*** 上午:
+**** DONE APUE(5.14)
+**** DONE TPE(20.2).
+*** 下午: 
+**** DONE C接口: 9.3.2.
+**** TODO emacs: cc-mode: 6.2.
+*** 晚上:
+**** TODO SCIP: 1.2.4正文.
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+** 20日(破戒)
+** 21日(1)
+*** 上午:
+**** DONE TPE:温习20.2.
+*** 下午: 
+**** DONE C接口: 温习9.3.1.
+**** DONE emacs: cc-mode: 6.2.
+*** 晚上:
+**** DONE SCIP: 1.2.4正文.
+**** DONE elisp(第4章:Inserting the Current Time实现出来). 
+** 22日(2)
+*** 下午: 
+**** DONE C接口: 温习9.3.2.
+*** 晚上:
+**** DONE SCIP: 1.2.4正文.
+** 23日(3)
+*** 上午:
+**** DONE TPE:20.3第一部分.
+**** DONE emacs: cc-mode: 6.3.1, 6.3.2.
+**** TODO APUE:.
+*** 下午: 
+**** TODO C接口: 实现9.3.1.
+*** 晚上:
+**** DONE SCIP: 练习1.17~1.18.
+**** TODO elisp(第4章:). 
+
+** 24日(1)
+*** 上午:
+**** TODO TPE:20.3第二部分.
+*** 下午: 
+**** TODO C接口: 实现9.3.1.
+**** TODO emacs: cc-mode: 6.3.3.
+*** 晚上:
+**** TODO SCIP: 练习1.19.
+**** DONE elisp(第4章:Inserting the Current Time实现出来). 
+
+** 25日(1)
+*** 上午:
+**** TODO TPE:20.3第3部分.
+**** TODO APUE:.
+*** 下午: 
+**** TODO C接口: 实现9.3.1.
+**** TODO emacs: cc-mode: 6.3.3.
+*** 晚上:
+**** TODO SCIP: 练习1.19.
+**** DONE elisp(第4章:Inserting the Current Time实现出来). 
+** 26日(2)
+上午下午去接英姿姐.
+*** 晚上:
+**** DONE TPE:18章 "More Than Two Levels".
+**** DONE APUE:5.1~5.3.
+**** DONE SCIP: 练习1.19.
+
+** 27日(3)
+**** DONE TPE: 20章看完.
+**** DONE APUE: 5.4细节.
+**** DONE C接口: 实现9.3.1.
+**** TODO emacs: cc-mode: 6.3.3.
+**** DONE SCIP: 1.2.5节.
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+** 28日(破戒, 啥都没干)
+**** TODO TPE: 温习20.1, 20.2.
+**** TODO APUE: 5.5细节.
+**** TODO C接口: 测试集合基本函数.
+**** TODO emacs: cc-mode: 6.3.3.
+**** TODO SCIP: 练习1.20, 1.2.6(寻找因子).
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+
+** 29日(1)
+**** DONE TPE: 温习20.1, 20.2.
+**** DONE APUE: 5.5细节.
+**** DONE C接口: 测试集合基本函数.
+**** DONE emacs: cc-mode: 6.3.3.
+**** DONE SCIP: 练习1.20.
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+** 30日(2)
+**** DONE TPE: 温习20.3前两部分.
+**** DONE APUE: 5.6细节.
+**** DONE C接口: 交集, 并集.
+**** DONE emacs: cc-mode: 6.3.5以及重温整个style设置.
+**** DONE SCIP: 1.2.6(寻找因子).
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+** 31日(3)
+**** DONE TPE: 20章结束.
+**** DONE APUE: 5.7细节.
+**** DONE C接口: 差集, 对称差.
+**** DONE emacs: cc-mode: 7.
+**** DONE SCIP: 1.2.6(费马检查, 概率方法).
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+* 11月
+** 1日(4)
+**** DONE TPE: 21.1.
+**** DONE APUE: 5.8细节.
+**** TODO emacs: cc-mode: 温习基本设置6.
+**** DONE SCIP: 1.2.6细节.
+**** TODO elisp: 第4章 . 
+
+** 2日(5)
+**** DONE TPE: 21.2.
+**** TODO APUE: 5.9细节.
+**** TODO C接口: .
+**** TODO emacs: cc-mode: 温习基本设置6.
+**** TODO SCIP: 1.2.6.
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+** 3日(6)
+**** DONE TPE: 21.3.
+**** TODO APUE: 5.10细节.
+**** TODO emacs: cc-mode: 温习基本设置6.
+**** DONE SCIP: 练习1.22, 1.23, 1.24.
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+** 4日(破戒)
+**** DONE TPE: 21.4, 21.5.
+**** TODO APUE: 5.10细节.
+**** TODO C接口: .
+**** TODO emacs: cc-mode: 温习基本设置6.
+**** TODO SCIP: 练习1.2.5, 1.26, 1.27.
+**** TODO elisp(第4章:Inserting the Current Time实现出来). 
+
+** 5日(1)
+**** TODO TPE: 21章完成.
+
+** 6日(2)
+*** 下午
+**** TODO 高维向量转化为数(ppt).
+*** 晚上
+**** TODO TPE: 温习21.1.
+**** TODO APUE: 5.10细节.
+** 7日(破戒)
+明天汇报压力加之迟迟未受到offer造成破戒。今天主要是做ppt。
+** 8日(1)
+*** DONE 上午继续做汇报ppt降维部分。
+*** TODO 晚上给张晓明写审稿意见。休整。
+** 9日(2)
+*** DONE 上午写三方寄走。
+*** DONE 下午给张晓明写审稿意见。
+*** DONE 晚上TPE:21.1~21.3.
+** 10日(3)
+*** DONE TPE:21章正文结束。
+*** DONE APUE:5.10细节.
+*** DONE SCIP: 练习1.25~1.27.
+** 11日(4)
+*** DONE TPE:21章课后作业mem.c源代码理解.
+*** DONE APUE: 5.12细节。
+*** TODO SCIP: 练习1.28.
+** 12日(5)
+*** TODO TPE:21章课后作业实验.
+*** TODO APUE: 5.13细节。
+*** TODO SCIP: 练习1.28.
+** 13日(6)
+*** DONE TPE:21章课后作业实验.
+*** DONE APUE: 5.13细节。
+*** TODO SCIP: 练习1.28.
+** 14日(破戒)
+*** DONE 填写《博士论文审批书》
+*** DONE TPE:22.1.a
+*** TODO APUE: 5.13细节。
+*** TODO SCIP: 练习1.28.
+** 15日(破戒)
+*** DONE 填写《人员基本情况表》
+*** DONE TPE:22.2.
+*** TODO APUE: 5.13细节。
+*** TODO SCIP: 练习1.28.
+** 16日(1)
+*** TODO 继续填写答辩前相关表格.
+*** DONE TPE:22.3, 22.4.
+*** DONE APUE: 5.13细节。
+*** DONE SCIP: 搞懂高阶函数.
+** 17日(2)
+*** TODO 继续填写答辩前相关表格.
+*** DONE TPE:22.5.
+*** TODO APUE: 第5章彻底结束。
+*** TODO SCIP: 练习1.29.
+** 18日(破戒)
+*** TODO 继续填写答辩前相关表格.
+*** TODO TPE:22.6.
+*** TODO APUE: 第5章彻底结束。
+*** TODO SCIP: 练习1.29.
+** 19日(1)
+*** 学习
+**** TODO 继续填写答辩前相关表格.
+**** DONE TPE:22.6.
+**** DONE APUE:6.1, 6.2。
+**** DONE SCIP: 练习1.30, 1.31.
+**** TODO C:温习set代码.
+*** 锻炼
+**** DONE 麦式.
+**** DONE 跑步.
+**** DONE 平板.
+**** DONE 正手.
+**** TODO 冥想.
+** 20日(2)
+*** 学习
+**** DONE TPE:22.7.
+**** DONE APUE:6.3, 6.4。
+**** DONE SCIP: 练习1.32.
+*** 锻炼
+**** DONE 麦式.
+**** DONE 平板.
+**** DONE 反手.
+**** DONE 冥想.
+** 21日(3)
+*** 学习
+**** DONE 继续填写答辩前相关表格.
+**** DONE PPT: 多模式匹配问题介绍.
+*** 锻炼
+**** DONE 麦式.
+**** DONE 平板.
+**** DONE 正手.
+**** DONE 冥想.
+**** DONE 跑步.
+** 22日(4)
+*** 学习
+**** DONE 继续填写答辩前相关表格.
+**** DONE PPT: 多模式匹配完成.
+**** DONE APUE:6.5.
+**** DONE SCIP:类型1.33.
+*** 锻炼
+**** TODO 麦式.
+**** TODO 平板.
+**** TODO 反手.
+**** DONE 冥想.
+** 23日
+*** 学习
+**** DONE 继续填写答辩前相关表格.
+**** TODO PPT: 后缀排序完成.
+**** TODO APUE:6.6, 6.7.
+**** DONE SCIP:1.3.2lambda部分.
+**** DONE TPE: 22章完成.
+*** 锻炼
+**** TODO 麦式.
+**** TODO 平板.
+**** TODO 正手.
+**** TODO 冥想.
+**** TODO 跑步.
+** 24日
+*** 学习
+**** DONE 继续填写答辩前相关表格.
+**** TODO PPT: 后缀排序完成.
+**** TODO APUE:6.6, 6.7.
+**** TODO SCIP:1.3.2lambda部分.
+**** TODO TPE: 温习22.1, 22.2.
+*** 锻炼
+**** DONE 麦式.
+**** DONE 平板.
+**** DONE 正手.
+**** TODO 冥想.
+**** DONE 跑步.
+** 25日
+*** 答辩
+**** TODO 继续填写答辩前相关表格.
+**** DONE 抄写所有评审意见，回答好答的意见.
+*** 锻炼
+**** DONE 麦式.
+**** DONE 平板.
+**** TODO 反手.
+**** DONE 冥想.
+* 12月
+** 15日
+*** 学习
+**** DONE TPE:温习22.1, 22.2.
+**** DONE APUE:6.8, 6.9.
+**** DONE SCIP:1.3.2.
+**** DONE C:温习hashtab代码.
+*** 锻炼
+**** DONE 麦式。
+**** DONE 平板。
+**** DONE 冥想。
+**** TODO 正手。
+**** TODO 跑步。
+** 16日
+*** 学习
+**** DONE TPE:温习22.3~22.5.
+**** TODO SCIP:1.3.3第一部分.
+**** DONE C:温习set代码。
+*** 锻炼
+**** TODO 麦式。
+**** TODO 冥想。
+**** TODO 平板。
+**** TODO 正手。
+**** DONE 跑步。
+** 17日
+*** 学习
+**** DONE TPE:温习22.6, 22.7.
+**** DONE APUE:6.10开始.
+**** DONE SCIP:1.3.3第一部分.
+**** DONE C:温习atom.
+*** 锻炼
+**** DONE 麦式。
+**** DONE 冥想。
+**** DONE 平板。
+**** DONE 反手。
+**** DONE 跑步。
+** 18日
+*** 学习
+**** DONE TPE:温习22章结束.
+**** DONE APUE:继续6.10.
+**** DONE SCIP:1.3.3 不动点.
+**** DONE C:温习9.2节.
+*** 锻炼
+**** DONE 麦式。
+**** DONE 冥想。
+**** DONE 平板。
+**** DONE 正手。
+**** TODO 跑步。
+** 19日
+*** 学习
+**** DONE TPE:温习13.1, 13.2, 13.3.
+**** TODO APUE:6.8, 6.9.
+**** TODO SCIP:1.3.3第一部分.
+**** DONE C:完成9.2节.
+*** 锻炼
+**** TODO 麦式。
+**** TODO 冥想。
+**** TODO 平板。
+**** TODO 正手。
+**** TODO 跑步。
+** 20日
+*** 学习
+**** TODO TPE:温习13章结束.
+**** TODO APUE:6.8, 6.9.
+**** TODO SCIP:1.3.3第一部分.
+**** TODO C:完成9.2节xref构造部分代码.
+*** 锻炼
+**** TODO 麦式。
+**** TODO 冥想。
+**** TODO 平板。
+**** TODO 正手。
+**** TODO 跑步。
+** 23日
+*** 学习
+**** TODO TPE:温习14.1~14.3.
+**** TODO APUE:7.1~7.3.
+**** TODO SCIP:1.3.3第一部分.
+**** TODO C:完成9.2节xref构造部分代码.
+**** DONE JOC投稿.
+*** 锻炼
+**** TODO 麦式。
+**** TODO 冥想。
+**** TODO 平板。
+**** TODO 正手。
+**** TODO 跑步。
+
+
+2018年
+
+
+2018年
+
+
+2018年
+* 1月
+** 6日
+*** 学习
+**** DONE TPE:15章完结.
+**** DONE APUE:7.6,7.7.
+*** 锻炼
+**** DONE 平板。
+**** DONE 跑步。
+** 7日
+*** 学习
+**** DONE TPE: 温习16.1, 16.2.
+**** DONE APUE:7.8.
+**** TODO SCIP:1.3.3第一部分.
+**** DONE C:完成9.2节xref构造部分代码.
+*** 锻炼
+**** DONE 瑜伽。
+**** DONE 冥想。
+**** TODO 平板。
+**** DONE 正手。
+**** DONE 跑步。
+** 8日
+*** 学习
+**** DONE TPE: 16章完结.
+**** TODO APUE:7.9.
+**** TODO SCIP:1.3.3第一部分.
+**** TODO C:完成9.2节xref输出代码.
+*** 锻炼
+**** TODO 瑜伽。
+**** TODO 冥想。
+**** TODO 平板。
+**** TODO 正手。
+**** TODO 跑步。   
+** 9日
+*** 学习
+**** TODO TPE: 17章看到第5页.
+**** TODO APUE:7.9.
+**** TODO SCIP:1.3.3第一部分.
+**** TODO C:完成9.2节xref输出代码.
+*** 锻炼
+**** TODO 瑜伽。
+**** TODO 冥想。
+**** TODO 平板。
+**** TODO 正手。
+**** TODO 跑步。   
+* 2月
+** 1日(修整)
+*** DONE TPE:20.1
+** 2日(接小孩)
+** 3日(打扫卫生)
+** 4日(帮爸妈打扫卫生)
+*** DONE TPE:20.2
+*** DONE elisp: 4.4, 4.5.
+** 5日(待小孩去吃哈根达斯)
+*** DONE TPE: 20.3第一部分.
+*** DONE APUE: 8.1, 8.2.
+*** DONE Emacs: IBuffer标记和执行标记. 
+** 6日(在家改KDD论文)
+*** DONE 论文前半部分(1/3).
+** 7日(在家改KDD论文)
+*** DONE 论文前半部分(2/3).
+*** DONE Emacs: IBuffer排序和过滤.
+** 8日(在家改KDD论文)
+*** DONE 论文基本完成.
+*** DONE Emacs: IBuffer过滤器及其它命令.
+*** DONE TPE:20.3第二部分.
+*** DONE Linux命令: unrar.
+** 9日(送小孩回家, 调格式)
+*** DONE 下午回来 EMACS: IBuffer过滤器分组.
+*** DONE 晚上 彻底完成论文.
+*** TODO TPE:20章完成.
+*** TODO Linux命令: rar.
+** 10日(打扫卫生)
+*** DONE TPE:20.3完成.
+** 11日(改论文，投出去)
+*** DONE 论文投稿.
+*** DONE TPE:20章完成.
+*** DONE Linux命令: unzip.
+** 12日
+*** DONE TPE:21.1~21.3.
+*** DONE APUE: 8.3节第一部分.
+** 13日(外出)
+*** DONE TPE:21完成.
+** 14日(学习)
+*** DONE TPE:22.1~22.4.
+*** DONE APUE: 8.3.
+*** DONE Linux命令: watch.
+** 15日(年三十)
+*** DONE TPE: 树莓派上做21章课后作业实验.
+** 16日(学习，收拾东西)
+*** DONE TPE: 22.5, 22.6.
+*** DONE APUE:8.4.
+** 17日(出发去重庆)
+*** DONE TPE: 22章结束(路上看完).
+*** TODO APUE: 8.5.
+** 20日(夏子结婚, 准备返程)
+*** DONE TPE:23.1, 23.2.
+** 21日(回西安)
+*** DONE TPE:23.3.
+** 22日(去英姿家, 回我家)
+今天忙了一天, 晚上回来锻炼身体, 没有学习.
+** 23日(出租屋打扫卫生)
+*** DONE TPE:23章结束.
+*** DONE APUE:8.5.
+** 24日(学习)
+*** DONE TPE:温习23章.
+*** TODO APUE:8.6第一部分.
+* 3月
+** 10日
+*** DONE APUE:8.9完成.
+** 11日
