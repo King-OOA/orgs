@@ -1364,29 +1364,35 @@
    2. int execle(char const *path, char const *arg0, char const *arg1,
       ..., NULL, char *const envp[]);
    将当前进程映像替换为路径path所指定的程序, 并赋予参数arg0, arg1,
-   ..., 并赋予环境向量envp.
+   ..., 并赋予环境向量envp(以NULL结尾).
  
    3. int execlp(char const *file, char const *arg0, char const *arg1,
       ..., NULL);
    将当前进程映像替换为文件名file(路径通过搜索环境变量PATH得到)所指定
-   的程序, 并赋予参数arg0, arg1, ....
+   的程序, 并赋予参数arg0, arg1, ... . 注: 若file中包含路径符"/"则忽略
+   PATH, 直接将file作为路径.
 
    4. int execv(char const *path, char *const argv[]);
-   将当前进程映像替换为路径path所指定的程序, 并赋予参数向量argv中的参
-   数.
+   将当前进程映像替换为路径path所指定的程序, 并赋予参数向量argv(以NULL
+   结尾)中的参数.
 
    5. int execve(char const *path, char *const argv[], char *const
       envp[]);
-   将当前进程映像替换为路径path所指定的程序, 并赋予参数向量argv中的参
-   数, 和环境向量envp.
+   将当前进程映像替换为路径path所指定的程序, 并赋予参数向量argv(以NULL
+   结尾)中的参数, 和环境向量envp(以NULL结尾). 注: 该函数为系统调用,
+   其余函数均是对其的封装.
 
    6. int execvp(char const *file, char *const argv[]);
    将当前进程映像替换为文件名file(路径通过搜索环境变量PATH得到)所指定
-   的程序, 并赋予参数向量argv.
+   的程序, 并赋予参数向量argv(以NULL结尾). 注: 若file中包含路径符"/"则
+   忽略PATH, 直接将file作为路径.
 
-   7. int fexecve(int fd, char *const argv[], char *const envp[]);
-   将当前进程映像替换为文件描述符fd所指定的程序, 并赋予参数向量argv和
-   环境向量envp.
+   7. int execvpe(char const *file, char *const argv[], char *const envp[])
+   同上. 多了一个环境变量数组envp(以NULL结尾). 注: 该函数为Linux专属.
+
+   8. int fexecve(int fd, char *const argv[], char *const envp[]);
+   将当前进程映像替换为文件描述符fd所指定的程序, 并赋予参数向量argv(以
+   NULL结尾)和环境向量envp(以NULL结尾).
 
    以上函数的返回值: 成功, 不返回任何值; 出错, 返回-1.
 
