@@ -21,46 +21,46 @@
 
    其中oflag参数由以下常量的"按位或"构成:
 
-    O_RDONLY(0) : 以只读方式打开.
-    O_WRONLY(1) : 以只写方式打开.
-    O_RDWR(2)   : 以读写方式打开.
+   O_RDONLY(0) : 以只读方式打开.
+   O_WRONLY(1) : 以只写方式打开.
+   O_RDWR(2)   : 以读写方式打开.
    
    注: 以上三个常量必须有且仅有一个. 以下常量为可选项:
    
-    O_CREAT : 当指定文件不存在时, 将产生一个新文件. 需要mode参数指定新
-    文件权限. 若文件已经存在, 则该文件不受mode参数的影响. 注: 无法用于
-    产生目录.
-    O_EXCL : 当使用O_CREAT且指定文件已经存在时, 将产生错误(返回-1).
-
-    O_DIRECTORY : 当pathname指定的文件不是目录时, 将产生错误(返回-1).
-    O_NOFOLLOW : 当pathname指定的文件为符号链接时, 将产生错误(返回-1).
-
-    O_SYNC : 每次写操作, 都需要等对文件数据和属性信息的更新完成.
-    O_DSYNC : 类似于O_SYNC, 但是只同步文件的数据信息和必要的属性信息.
-
-    O_TRUNC : 当使用O_WRONLY或O_RDWR方式打开已存在文件时, 将文件长度截取为0.
-
-    O_APPEND : O_APPEND方式打开, 则每次write之前(不影响read操作), 会将
+   O_CREAT : 当指定文件不存在时, 将产生一个新文件. 需要mode参数指定新
+   文件权限. 若文件已经存在, 则该文件不受mode参数的影响. 注: 无法用于
+   产生目录.
+   O_EXCL : 当使用O_CREAT且指定文件已经存在时, 将产生错误(返回-1).
+   
+   O_DIRECTORY : 当pathname指定的文件不是目录时, 将产生错误(返回-1).
+   O_NOFOLLOW : 当pathname指定的文件为符号链接时, 将产生错误(返回-1).
+   
+   O_SYNC : 每次写操作, 都需要等对文件数据和属性信息的更新完成.
+   O_DSYNC : 类似于O_SYNC, 但是只同步文件的数据信息和必要的属性信息.
+   
+   O_TRUNC : 当使用O_WRONLY或O_RDWR方式打开已存在文件时, 将文件长度截取为0.
+   
+   O_APPEND : O_APPEND方式打开, 则每次write之前(不影响read操作), 会将
    文件的当前偏移量设置为文件末尾, 以确保每次写操作都在文件末尾进行.
    这会影响后续的读取操作.
-    
-    O_NOCITTY : 
-    O_CLOEXEC : 
-    O_NONBLOCK : 
-    O_TTY_INIT
-
-
-    用close关闭文件
-
-    #include <unistd.h>
-
-    int close(int fd);
-    关闭具有文件描述符fd的文件.
-
-    返回值: 成功, 返回0; 失败, 返回-1.
-
-    注: 进程结束时, 其打开的所有文件将由内核自动关闭.
-
+   
+   O_NOCITTY : 
+   O_CLOEXEC : 
+   O_NONBLOCK : 
+   O_TTY_INIT
+   
+   
+   用close关闭文件
+   
+   #include <unistd.h>
+   
+   int close(int fd);
+   关闭具有文件描述符fd的文件.
+   
+   返回值: 成功, 返回0; 失败, 返回-1.
+   
+   注: 进程结束时, 其打开的所有文件将由内核自动关闭.
+   
 ** 产生文件
 
    #include <fcntl.h>
@@ -1348,7 +1348,7 @@
    2. pid_t vfork(void);
    功能及返回值同fork. 与fork的区别在于: 父进程在子进程执行exit或exec
    之后才允许运行; 子进程在执行exec或exit之前, 与父进程共享全部地址空
-   间(即若此时在子进程中改变数据, 将体现在父进程中.
+   间, 若此时子进程改变数据, 将体现在父进程中.
 
 *** exec
 
@@ -1359,11 +1359,11 @@
    
    1. int execl(char const *path, char const *arg0, char const *arg1,
       ..., NULL);
-   将当前进程映像替换为路径path所指定的程序, 并赋予参数arg0, arg1, ...
-
+   将当前进程映像替换为绝对路径path所指定的程序, 并赋予参数arg0, arg1, ...
+   
    2. int execle(char const *path, char const *arg0, char const *arg1,
       ..., NULL, char *const envp[]);
-   将当前进程映像替换为路径path所指定的程序, 并赋予参数arg0, arg1,
+   将当前进程映像替换为绝对路径path所指定的程序, 并赋予参数arg0, arg1,
    ..., 并赋予环境向量envp(以NULL结尾).
  
    3. int execlp(char const *file, char const *arg0, char const *arg1,
@@ -1387,14 +1387,14 @@
    的程序, 并赋予参数向量argv(以NULL结尾). 注: 若file中包含路径符"/"则
    忽略PATH, 直接将file作为路径.
 
-   7. int execvpe(char const *file, char *const argv[], char *const envp[])
-   同上. 多了一个环境变量数组envp(以NULL结尾). 注: 该函数为Linux专属.
-
-   8. int fexecve(int fd, char *const argv[], char *const envp[]);
+   7. int fexecve(int fd, char *const argv[], char *const envp[]);
    将当前进程映像替换为文件描述符fd所指定的程序, 并赋予参数向量argv(以
    NULL结尾)和环境向量envp(以NULL结尾).
 
    以上函数的返回值: 成功, 不返回任何值; 出错, 返回-1.
+   
+   注: 以上函数中, p和e无法共存, 因为p寻找文件时需要依赖环境变量
+   (PATH), 而e会改变当前进程的环境变量.
 
 ** 进程终止(exit)
 
@@ -1410,7 +1410,6 @@
    
    3. void _Exit(int status);
    不执行任何清理工作, 直接退出进程, 并进入内核. 该函数为系统调用.
-   
 
    #include <unistd.h>
 
@@ -1419,25 +1418,26 @@
 
 ** 进程等待(wait)
 
-   调用进程可用wait函数族来检查其子进程的状态变化(但子进程无法用其检查
+   调用进程可用wait函数族来监测其子进程的状态变化(但子进程无法用其检查
    父进程的状态变化). 若子进程的状态已经发生变化, 调用wait函数族将立刻
    返回.
 
    若子进程先于父进程终止, 且父进程未(通过wait函数族)对其回收, 则子进
-   程将变为"僵尸"进程. 僵尸进程的内存和打开文件均已被回收, 但其pid, 终
-   止状态, 以及CPU使用时间等信息会被保留, 仍会占用进程表中的一项.  若
-   父进程终止, 则其(包括僵尸状态的)子进程将变为孤儿进程, 会被init进程
-   回收.
+   程将变为"僵尸"进程. 僵尸进程的内存和打开的文件均已被回收, 但其pid,
+   终止状态, 及CPU使用时间等信息会被保留, 仍会占用进程表中的一项. 若父
+   进程终止, 则其(包括僵尸状态的)子进程将变为孤儿进程, 会被init进程回
+   收.
 
    #include <sys/wait.h>
    
    1. pid_t wait(int *status_p)
-   阻塞调用进程, 直到其某个子进程终止, 将其终止状态存入status_p所指向
-   的整型变量中(若不关心终止状态, 则令status_p为NULL). 返回该子进程的
-   pid; 若调用进程没有子进程, 返回-1, 同时errno被置为ECHILD.
+   阻塞调用进程, 直到其任一子进程终止, 回收该子进程资源, 并将终止状态
+   存入status_p所指向的整型变量中(若不关心终止状态, 则令status_p为
+   NULL). 返回该子进程的pid; 若调用进程没有子进程, 返回-1, 同时errno被
+   置为ECHILD.
    
    2. pid_t waitpid(pid_t pid, int *status_p, int options);
-   阻塞调用进程, 直到由pid指定的子进程的状态发生变化(由options指定),
+   阻塞调用进程, 直到进程ID为pid的子进程的状态发生变化(由options指定),
    将其状态存入status所指向的整型变量中(若不关心其状态, 则令status_p为
    NULL), 返回该子进程的pid; 若pid指定的子进程不存在, 或此进程存在, 但
    不是调用进程的子进程, 则waitpid返回-1, 且errno被设置为ECHILD.
