@@ -1463,7 +1463,7 @@
 
    (1) WIFEXIT(status) : 当子进程正常终止时(即调用exit/_exit, 或在main
    中return)为真. 此时, 可用宏WEXITSTATUS(status), 来获取子进程传递给
-   exit/_exit/return的参数.
+   exit/_exit/return的参数(只有低8位, 范围: 0~255).
 
    (2) WIFSIGNALED(status): 当子进程被信号终止时为真(异常终止). 此时,
    可用宏WTERMSIG(status), 来获取导致子进程终止的信号值. 同时, 若子进

@@ -258,8 +258,6 @@
    程仓库. 首先在github上新建一个repository, 然后添加远程仓库URL:
    git@github.com:pz239/yourrepository.git
 
-
-
    git remote rm [远程仓库名] : 为当前仓库删除指定远程仓库.(并不会删除
    远程服务器上的仓库,只是删除其在本地的映像)
 

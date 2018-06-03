@@ -1,0 +1,45 @@
+* 概念
+
+镜像(image) : 静态程序.
+容器(container) : 镜像形成的进程.
+
+层级关系: 
+
+stack --> service --> container(app) 
+
+* 整体信息
+
+  docker --version : 查看docker版本.
+  docker info : 查看docker当前的详细状态信息.
+
+* 镜像
+** 查看
+
+   docker image ls : 列出所有镜像信息.
+
+** 构建
+
+   docker build -t [镜像名称] . : 在当前目录下构建docker镜像, 并指定名
+   称(必须都是小写字母).
+
+* 容器
+** 查看
+
+  docker ps : 查看运行中的容器列表.
+  docker container ls : 列出正在运行的容器.
+  docker container ls --all : 列出所有容器(包括退出的).
+  docker container ls -aq : 列出所有处于quite状态的容器ID.
+
+** 启动
+
+  docker run [镜像名称/ID] : 运行指定容器镜像. 同一镜像可以对应多个容
+  器实例.
+  -p [外部端口:容器内端口] : 将外部端口映射到容器内指定端口.
+  -d : 后台运行.
+
+** 停止
+
+  docker container stop [容器ID_1 容器ID_2 ...] : 终止运行指定容器(可
+  以是多个).
+
+
