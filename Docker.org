@@ -1,11 +1,13 @@
 * 概念
 
 镜像(image) : 静态程序.
-容器(container) : 镜像形成的进程.
+容器(container) : 镜像拉起的进程.(同一个镜像可以有多个容器实例)
 
 层级关系: 
 
-stack --> service --> container(app) 
+1. container(app) --> service --> stack
+2. image --> repository --> registry
+
 
 * 整体信息
 
@@ -32,14 +34,17 @@ stack --> service --> container(app)
 
 ** 启动
 
-  docker run [镜像名称/ID] : 运行指定容器镜像. 同一镜像可以对应多个容
-  器实例.
+  docker run [镜像名称/ID] : 运行指定容器镜像. 同一镜像可以对应多个容器实例.
+
   -p [外部端口:容器内端口] : 将外部端口映射到容器内指定端口.
   -d : 后台运行.
 
 ** 停止
 
-  docker container stop [容器ID_1 容器ID_2 ...] : 终止运行指定容器(可
+  docker container stop [容器ID1 容器ID2 ...] : 终止运行指定容器(可
   以是多个).
 
 
+** 进入
+
+   docker exec -it [容器ID] /bin/bash
