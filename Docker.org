@@ -8,22 +8,54 @@
 1. container(app) --> service --> stack
 2. image --> repository --> registry
 
-
-* 整体信息
+* 查看信息
 
   docker --version : 查看docker版本.
   docker info : 查看docker当前的详细状态信息.
 
+  docker system df : 查看本机上所有镜像, 容器, 数据卷所占用空间大小.
+  
 * 镜像
+** 获取
+
+   docker pull [选项] [镜像仓库地址(域名或IP):端口号/仓库名:标签]
+   
+   注:若'镜像仓库地址:端口号'缺失, 则默认为是'Docker hub';若仓库名缺失,则
+   默认为是'library'即官方镜像.
+
 ** 查看
 
-   docker image ls : 列出所有镜像信息.
+   1. docker image ls [选项]: 列出所有镜像信息.
+      注: 同一个镜像(ID唯一)可以对应多个标签.
+
+    可加如下选项:  
+    [仓库名] : 仅显示特定仓库中的镜像.
+    [仓库名:标签] : 仅显示指定的镜像. 
+
+    -a: 显示包括中间层镜像.
+    -q: 仅显示镜像ID.(配合过滤器使用, 作为其它docker命令的输入参数)  
+    -f dangling=true : 仅显示虚悬镜像.
+    -f since=[仓库名:标签(缺省为latest)] : 仅显示在指定镜像构建之后构建的镜像.
+    -f before=[仓库名:标签(缺省为latest)] : 仅显示在指定镜像构建之前构建的镜像.
+    -f label=[标签] : 仅显示具有指定标签(构建时指定)的镜像.  
+    --format [Go模板] : 根据格式模板显示结果.
+    --digests : 查看镜像摘要.
+
+** 删除
+
+   docker rm [选项] <镜像1> <镜像2> ... : 删除本地镜像.
+
+   其中<镜像>可以是: 镜像ID(可以是具有唯一性的最短ID), 镜像名(镜像仓
+   库:标签), 镜像摘要.
+   
+   可以配合`docker image ls -q ...` 来批量删除镜像, 例如:
+   docker image rm $(docker image ls -q -f since=ubuntu)
 
 ** 构建
 
    docker build -t [镜像名称] . : 在当前目录下构建docker镜像, 并指定名
    称(必须都是小写字母).
-
+   
 * 容器
 ** 查看
 
@@ -32,19 +64,26 @@
   docker container ls --all : 列出所有容器(包括退出的).
   docker container ls -aq : 列出所有处于quite状态的容器ID.
 
-** 启动
+** 运行
 
-  docker run [镜像名称/ID] : 运行指定容器镜像. 同一镜像可以对应多个容器实例.
+  docker run [选项] [镜像名称/ID] : 运行指定容器镜像. 同一镜像可以对应多个容器实例.
+
+  选项:
 
   -p [外部端口:容器内端口] : 将外部端口映射到容器内指定端口.
   -d : 后台运行.
+
+  docker run -it [镜像名称/ID] bash : 启动并进入容器.
 
 ** 停止
 
   docker container stop [容器ID1 容器ID2 ...] : 终止运行指定容器(可
   以是多个).
 
-
 ** 进入
 
    docker exec -it [容器ID] /bin/bash
+   
+
+
+

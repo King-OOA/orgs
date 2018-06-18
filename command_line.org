@@ -835,7 +835,7 @@
 ** 查看发行版版本
 
    sudo lsb_release -a
-   cat /etc/issue
+   cat /etc/os-release
 
 ** 查看CPU信息
 
