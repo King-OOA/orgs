@@ -66,24 +66,42 @@
 
 ** 运行
 
-  docker run [选项] [镜像名称/ID] : 运行指定容器镜像. 同一镜像可以对应多个容器实例.
+  docker run [选项] [镜像名称/ID] [命令]: 运行指定镜像, 拉起容器. 同一
+  镜像可以拉起多个容器实例.
 
   选项:
 
   -p [外部端口:容器内端口] : 将外部端口映射到容器内指定端口.
   -d : 后台运行.
+  -it: 打开虚拟终端以交互的方式运行容器.
 
   docker run -it [镜像名称/ID] bash : 启动并进入容器.
 
-** 停止
-
-  docker container stop [容器ID1 容器ID2 ...] : 终止运行指定容器(可
-  以是多个).
+  docker container start [容器名称/ID] : 启动已经终止的容器(可以是多个).
+  
+  docker container restart [容器名称/ID]: 重启运行中的容器.(可以是多个)
 
 ** 进入
 
-   docker exec -it [容器ID] /bin/bash
+   docker exec -it [容器名称/ID] bash
+
+** 停止
+
+  docker container stop [容器名称/ID] : 终止运行中的容器(可以是多个).
+
+  注: 当容器内所执行的进程终止时, 容器也将终止.
+
+** 删除
+
+   docker container rm [容器名称/ID] : 删除处于终止状态的容器.(可以是多个)
+   -f: 可以删除运行中的容器.
    
+   docker container prune : 删除所有处于终止状态的容器. 
 
+** 日志
 
+   docker container logs [容器ID/名称] : 查看指定容器的日志.
 
+** 导入导出
+
+   docker export [容器名称/ID] > [文件] : 将指定容器的快照导出到指定文件. 
