@@ -725,6 +725,19 @@
     /var/log/syslog : 系统日至.
 
 * 网络
+
+** Ubuntu配置文件
+
+  /etc/hosts: 该文件用于保存设备(名称)映射与其IP地址的映射关系.
+  /etc/hostname: 该文件保存主机名称.
+  /etc/network/interfaces: 该文件保存各网口的IP地址, 掩码, 默认网关等.
+
+
+** ifconfig
+
+   配置网口的IP地址, 子网掩码.
+
+** 监测
   ping [hostname] : 向host持续发送数据包,直到终止该命令.
   traceroute [hostname] : 显示从当前主机到host所经过的所有路由.
 ** netstat : 查看网络设置和统计信息.
@@ -800,9 +813,10 @@
 * 文本分割
  
 ** split: 将大文件分割成若干小文件.
-   split -l/-b [待分割文件名] [分割后文件前缀]
+   split [-l/-b] [待分割文件名] [分割后文件前缀]
    -l 行数: 按指定行数分割. 
-   -b 大小: 按指定大小分割.
+   -b 大小: 按指定大小分割(支持单位: m,k).
+
    例:
    split [-l 50/-b 1m] file splited_file
    会将file按50行/1mb进行分割.产生的文件为: splitted_filea, splitted_fileb, splitted_filec,...

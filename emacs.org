@@ -763,6 +763,7 @@
 * info系统使用
 
 ** 基本
+
   Space/Backspace : 下/上一页
   p/n : 同级前/后一节点. (兄弟节点)
   [/] : 顺序前/后一节点. (深度遍历节点)
@@ -1428,7 +1429,7 @@ Ediff使用POSIX diff和diff3程序来比较文件间的差异,然后将输出�
 ** 处理被标记的buffer
 
    'x': 删除所有被标记为待删除的buffer.
-   'D': 删除所有被标记buffer.
+   'D': 删除所有被标记的buffer.
    'S': 保存所有被标记的buffer.
 
    'A': 将当前frame水平分割成多个窗口, 每个窗口显示一个被标记的buffer.
@@ -1507,3 +1508,160 @@ Ediff使用POSIX diff和diff3程序来比较文件间的差异,然后将输出�
    'C-o': 在另一窗口显示当前buffer.
    'b' : 从IBuffer列表中删除(但不kill)当前buffer.
 
+* Meghanada
+
+** 函数
+   
+   1. meghanada-install-server
+      安装meghanada服务器.
+
+   2. meghanada-update-server
+      下载并更新meghanada服务器.
+
+   3. meghanada-server-start
+      启动并连接到meghanada服务器.
+
+   4. meghanada-restart
+      重启meghanada服务器和客户端.
+
+   5. meghanada-server-kill
+      杀死meghanada服务器进程.
+
+   6. meghanada-client-direct-connect
+      Connect to other meghanada-server directly.
+
+   7. meghanada-client-connect
+       连接到meghanada服务器.
+
+   8. meghanada-client-disconnect
+       断开与meghanada服务器的连接.
+
+   9.  meghanada-ping
+       ping meghanada服务器.
+
+   10. meghanada-clear-cache
+       清空meghanada服务器当前项目的cache.
+
+   11. meghanada-import-all (C-c C-r i)
+       添加所有需要的import.
+
+   12. meghanada-optimize-import (C-c C-r o)
+       添加所有需要的import, 并删除所有不需要的import.
+
+   13. meghanada-import-at-point
+       为光标所在符号添加import.
+
+   14. meghanada-local-variable (C-c C-r r)
+       Introduce local variable. (need expression is end ;).
+
+   15. meghanada-compile-file (C-c C-c C-c)
+       编译当前文件(及相关文件).
+
+   16. meghanada-project-compile (C-c C-c c)
+       编译整个项目.
+
+   17. meghanada-show-project
+       显示当前项目的详细信息.
+
+   18. meghanada-exec-main
+       执行主类.
+
+   19.     
+
+* eshell
+  
+  eshell执行命令的顺序:
+  1. 先执行同名的alias.
+  2. 若没有, 则执行内置同名命令.
+  3. 若没有, 再执行同名外部命令.
+
+  ';' : 一行中分隔多条命令.
+  '&' : 后台执行.
+  *[command] : 选择执行外部命令command, 而非ehsell内置同名命令.
+
+** 内置命令
+
+   [command] --help : 查看该命令帮助.
+
+   which : 用于查看命令类型(内置, 外置, 别名).
+   addpath : 添加路径到环境变量PATH中.(无参数, 则打印PATH变量)
+   clear : 清理屏幕.
+   date : 查看日期时间.
+   alias [command] 'command's alias' : 为command定义别名.(所有别名都保存在eshell-aliases-file指定的文件中)
+   define : 定义可变别名.
+   diff : 使用emacs内置diff(并非ediff).
+   grep/agrep/egrep/fgrep/glimpse : emacs内置grep命令.
+   info : emacs内置info reader.
+   jobs : 查看emacs进程.
+   kill : 杀死进程.
+   listify : 
+   locate : 是外部命令locate的别名.
+   make: 
+   occur : emacs occur的别名.
+   printnl : 按行打印其参数.
+   cd : 'cd =' 可以查看目录栈, 'cd -n': 进入命令栈中指定目录.
+   su/sudo : 使用TRAMP内置的su/sudo方法.
+   
+** 历史记录
+
+   历史命令保存在由变量'eshell-history-file-name'所指定的文件中;保存的
+   历史命令个数, 由'eshell-history-size'变量指定.
+
+   history : 查看命令行历史.
+   !n : 执行第n条历史命令.
+   !foo : 执行最后一个以'foo'打头的历史命令.
+   !?foo : 执行最后一个包含'foo'的历史命令. 
+   
+   M-r/s : 正反向搜索.
+   M-p/n : 上/下一条历史命令.
+
+** 内置变量
+   
+   '$+' : 保存当前目录.
+   '$-' : 保存最近一次使用过的目录.
+   '$_' : 保存最近一次命令的最后一个参数.
+   '$$' : 保存最近一次命令的输出结果.
+   '$0' : 保存最近一次命令的退出码(0或1).
+
+   eshell-prefer-lisp-functions : 设置为't'时, 优先使用eshell内置命令.
+** 命令行扩展
+
+   $var: 扩展为var所绑定的变量值.
+   $#var: 扩展为var所绑定的序列长度.(var必须是序列, 否则报错).
+   
+   $var[i]: 扩展为var所绑定变量的第i个元素(从0开始).(var必须是序列, 否
+   则报错). 若var是字符串, 则需要以空白符分隔不同元素.
+   
+   $(lisp): 扩展为执行符号表达式(lisp)所得的结果.
+   ${command}: 扩展为执行command命令后所得的结果.
+   
+   ‘$var[: i]’
+     As above, but now splitting occurs at the colon character.
+
+‘$var[: i j]’
+     As above, but instead of returning just a string, it now returns a
+     list of two strings.  If the result is being interpolated into a
+     larger string, this list will be flattened into one big string,
+     with each element separated by a space.
+
+‘$var["\\\\" i]’
+     Separate on backslash characters.  Actually, the first argument –
+     if it doesn’t have the form of a number, or a plain variable name –
+     can be any regular expression.  So to split on numbers, use
+     ‘$var["[0-9]+" 10 20]’.
+
+‘$var[hello]’
+     Calls ‘assoc’ on ‘var’ with ‘"hello"’, expecting it to be an alist
+     (*note Association Lists: (elisp)Association List Type.).
+
+‘$#var[hello]’
+     Returns the length of the cdr of the element of ‘var’ who car is
+     equal to ‘"hello"’.
+
+** 重定向
+
+   eshell暂不支持输入重定向.
+
+   >/>> [文件]: 重定向输出到指定文件.
+   >>> #<BUFFER-NAME>: 重定向输出到指定buffer(若不存在则创建).
+   
