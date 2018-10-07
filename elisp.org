@@ -803,13 +803,17 @@
     (defvar VAR VALUE "COMMENT") : 声明并初始化变量.
     若变量已经初始化过, 则不改变量原值.
 
-** interactive
+** interaactive
    
-   含有"iteractive"的函数, 可以通过"M-x"进行调用.
+   包含"iteractive"的函数, 可以通过"M-x"进行调用.
     
    1. (interactive STR): STR的初始部分为参数类型字符, 依次规定了传递给函
-   数的各个参数的类型, 参数类型字符间用'\n'分隔. 在参数类型字符之后,是
-   提示字符串.
+   数的各个参数的类型. 在参数类型字符之后,是提示字符串. 每部分之间
+   用'\n'分隔. 
+   
+   例如: (interactive "p\nnInput n: \nsInput s: \nbInput b: ")
+
+   
 
    参数类型字符:
     'p' : 向该函数传递一个前缀参数.(由"C-u"传递, 若无参数输入, 默认为1)
