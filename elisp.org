@@ -186,7 +186,9 @@
     (let ((变量1 值1) 变量2 (变量3 值3) ... )
          (body)
     )
-    在let的范围内给变量初始化值, 变量2被初始化为nil.
+
+    在let的范围内给变量初始化值, 变量2被初始化为nil. 值1, 值3可以是表
+    达式. 变量的生命周期仅限于let范围内.
 
     let*和let类似, 只是在定义后面的变量时, 可以使用前面刚刚定义过的变
     量.
@@ -330,8 +332,8 @@
 
     (current-buffer) : 返回当前buffer对象.
 
-    (buffer-size &optional BUFOBJ) : 返回指定buffer大小(字符数)(缺省为当
-    前buffer).
+    (buffer-size &optional BUFOBJ) : 返回指定buffer对象的大小(字符
+    数)(缺省为当前buffer).
 
     (other-buffer) : 返回最近访问的buffer对象.
 

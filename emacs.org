@@ -1676,3 +1676,15 @@ Ediff使用POSIX diff和diff3程序来比较文件间的差异,然后将输出�
    >/>> [文件]: 重定向输出到指定文件.
    >/>> #<BUFFER-NAME>: 重定向输出到指定buffer(若不存在则创建).
    >/>> #'var : 重定向到变量var.
+   >/>> /dev/kill : 重定向到kill ring.
+   >/>> /dev/clip : 重定向到系统剪切板.
+
+** 环境变量
+
+   注: 以下操作仅影响emacs内部的环境变量, 并不改变系统中的环境变量.
+
+   (getenv "PATH") : 获取环境变量PATH的值.
+
+   (setenv "PATH" 
+   (concat "C:/cygwin/usr/local/bin;"
+   (getenv "PATH"))) : 向环境变量PATH中添加值.
