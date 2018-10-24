@@ -361,10 +361,12 @@
     (set-buffer BUFFER-OR-NAME) : 将指定buffer(名称或对象)设置为当前
     buffer(并不切换到该buffer), 并返回该buffer对象.
 
-    (get-buffer BUFFER-OR-NAME) : 返回指定buffer对象, 若不存在则返回nil.
-    
+    (get-buffer BUFFER-OR-NAME) : 返回指定buffer对象, 若不存在则返回
+    nil. 可以用于判断buffer是否存在.
+
+
     (get-buffer-create BUFFER-OR-NAME) : 返回指定buffer对象, 若不存在
-    则新建buffer.
+    则新建buffer(但不切换到该buffer).
     
     (erase-buffer) : 清除当前buffer的内容.
     
@@ -377,7 +379,6 @@
     
     (save-restriction BODY) : 保存当前buffer当前的状态, 执行完BODY后恢
     复. 与(narrow-to-region)连用.
-
 
 ** 抽取buffer内容
    
@@ -573,9 +574,24 @@
   (insert-file-contents FILENAME) : 将由FILENAME指定的文件的内容, 插
   入到当前buffer的光标处.
   
-  (insert-buffer-substring BUFFER &optional START END): 将源BUFFER(名
-  称或对象)中START和END之间的内容,拷贝到当前buffer光标后.若不指定起始
-  位置或终止位置则拷贝源buffer中的全部内容.
+  (insert-buffer-substring BUFFER-OR-NAME &optional START END): 将指定
+  buffer中, START和END之间的内容,拷贝到当前buffer光标后.若不指定起始位
+  置或终止位置则拷贝源buffer中的全部内容.
+
+  (insert-buffer BUFFER-OR-NAME) : 将指定buffer中的所有内容插入到当前
+  光标后. 等价于: (insert-buffer-substring BUFFER-OR-NAME).
+
+  (copy-to-buffer BUFFER-OR-NAME START END): 将当前buffer中位于[start,
+  , end)之间的文本拷贝到指定buffer中(会清除该buffer中原有内容).
+
+  (append-to-buffer BUFFER-OR-NAME START END): 将当前buffer中位于
+  [start, end)之间的文本插入到指定buffer的光标后, 不会覆盖该buffer原有
+  内容.
+
+  
+
+
+
   
 * 光标
 ** 光标位置
@@ -805,7 +821,7 @@
     (defvar VAR VALUE "COMMENT") : 声明并初始化变量.
     若变量已经初始化过, 则不改变量原值.
 
-** interaactive
+** interactive
    
    包含"iteractive"的函数, 可以通过"M-x"进行调用.
     
@@ -823,6 +839,8 @@
     'c' : 向该函数传递一个字符型参数.
     's' : 向该函数传递一个字符串型参数.
     'b' : 向函数传递一个已存在的buffer名.
+    'B' : 向函数传递一个buffer, 可以不存在.
+    'f' : 向函数传递一个已存在的文件名.
     'n' : 向该函数传递一个整数/浮点数型参数.
     'r' : 向该函数传递两个数, 作为区域的首(mark)和尾(point)位置. 调用
     该函数前, 区域必须激活.
