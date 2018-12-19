@@ -1688,3 +1688,9 @@ Ediff使用POSIX diff和diff3程序来比较文件间的差异,然后将输出�
    (setenv "PATH" 
    (concat "C:/cygwin/usr/local/bin;"
    (getenv "PATH"))) : 向环境变量PATH中添加值.
+* elpy
+
+
+   C-M-f/b: 向前/后移动一个大单词.
+   C-M-k: 剪切光标后平衡表达式.
+  

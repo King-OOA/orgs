@@ -50,8 +50,9 @@
     4. 在当前buffer中搜索
     
     (search-forward STR &optional BOUND NOERROR COUNT) :
-    从光标处开始向右搜索STR, 若搜索成功则将光标置于目标字符串的最后一个
-    字符之后. 若是反向搜索, 择将光标置于目标字符串第一个字符处. 返回光标最后所在位置.
+    当前buffer中, 从光标处开始向右搜索STR, 若搜索成功则将光标置于目标
+    字符串的最后一个字符之后. 若是反向搜索, 择将光标置于目标字符串第一
+    个字符处. 返回光标最后所在位置.
     
     BOUND是当前buffer中的某个位置, 用于限制搜索范围不超过该位置: nil表示无限制,即搜索全文.
     NOERROR表示搜索失败后, 所采取的行动:为nil则报错,为t则返回nil.
@@ -358,14 +359,13 @@
     并在当前窗口中显示(若用名称指定的buffer不存在, 则产生新的空白
     buffer).
 
-    (set-buffer BUFFER-OR-NAME) : 将指定buffer(名称或对象)设置为当前
-    buffer(并不切换到该buffer), 并返回该buffer对象.
+    (set-buffer BUFFER-OR-NAME) : 将指定(已存在)buffer(名称或对象)设置
+    为当前buffer(并不切换到该buffer), 并返回该buffer对象.
 
-    (get-buffer BUFFER-OR-NAME) : 返回指定buffer对象, 若不存在则返回
+    (get-buffer BUFFER-OR-NAME) : 获取指定buffer对象, 若不存在则返回
     nil. 可以用于判断buffer是否存在.
 
-
-    (get-buffer-create BUFFER-OR-NAME) : 返回指定buffer对象, 若不存在
+    (get-buffer-create BUFFER-OR-NAME) : 获取指定buffer对象, 若不存在
     则新建buffer(但不切换到该buffer).
     
     (erase-buffer) : 清除当前buffer的内容.
@@ -382,14 +382,15 @@
 
 ** 抽取buffer内容
    
-   (buffer-string) : 以字符串的形式返回当前buffer中的所有内容.(受
-   narrow-to-region影响.)
+   (buffer-string) : 
+   以字符串的形式返回当前buffer中的所有内容.(受narrow-to-region影响.)
 
-   (buffer-substring START END) : 返回当前buffer中位于[START, END-1]的
-   子串, 并包含其属性信息. START从1开始. 允许START和END以任意顺序给出.
+   (buffer-substring BEG END) : 
+   返回当前buffer中位于[BEG, END)的部分, 并包含其属性信息. BEG从1开始.
+   允许BEG和END以任意顺序给出.
 
-   (buffer-substring-no-properties START END) : 功能同以上函数.返回不
-   带属性的纯文本.
+   (buffer-substring-no-properties START END) : 
+   功能同以上函数.返回不带属性的纯文本.
 
 * file和directory相关
   
@@ -502,11 +503,11 @@
   
     注: 以下函数均不改变原列表.
     (car 列表) : 返回列表中的第一个元素.
-    (cdr 列表) : 返回除第一个元素以外,剩余的列表.
+    (cdr 列表) : 返回除去第一个元素之后,剩余的列表.
     (cons 元素 列表) : 将元素插入到原列表首,构成新列表并返回.
     (length 列表) : 返回列表中元素的个数.
     (nthcdr n 列表) : 返回去掉前n个(n从1开始)元素后,剩余的列表.
-    (nth n 列表) : 返回列表中的第n个(n从0开始)元素. n<0时,视为0; n>列表长度时,函数返回nil.
+    (nth n 列表) : 等价于(car (nthcdr n 列表)). n<0时,视为0; n>列表长度时,函数返回nil.
     (reverse 列表) : 返回反转后的列表.
 
     注:以下函数会改变原列表.
@@ -519,24 +520,29 @@
 
 * 常用函数
   
-** 拷贝相关
+** 拷贝
 
-    (filter-buffer-substring 起始位置 终止位置 &optional 是否删除):
-    返回当前buffer中起始位置与终止位置之间的文本. 若第三个参数非nil, 则同时
-    在buffer中删除该文本.
+    (filter-buffer-substring BEG END &optional DEL):
+    返回当前buffer中[BEG, END)之间的文本. 若DEL为非nil, 则同时在buffer
+    中删除该文本(不保存到剪切环).
     
-    (copy-region-as-kill 起始位置 终止位置):
-    将当前buffer中, 位于起始位置和终止位置之间的文本, 拷贝到剪切环中. 若上
-    一条命令也为将文本拷贝到剪切环, 则将和上次文本合并; 否则, 在剪切环
-    中新建一项.
+    (copy-region-as-kill BEG END &optional REGION): 
+    将当前buffer中, 位于[BEG, END)之间的文本, 拷贝到剪切环中. 若上一条
+    命令也是将文本拷贝到剪切环, 则将和上次文本合并; 否则, 在剪切环中新
+    建一项. 若REGION为非nil, 则忽略BEG和END, 将当前区域拷贝到剪切环中.
+    等价于(kill-append (filter-buffer-substring BEG END) )
+
     
-** 剪切相关
+** 剪切
 
     (zap-to-char 数字 字符) : 剪切从光标起直到(并包括)第'数字'个'字符'
     间的文本.
 
-    (kill-append 字符串 before-p) : 将字符串参数连接到剪切环最近一项之后, 若
-    before-p非nill, 则将字符串连接到剪切环最近一项之前.
+    (kill-append STR BEFORE-P) : 若BEFORE-P为nil, 将字符串STR追加到剪
+    切环最新项之后; 若before-p非nill, 则将STR置于剪切环最新项之前.
+
+    (kill-new STR REPLACE) : 若REPLACE为nil, 则将字符串STR设置为剪切环
+    的最新项; 否则, 用STR取代剪切环的最新项.
     
 ** 函数参数相关
     
@@ -554,9 +560,9 @@
    
    将当前buffer中, 匹配REGXP的行的颜色设置为FACE.
 
-** (count-lines START END) 
+** (count-lines BEG END) 
 
-   返回位于START和END之间区域所包含的行数.
+   返回位于BEG和END之间区域所包含的行数.
 
 ** 别名
    
@@ -574,17 +580,17 @@
   (insert-file-contents FILENAME) : 将由FILENAME指定的文件的内容, 插
   入到当前buffer的光标处.
   
-  (insert-buffer-substring BUFFER-OR-NAME &optional START END): 将指定
-  buffer中, START和END之间的内容,拷贝到当前buffer光标后.若不指定起始位
-  置或终止位置则拷贝源buffer中的全部内容.
+  (insert-buffer-substring BUFFER-OR-NAME &optional BEG END): 将指定
+  buffer中, BEG和END之间的内容,拷贝到当前buffer光标后, 光标移至新插
+  入文本的末尾. 若不指定起始位置或终止位置则拷贝源buffer中的全部内容.
 
   (insert-buffer BUFFER-OR-NAME) : 将指定buffer中的所有内容插入到当前
   光标后. 等价于: (insert-buffer-substring BUFFER-OR-NAME).
 
-  (copy-to-buffer BUFFER-OR-NAME START END): 将当前buffer中位于[start,
+  (copy-to-buffer BUFFER-OR-NAME BEG END): 将当前buffer中位于[start,
   , end)之间的文本拷贝到指定buffer中(会清除该buffer中原有内容).
 
-  (append-to-buffer BUFFER-OR-NAME START END): 将当前buffer中位于
+  (append-to-buffer BUFFER-OR-NAME BEG END): 将当前buffer中位于
   [start, end)之间的文本插入到指定buffer的光标后, 不会覆盖该buffer原有
   内容.
 
@@ -714,12 +720,12 @@
 * 剪切/复制/删除/粘贴
 ** 剪切
 
-  (kill-region START END) : 剪切当前buffer中位于START与END之间的文本,
-  将其保存到剪切环.
+  (kill-region BEG END) : 剪切当前buffer中位于[BEG, END)之间的文本,将
+  其保存到剪切环. BEG最小为1.
 
 ** 复制
 
-  (kill-ring-save START END) : 将当前buffer中位于START与END之间的文本,
+  (kill-ring-save BEG END) : 将当前buffer中位于BEG与END之间的文本,
   拷贝到剪切环.
 
   (kill-new STR &optional REPLACE) :将STR插入到剪切环首, 若REPLACE非
@@ -727,10 +733,10 @@
 
 ** 删除
    
-   (delete-region START END) : 删除当前buffer中位于START和END之间的文
+   (delete-region BEG END) : 删除当前buffer中位于BEG和END之间的文
    本, 不放入剪切环, 无法找回.
    
-   (delete-and-extract-region START END) : 功能同上, 但同时返回(带有属
+   (delete-and-extract-region BEG END) : 功能同上, 但同时返回(带有属
    性的)被删除文本.
 
 ** 粘贴
@@ -749,6 +755,7 @@
    kill-ring : 剪切环(列表类型), 实际上是指向剪切环第一项的指针.
    kill-ring-max : 剪切环的最大允许长度.   
    kill-ring-yank-pointer : 指向下一次待yank的项.
+   kill-read-only-ok : 非nil, 则剪切只读buffer时, 不报错.
    buffer-file-name : 当前buffer所关联的文件(的绝对路径).
    current-prefix-arg : 当前编辑命令的(原本)前缀参数(可以为数字, 负号, C-u,
    或nil). 即(interactive "P")的返回值.
@@ -785,7 +792,13 @@
     (2) mark-active 为 't'; (3) 区域非空(通过use-empty-active-region
     检测). 则返回t, 否则返回nil.
 
-    (fill-region START END) : 按照fill-column的值来重排所选区域.
+    (fill-region BEG END) : 按照fill-column的值来重排所选区域.
+
+** 局部区域
+
+* Narrowing
+  
+  (widen) : 将局部buffer恢复到原始buffer.
 
 * 字符编码
 
@@ -827,7 +840,7 @@
     
    1. (interactive STR): STR的初始部分为参数类型字符, 依次规定了传递给函
    数的各个参数的类型. 在参数类型字符之后,是提示字符串. 每部分之间
-   用'\n'分隔. 
+   用'\n'分隔. 注: \n必须紧挨着后面的参数类型字符.
    
    例如: (interactive "p\nnInput n: \nsInput s: \nbInput b: ")
 
@@ -856,13 +869,14 @@
 ** condition-case
 
     (condition-case
-          参数1
-	  正常处理部分
-	  错误处理部分)
+          VAR
+	  BODY
+	  ERR-HANDLER)
    
-   当一切正常时, 执行正常处理部分; 若有错误发生, 则执行错误处理部分.
-   错误处理部分可包括多个错误处理函数, 每个函数包括两个部分:
-   1.出错情况; 2.相应的处理过程.
+   首先执行BODY部分, 若正常则返回BODY的值; 若有错误发生, 则执行
+   ERR-HANDLER部分. 错误处理部分可包括多个错误处理函数, 每个函数包括两
+   个部分: 1.出错码; 2.相应的处理过程. 注: BODY部分若出错, 系统会定义
+   出错码, 去匹配ERR-HANDLER中的出错码.
    
    第一个被匹配到的错误处理函数将被执行.
 
