@@ -1,4 +1,4 @@
-* 第一章 List Processing
+* 杂项
 
 1. 原子包括: 运算符, 符号, 数字, 字符串.
 2. list中(元素之间)可以包含任意多空白符或空行.
@@ -10,7 +10,6 @@
               Symbol's function definition is void: [函数名] --- 同上.
 8. '.el'文件是可读的elisp文件, 而'.elc'是字节编译过的文件, 其执行速度较快.
    可以使用'M-x byte-compile-file'命令对.el文件进行字节编译.
-
 
 * 执行代码
 
@@ -172,7 +171,6 @@
       (banana . "yellow")
       (orange . "orange"))
       
-   
 * 变量
 ** 全局变量
     
@@ -304,7 +302,6 @@
    (and 参数1 参数2 ...) : 依次求解各个参数,若某个参数的值为nil,则返回
    nil;若所有参数均为非nil,返回最后一个参数的值.
    
-
 * 类型转换函数
    
    (string-to-number STR) : 将字符串STR转化为对应的数(整数或浮点数).
@@ -391,6 +388,11 @@
 
    (buffer-substring-no-properties START END) : 
    功能同以上函数.返回不带属性的纯文本.
+
+   (filter-buffer-substring BEG END &optional DEL):
+   返回当前buffer中[BEG, END)之间的文本. 若DEL为非nil, 则同时在buffer
+   中删除该文本(不保存到剪切环).
+    
 
 * file和directory相关
   
@@ -519,31 +521,6 @@
     (print 元素) : 打印列表中的某个元素.
 
 * 常用函数
-  
-** 拷贝
-
-    (filter-buffer-substring BEG END &optional DEL):
-    返回当前buffer中[BEG, END)之间的文本. 若DEL为非nil, 则同时在buffer
-    中删除该文本(不保存到剪切环).
-    
-    (copy-region-as-kill BEG END &optional REGION): 
-    将当前buffer中, 位于[BEG, END)之间的文本, 拷贝到剪切环中. 若上一条
-    命令也是将文本拷贝到剪切环, 则将和上次文本合并; 否则, 在剪切环中新
-    建一项. 若REGION为非nil, 则忽略BEG和END, 将当前区域拷贝到剪切环中.
-    等价于(kill-append (filter-buffer-substring BEG END) )
-
-    
-** 剪切
-
-    (zap-to-char 数字 字符) : 剪切从光标起直到(并包括)第'数字'个'字符'
-    间的文本.
-
-    (kill-append STR BEFORE-P) : 若BEFORE-P为nil, 将字符串STR追加到剪
-    切环最新项之后; 若before-p非nill, 则将STR置于剪切环最新项之前.
-
-    (kill-new STR REPLACE) : 若REPLACE为nil, 则将字符串STR设置为剪切环
-    的最新项; 否则, 用STR取代剪切环的最新项.
-    
 ** 函数参数相关
     
     (prefix-numeric-value 参数) : 将由(interactive "P")得到的"raw prefix argument"转换成数值.
@@ -598,7 +575,6 @@
 
 
 
-  
 * 光标
 ** 光标位置
      
@@ -660,7 +636,6 @@
   (set-window-hscroll WINDOW COLUMN) : 将WINDOW对象的水平移动列数设置
   为COLUMN. 若WINDOW为nil,则为当前窗口. 返回POS.
 
-
 * 时间
 
   (current-time-string) : 以字符串形式返回当前时间及日期.
@@ -720,17 +695,27 @@
 * 剪切/复制/删除/粘贴
 ** 剪切
 
-  (kill-region BEG END) : 剪切当前buffer中位于[BEG, END)之间的文本,将
-  其保存到剪切环. BEG最小为1.
+  (kill-region BEG END) :
+  剪切当前buffer中位于[BEG, END)之间的文本,将其保存到剪切环. BEG最小
+  为1.
 
-** 复制
+  (zap-to-char N CH) :
+  剪切从光标起直到(并包括)第N个字符CH间的文本.
 
-  (kill-ring-save BEG END) : 将当前buffer中位于BEG与END之间的文本,
-  拷贝到剪切环.
+** 拷贝
 
-  (kill-new STR &optional REPLACE) :将STR插入到剪切环首, 若REPLACE非
-  nil, 则替换剪切环首的元素.
+  (copy-region-as-kill BEG END &optional REGION): 
+  将当前buffer中, 位于[BEG, END)之间的文本, 拷贝到剪切环中. 若上一条命令
+  也是将文本拷贝到剪切环, 则将和上次文本合并; 否则, 在剪切环中新建一项.
+  若REGION为非nil, 则忽略BEG和END, 将当前区域拷贝到剪切环中. 等价于
+  (kill-append (filter-buffer-substring BEG END) )
 
+  (kill-append STR BEFORE-P) : 若BEFORE-P为nil, 将字符串STR追加到剪
+  切环最新项之后; 若before-p非nill, 则将STR置于剪切环最新项之前.
+
+  (kill-new STR REPLACE) : 若REPLACE为nil, 则将字符串STR设置为剪切环
+  的最新项; 否则, 用STR取代剪切环的最新项.
+    
 ** 删除
    
    (delete-region BEG END) : 删除当前buffer中位于BEG和END之间的文
@@ -765,9 +750,7 @@
 
    (delete-char N &optional KILL) : 删除光标后N个(如果N为负数, 则删除
    光标前字符). 如果KILL为t则剪切.
-
    
-
 * 标记和区域
 
 ** 标记(mark)
@@ -779,7 +762,7 @@
 
 ** 区域(region)
 
-    [最近标记处, 当前光标处]之间的部分构成区域(region). 一旦在buffer中
+    [最新标记处, 当前光标处]之间的部分构成区域(region). 一旦在buffer中
     设置了标记, 就会存在区域.
 
     变量'mark-active'控制是否激活区域.(设置为t则激活区域)
